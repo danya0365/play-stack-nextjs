@@ -1,0 +1,264 @@
+/* ============================================
+   MainLayout - Modern Design CSS
+   ============================================ */
+
+/* Layout Structure */
+.main-layout {
+  @apply h-screen flex flex-col overflow-hidden;
+  @apply bg-gradient-to-br from-gray-50 via-white to-gray-100;
+  @apply dark:from-gray-900 dark:via-gray-900 dark:to-gray-800;
+}
+
+.main-content {
+  @apply flex-1 overflow-auto;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.main-header {
+  @apply relative z-50;
+  @apply border-b border-gray-200/50 dark:border-gray-700/50;
+  @apply backdrop-blur-xl bg-white/70 dark:bg-gray-900/70;
+}
+
+.main-header-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  @apply flex items-center justify-between h-16;
+}
+
+/* Logo */
+.main-logo {
+  @apply flex items-center gap-2;
+  @apply text-xl font-bold;
+  @apply text-gray-900 dark:text-white;
+}
+
+.main-logo-icon {
+  @apply text-2xl;
+}
+
+.main-logo-text {
+  @apply bg-gradient-to-r from-indigo-600 to-purple-600;
+  @apply bg-clip-text text-transparent;
+}
+
+/* Navigation */
+.main-nav {
+  @apply hidden md:flex items-center gap-1;
+}
+
+.main-nav-link {
+  @apply px-3 py-2 rounded-lg;
+  @apply text-sm font-medium text-gray-600 dark:text-gray-300;
+  @apply hover:text-gray-900 dark:hover:text-white;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-800;
+  @apply transition-all duration-200;
+  @apply flex items-center gap-1.5;
+}
+
+.main-nav-link-active {
+  @apply text-indigo-600 dark:text-indigo-400;
+  @apply bg-indigo-50 dark:bg-indigo-900/30;
+}
+
+.main-nav-icon {
+  @apply text-base;
+}
+
+
+/* Header Actions */
+.main-header-actions {
+  @apply flex items-center gap-3;
+}
+
+.main-icon-button {
+  @apply w-10 h-10 flex items-center justify-center;
+  @apply rounded-lg text-lg;
+  @apply text-gray-600 dark:text-gray-300;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-800;
+  @apply transition-all duration-200;
+  @apply cursor-pointer;
+}
+
+.main-button-outline {
+  @apply px-4 py-2 rounded-lg;
+  @apply text-sm font-medium;
+  @apply text-gray-700 dark:text-gray-200;
+  @apply border border-gray-300 dark:border-gray-600;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-800;
+  @apply transition-all duration-200;
+}
+
+.main-button-primary {
+  @apply px-4 py-2 rounded-lg;
+  @apply text-sm font-medium text-white;
+  @apply bg-gradient-to-r from-indigo-600 to-purple-600;
+  @apply hover:from-indigo-700 hover:to-purple-700;
+  @apply shadow-lg shadow-indigo-500/25;
+  @apply transition-all duration-200;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.main-footer {
+  @apply border-t border-gray-200/50 dark:border-gray-700/50;
+  @apply backdrop-blur-xl bg-white/70 dark:bg-gray-900/70;
+}
+
+.main-footer-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  @apply flex items-center justify-between h-14;
+}
+
+.main-footer-brand {
+  @apply flex items-center gap-4;
+}
+
+.main-footer-logo {
+  @apply text-sm font-semibold text-gray-900 dark:text-white;
+}
+
+.main-footer-copyright {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.main-footer-nav {
+  @apply flex items-center gap-4;
+}
+
+.main-footer-link {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+  @apply hover:text-gray-900 dark:hover:text-white;
+  @apply transition-colors duration-200;
+}
+
+/* ============================================
+   Reusable Components - Main Style
+   ============================================ */
+
+/* Modal */
+.main-modal-overlay {
+  @apply fixed inset-0 z-50;
+  @apply bg-black/50 backdrop-blur-sm;
+  @apply flex items-center justify-center p-4;
+}
+
+.main-modal {
+  @apply w-full max-w-lg;
+  @apply bg-white dark:bg-gray-800;
+  @apply rounded-2xl shadow-2xl;
+  @apply border border-gray-200 dark:border-gray-700;
+}
+
+.main-modal-header {
+  @apply flex items-center justify-between;
+  @apply px-6 py-4;
+  @apply border-b border-gray-200 dark:border-gray-700;
+}
+
+.main-modal-title {
+  @apply text-lg font-semibold;
+  @apply text-gray-900 dark:text-white;
+}
+
+.main-modal-close {
+  @apply w-8 h-8 flex items-center justify-center;
+  @apply rounded-lg text-gray-500;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply transition-colors duration-200;
+  @apply cursor-pointer;
+}
+
+.main-modal-body {
+  @apply px-6 py-4;
+}
+
+.main-modal-footer {
+  @apply flex items-center justify-end gap-3;
+  @apply px-6 py-4;
+  @apply border-t border-gray-200 dark:border-gray-700;
+}
+
+/* Input */
+.main-input {
+  @apply w-full px-4 py-3;
+  @apply bg-gray-50 dark:bg-gray-900;
+  @apply border border-gray-300 dark:border-gray-600;
+  @apply rounded-xl;
+  @apply text-gray-900 dark:text-white;
+  @apply placeholder-gray-400 dark:placeholder-gray-500;
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent;
+  @apply transition-all duration-200;
+}
+
+.main-input-label {
+  @apply block text-sm font-medium;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply mb-2;
+}
+
+/* Select */
+.main-select {
+  @apply w-full px-4 py-3;
+  @apply bg-gray-50 dark:bg-gray-900;
+  @apply border border-gray-300 dark:border-gray-600;
+  @apply rounded-xl;
+  @apply text-gray-900 dark:text-white;
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent;
+  @apply transition-all duration-200;
+  @apply cursor-pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+/* Button */
+.main-btn {
+  @apply inline-flex items-center justify-center gap-2;
+  @apply px-4 py-2.5 rounded-xl;
+  @apply text-sm font-medium;
+  @apply transition-all duration-200;
+  @apply cursor-pointer;
+}
+
+.main-btn-primary {
+  @apply text-white;
+  @apply bg-gradient-to-r from-indigo-600 to-purple-600;
+  @apply hover:from-indigo-700 hover:to-purple-700;
+  @apply shadow-lg shadow-indigo-500/25;
+}
+
+.main-btn-secondary {
+  @apply text-gray-700 dark:text-gray-200;
+  @apply bg-gray-100 dark:bg-gray-700;
+  @apply hover:bg-gray-200 dark:hover:bg-gray-600;
+}
+
+.main-btn-ghost {
+  @apply text-gray-700 dark:text-gray-200;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-800;
+}
+
+/* Popover */
+.main-popover {
+  @apply absolute z-50;
+  @apply min-w-48 p-2;
+  @apply bg-white dark:bg-gray-800;
+  @apply rounded-xl shadow-xl;
+  @apply border border-gray-200 dark:border-gray-700;
+}
+
+.main-popover-item {
+  @apply w-full px-3 py-2;
+  @apply text-left text-sm;
+  @apply text-gray-700 dark:text-gray-200;
+  @apply rounded-lg;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply transition-colors duration-150;
+  @apply cursor-pointer;
+}

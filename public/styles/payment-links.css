@@ -1,0 +1,137 @@
+/* ============================================
+   Payment Links - Modern Styles
+   ============================================ */
+
+.payment-links-container {
+  @apply p-6 max-w-7xl mx-auto;
+}
+
+.payment-links-loading {
+  @apply h-full flex flex-col items-center justify-center text-center;
+}
+
+.payment-links-header {
+  @apply flex items-center justify-between mb-6;
+}
+
+.payment-links-title {
+  @apply text-3xl font-bold text-gray-900 dark:text-white;
+}
+
+.payment-links-subtitle {
+  @apply text-gray-500 dark:text-gray-400 mt-1;
+}
+
+.payment-links-stats {
+  @apply flex items-center gap-8 mb-8;
+}
+
+.payment-links-stat {
+  @apply flex flex-col items-center;
+}
+
+.payment-links-stat-value {
+  @apply text-2xl font-bold text-gray-900 dark:text-white;
+}
+
+.payment-links-stat-label {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.payment-links-empty {
+  @apply flex flex-col items-center justify-center py-20 text-center;
+}
+
+.payment-links-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+/* Payment Link Card */
+.payment-link-card {
+  @apply p-6 rounded-2xl;
+  @apply bg-white dark:bg-gray-800;
+  @apply border border-gray-100 dark:border-gray-700;
+}
+
+.payment-link-card-header {
+  @apply flex items-center justify-between mb-3;
+}
+
+.payment-link-type-badge {
+  @apply text-xs px-2 py-1 rounded-full font-medium;
+  @apply bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400;
+}
+
+.payment-link-status {
+  @apply text-xs px-2 py-0.5 rounded-full font-medium;
+}
+
+.payment-link-active {
+  @apply bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400;
+}
+
+.payment-link-inactive {
+  @apply bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400;
+}
+
+.payment-link-title {
+  @apply font-semibold text-lg text-gray-900 dark:text-white mb-1;
+}
+
+.payment-link-desc {
+  @apply text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2;
+}
+
+.payment-link-meta {
+  @apply flex items-center justify-between mb-4;
+}
+
+.payment-link-project {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.payment-link-amount {
+  @apply font-bold text-indigo-600 dark:text-indigo-400;
+}
+
+.payment-link-actions {
+  @apply flex items-center justify-between pt-4;
+  @apply border-t border-gray-100 dark:border-gray-700;
+}
+
+.payment-link-url {
+  @apply text-sm text-indigo-600 dark:text-indigo-400 hover:underline;
+}
+
+.payment-link-delete {
+  @apply p-1.5 rounded-lg;
+  @apply hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors;
+}
+
+/* ============================================
+   Payment Links - Retro Styles
+   ============================================ */
+
+.retro-payment-links {
+  @apply p-4 h-full overflow-auto;
+  font-family: "MS Sans Serif", Tahoma, sans-serif;
+}
+
+.retro-payment-links-loading {
+  @apply p-4 text-center;
+}
+
+.retro-payment-links-banner {
+  @apply flex items-center justify-center gap-2 py-2 mb-4;
+  @apply text-xl font-bold;
+  color: #000080;
+}
+
+.retro-payment-links-actions {
+  @apply flex gap-2 mb-4;
+}
+
+.retro-payment-links-stats {
+  @apply flex items-center gap-4;
+  font-size: 12px;
+}

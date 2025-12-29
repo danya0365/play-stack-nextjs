@@ -1,0 +1,432 @@
+/* ============================================
+   RetroLayout - Windows 98 / IE5 Style CSS
+   ============================================ */
+
+/* Windows 98 Color Variables */
+:root {
+  --win98-bg: #c0c0c0;
+  --win98-bg-dark: #808080;
+  --win98-titlebar: #000080;
+  --win98-titlebar-inactive: #808080;
+  --win98-border-light: #ffffff;
+  --win98-border-dark: #404040;
+  --win98-text: #000000;
+  --win98-text-light: #ffffff;
+  --win98-menubar: #c0c0c0;
+  --win98-input-bg: #ffffff;
+  --win98-button-face: #c0c0c0;
+}
+
+/* Dark mode - slightly adjusted for readability */
+.dark {
+  --win98-bg: #404040;
+  --win98-bg-dark: #282828;
+  --win98-titlebar: #000060;
+  --win98-border-light: #606060;
+  --win98-border-dark: #202020;
+  --win98-text: #e0e0e0;
+  --win98-text-light: #ffffff;
+  --win98-menubar: #505050;
+  --win98-input-bg: #303030;
+  --win98-button-face: #505050;
+}
+
+/* Layout Structure */
+.retro-layout {
+  @apply h-screen flex flex-col overflow-hidden;
+  background-color: var(--win98-bg);
+  font-family: "MS Sans Serif", "Segoe UI", Tahoma, sans-serif;
+  font-size: 12px;
+}
+
+.retro-content {
+  @apply flex-1 overflow-auto;
+  background-color: var(--win98-input-bg);
+  border: 2px inset var(--win98-border-dark);
+  margin: 2px;
+}
+
+/* ============================================
+   Header - IE5 Browser Chrome
+   ============================================ */
+.retro-header {
+  @apply flex flex-col;
+  background-color: var(--win98-bg);
+}
+
+/* Title Bar */
+.retro-titlebar {
+  @apply flex items-center justify-between;
+  @apply h-6 px-1;
+  background: linear-gradient(90deg, var(--win98-titlebar), #1084d0);
+  color: var(--win98-text-light);
+  font-weight: bold;
+}
+
+.retro-titlebar-left {
+  @apply flex items-center gap-1;
+}
+
+.retro-titlebar-icon {
+  @apply text-sm;
+}
+
+.retro-titlebar-text {
+  @apply text-xs truncate;
+}
+
+.retro-titlebar-controls {
+  @apply flex;
+}
+
+.retro-titlebar-btn {
+  @apply w-4 h-4 flex items-center justify-center;
+  @apply text-xs leading-none;
+  background-color: var(--win98-button-face);
+  color: var(--win98-text);
+  border: 1px outset var(--win98-border-light);
+  margin-left: 2px;
+  font-family: "Marlett", sans-serif;
+  cursor: pointer;
+}
+
+.retro-titlebar-btn:active {
+  border-style: inset;
+}
+
+.retro-close {
+  background-color: var(--win98-button-face);
+}
+
+/* Menu Bar */
+.retro-menubar {
+  @apply flex items-center h-6 px-1;
+  background-color: var(--win98-menubar);
+  border-bottom: 1px solid var(--win98-border-dark);
+}
+
+.retro-menu-item {
+  @apply px-2 py-0.5;
+  @apply text-xs;
+  color: var(--win98-text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.retro-menu-item:hover {
+  background-color: var(--win98-titlebar);
+  color: var(--win98-text-light);
+}
+
+.retro-menu-active {
+  background-color: var(--win98-titlebar);
+  color: var(--win98-text-light);
+}
+
+.retro-menu-underline {
+  text-decoration: underline;
+}
+
+/* Toolbar */
+.retro-toolbar {
+  @apply flex items-center gap-1 px-1 py-1;
+  background-color: var(--win98-bg);
+  border-bottom: 1px solid var(--win98-border-dark);
+}
+
+.retro-toolbar-btn {
+  @apply flex flex-col items-center justify-center;
+  @apply px-2 py-1;
+  @apply text-xs;
+  color: var(--win98-text);
+  background-color: var(--win98-button-face);
+  border: 1px solid transparent;
+  cursor: pointer;
+  min-width: 48px;
+}
+
+.retro-toolbar-btn:hover {
+  border: 1px outset var(--win98-border-light);
+}
+
+.retro-toolbar-btn:active {
+  border: 1px inset var(--win98-border-dark);
+}
+
+.retro-toolbar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.retro-toolbar-icon {
+  @apply text-lg mb-0.5;
+}
+
+.retro-toolbar-label {
+  @apply text-xs;
+}
+
+.retro-toolbar-separator {
+  @apply w-px h-10 mx-1;
+  background: linear-gradient(
+    to bottom,
+    var(--win98-border-dark),
+    var(--win98-border-light)
+  );
+}
+
+/* Address Bar */
+.retro-addressbar {
+  @apply flex items-center gap-2 px-2 py-1;
+  background-color: var(--win98-bg);
+  border-bottom: 1px solid var(--win98-border-dark);
+}
+
+.retro-addressbar-label {
+  @apply text-xs font-medium;
+  color: var(--win98-text);
+}
+
+.retro-addressbar-input-wrapper {
+  @apply flex-1 flex items-center;
+  background-color: var(--win98-input-bg);
+  border: 2px inset var(--win98-border-dark);
+}
+
+.retro-addressbar-icon {
+  @apply px-1 text-sm;
+}
+
+.retro-addressbar-input {
+  @apply flex-1 px-1 py-0.5;
+  @apply text-xs;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--win98-text);
+}
+
+.retro-addressbar-go {
+  @apply px-3 py-0.5;
+  @apply text-xs;
+  background-color: var(--win98-button-face);
+  color: var(--win98-text);
+  border: 2px outset var(--win98-border-light);
+  cursor: pointer;
+}
+
+.retro-addressbar-go:active {
+  border-style: inset;
+}
+
+/* ============================================
+   Footer - Status Bar
+   ============================================ */
+.retro-footer {
+  background-color: var(--win98-bg);
+}
+
+.retro-statusbar {
+  @apply flex items-center h-6;
+  border-top: 1px solid var(--win98-border-light);
+}
+
+.retro-statusbar-section {
+  @apply flex items-center gap-1 px-2 h-5;
+  @apply text-xs;
+  color: var(--win98-text);
+  border: 1px inset var(--win98-border-dark);
+  margin: 2px;
+}
+
+.retro-statusbar-main {
+  @apply flex-1;
+}
+
+.retro-statusbar-zone {
+  @apply min-w-24;
+}
+
+.retro-statusbar-icon {
+  @apply text-xs;
+}
+
+/* ============================================
+   Reusable Components - Retro Style
+   ============================================ */
+
+/* Modal (Windows 98 Dialog) */
+.retro-modal-overlay {
+  @apply fixed inset-0 z-50;
+  @apply flex items-center justify-center;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.retro-modal {
+  @apply flex flex-col;
+  @apply min-w-80;
+  background-color: var(--win98-bg);
+  border: 2px outset var(--win98-border-light);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.retro-modal-titlebar {
+  @apply flex items-center justify-between;
+  @apply h-6 px-1;
+  background: linear-gradient(90deg, var(--win98-titlebar), #1084d0);
+  color: var(--win98-text-light);
+  font-weight: bold;
+}
+
+.retro-modal-title {
+  @apply text-xs truncate;
+}
+
+.retro-modal-close {
+  @apply w-4 h-4 flex items-center justify-center;
+  @apply text-xs;
+  background-color: var(--win98-button-face);
+  color: var(--win98-text);
+  border: 1px outset var(--win98-border-light);
+  cursor: pointer;
+}
+
+.retro-modal-body {
+  @apply p-4;
+  color: var(--win98-text);
+}
+
+.retro-modal-footer {
+  @apply flex items-center justify-end gap-2;
+  @apply p-2;
+}
+
+/* Input */
+.retro-input {
+  @apply w-full px-2 py-1;
+  @apply text-xs;
+  background-color: var(--win98-input-bg);
+  color: var(--win98-text);
+  border: 2px inset var(--win98-border-dark);
+  outline: none;
+}
+
+.retro-input:focus {
+  outline: 1px dotted var(--win98-text);
+  outline-offset: -2px;
+}
+
+.retro-input-label {
+  @apply block text-xs mb-1;
+  color: var(--win98-text);
+}
+
+/* Select */
+.retro-select {
+  @apply w-full px-2 py-1;
+  @apply text-xs;
+  background-color: var(--win98-input-bg);
+  color: var(--win98-text);
+  border: 2px inset var(--win98-border-dark);
+  cursor: pointer;
+}
+
+/* Button */
+.retro-btn {
+  @apply inline-flex items-center justify-center;
+  @apply px-4 py-1;
+  @apply text-xs;
+  min-width: 75px;
+  background-color: var(--win98-button-face);
+  color: var(--win98-text);
+  border: 2px outset var(--win98-border-light);
+  cursor: pointer;
+}
+
+.retro-btn:hover {
+  background-color: #d0d0d0;
+}
+
+.retro-btn:active {
+  border-style: inset;
+}
+
+.retro-btn:focus {
+  outline: 1px dotted var(--win98-text);
+  outline-offset: -4px;
+}
+
+.retro-btn-primary {
+  font-weight: bold;
+  border: 3px outset var(--win98-border-light);
+}
+
+/* Popover */
+.retro-popover {
+  @apply absolute z-50;
+  @apply min-w-32;
+  background-color: var(--win98-bg);
+  border: 2px outset var(--win98-border-light);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.retro-popover-item {
+  @apply w-full px-4 py-1;
+  @apply text-left text-xs;
+  color: var(--win98-text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.retro-popover-item:hover {
+  background-color: var(--win98-titlebar);
+  color: var(--win98-text-light);
+}
+
+.retro-popover-separator {
+  @apply h-px mx-1 my-1;
+  background: linear-gradient(
+    to right,
+    var(--win98-border-dark),
+    var(--win98-border-light)
+  );
+}
+
+/* ============================================
+   Retro Typography & Utilities
+   ============================================ */
+.retro-text {
+  color: var(--win98-text);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.retro-link {
+  color: #0000ff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.retro-link:visited {
+  color: #800080;
+}
+
+.retro-link:hover {
+  color: #ff0000;
+}
+
+/* Group Box */
+.retro-groupbox {
+  @apply p-3 mt-3;
+  border: 1px solid var(--win98-border-dark);
+  position: relative;
+}
+
+.retro-groupbox-title {
+  @apply absolute -top-2 left-2 px-1;
+  @apply text-xs;
+  background-color: var(--win98-bg);
+  color: var(--win98-text);
+}

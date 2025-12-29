@@ -1,0 +1,258 @@
+/* ============================================
+   Dashboard - Modern Styles
+   ============================================ */
+
+.dashboard-container {
+  @apply p-6 max-w-7xl mx-auto;
+}
+
+.dashboard-loading,
+.dashboard-error {
+  @apply h-full flex flex-col items-center justify-center text-center;
+}
+
+.dashboard-header {
+  @apply flex items-center justify-between mb-8;
+}
+
+.dashboard-title {
+  @apply text-3xl font-bold text-gray-900 dark:text-white;
+}
+
+.dashboard-subtitle {
+  @apply text-gray-500 dark:text-gray-400 mt-1;
+}
+
+/* Stats Grid */
+.dashboard-stats-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8;
+}
+
+.dashboard-stat-card {
+  @apply p-6 rounded-2xl flex items-center gap-4;
+  @apply bg-white dark:bg-gray-800;
+  @apply border border-gray-100 dark:border-gray-700;
+  @apply shadow-sm;
+}
+
+.dashboard-stat-primary {
+  @apply bg-gradient-to-br from-indigo-500 to-purple-600;
+  @apply border-0 text-white;
+}
+
+.dashboard-stat-primary .dashboard-stat-label {
+  @apply text-indigo-100;
+}
+
+.dashboard-stat-primary .dashboard-stat-value {
+  @apply text-white;
+}
+
+.dashboard-stat-icon {
+  @apply text-3xl;
+}
+
+.dashboard-stat-content {
+  @apply flex flex-col;
+}
+
+.dashboard-stat-label {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.dashboard-stat-value {
+  @apply text-2xl font-bold text-gray-900 dark:text-white;
+}
+
+/* Content Grid */
+.dashboard-content-grid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+}
+
+.dashboard-card {
+  @apply rounded-2xl overflow-hidden;
+  @apply bg-white dark:bg-gray-800;
+  @apply border border-gray-100 dark:border-gray-700;
+}
+
+.dashboard-card-header {
+  @apply flex items-center justify-between px-6 py-4;
+  @apply border-b border-gray-100 dark:border-gray-700;
+}
+
+.dashboard-card-title {
+  @apply text-lg font-semibold text-gray-900 dark:text-white;
+}
+
+.dashboard-card-link {
+  @apply text-sm text-indigo-600 dark:text-indigo-400 hover:underline;
+}
+
+.dashboard-card-body {
+  @apply p-6;
+}
+
+.dashboard-empty {
+  @apply text-center text-gray-500 dark:text-gray-400 py-8;
+}
+
+/* Payment List */
+.dashboard-payment-list {
+  @apply space-y-3;
+}
+
+.dashboard-payment-item {
+  @apply flex items-center justify-between p-3 rounded-lg;
+  @apply bg-gray-50 dark:bg-gray-700/50;
+}
+
+.dashboard-payment-info {
+  @apply flex flex-col;
+}
+
+.dashboard-payment-amount {
+  @apply font-semibold text-gray-900 dark:text-white;
+}
+
+.dashboard-payment-date {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.dashboard-payment-status {
+  @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+/* Project List */
+.dashboard-project-list {
+  @apply space-y-3;
+}
+
+.dashboard-project-item {
+  @apply flex items-center justify-between p-3 rounded-lg;
+  @apply bg-gray-50 dark:bg-gray-700/50;
+}
+
+.dashboard-project-info {
+  @apply flex flex-col;
+}
+
+.dashboard-project-name {
+  @apply font-semibold text-gray-900 dark:text-white;
+}
+
+.dashboard-project-slug {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.dashboard-project-status {
+  @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+/* ============================================
+   Dashboard - Retro Styles
+   ============================================ */
+
+.retro-dashboard {
+  @apply p-4 h-full overflow-auto;
+  font-family: "MS Sans Serif", Tahoma, sans-serif;
+}
+
+.retro-dashboard-loading,
+.retro-dashboard-error {
+  @apply p-4 text-center;
+}
+
+.retro-dashboard-banner {
+  @apply flex items-center justify-center gap-2 py-2 mb-4;
+  @apply text-xl font-bold;
+  color: #000080;
+}
+
+.retro-dashboard-actions {
+  @apply flex justify-end mb-4;
+}
+
+.retro-dashboard-columns {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4 mt-4;
+}
+
+.retro-stats-table {
+  @apply w-full;
+  border-collapse: collapse;
+}
+
+.retro-stats-table td {
+  @apply py-1 px-2;
+}
+
+.retro-stats-icon {
+  width: 30px;
+  text-align: center;
+}
+
+.retro-stats-label {
+  @apply font-bold;
+  color: var(--win98-text);
+}
+
+.retro-stats-value {
+  @apply text-right;
+  font-family: "Courier New", monospace;
+  background-color: #ffffcc;
+  padding: 2px 8px;
+}
+
+.retro-data-table {
+  @apply w-full;
+  border-collapse: collapse;
+  border: 1px solid #808080;
+}
+
+.retro-data-table th,
+.retro-data-table td {
+  @apply py-1 px-2 text-left;
+  border: 1px solid #808080;
+  font-size: 11px;
+}
+
+.retro-data-table th {
+  background-color: #c0c0c0;
+  font-weight: bold;
+}
+
+.retro-data-table tr:nth-child(even) {
+  background-color: #f0f0f0;
+}
+
+.retro-table-footer {
+  @apply text-center py-2;
+}
+
+.retro-status {
+  @apply inline-block px-1;
+  font-size: 10px;
+}
+
+.retro-status-paid {
+  color: #008000;
+}
+
+.retro-status-pending {
+  color: #808000;
+}
+
+.retro-status-failed {
+  color: #800000;
+}
+
+.retro-dashboard-footer {
+  @apply mt-4 text-center;
+  @apply text-xs;
+  color: #808080;
+}
+
+.retro-empty {
+  @apply text-center py-4;
+  color: #808080;
+  font-style: italic;
+}

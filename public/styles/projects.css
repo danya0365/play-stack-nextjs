@@ -1,0 +1,162 @@
+/* ============================================
+   Projects - Modern Styles
+   ============================================ */
+
+.projects-container {
+  @apply p-6 max-w-7xl mx-auto;
+}
+
+.projects-loading {
+  @apply h-full flex flex-col items-center justify-center text-center;
+}
+
+.projects-header {
+  @apply flex items-center justify-between mb-6;
+}
+
+.projects-title {
+  @apply text-3xl font-bold text-gray-900 dark:text-white;
+}
+
+.projects-subtitle {
+  @apply text-gray-500 dark:text-gray-400 mt-1;
+}
+
+/* Stats */
+.projects-stats {
+  @apply flex items-center gap-8 mb-8;
+}
+
+.projects-stat {
+  @apply flex flex-col items-center;
+}
+
+.projects-stat-value {
+  @apply text-2xl font-bold text-gray-900 dark:text-white;
+}
+
+.projects-stat-label {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+/* Empty State */
+.projects-empty {
+  @apply flex flex-col items-center justify-center py-20 text-center;
+}
+
+/* Grid */
+.projects-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+/* Project Card */
+.project-card {
+  @apply p-6 rounded-2xl cursor-pointer;
+  @apply bg-white dark:bg-gray-800;
+  @apply border border-gray-100 dark:border-gray-700;
+}
+
+.project-card-header {
+  @apply flex items-center gap-3 mb-3;
+}
+
+.project-card-icon {
+  @apply text-2xl;
+}
+
+.project-card-name {
+  @apply flex-1 font-semibold text-lg text-gray-900 dark:text-white truncate;
+}
+
+.project-card-status {
+  @apply text-xs px-2 py-0.5 rounded-full font-medium;
+}
+
+.project-card-active {
+  @apply bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400;
+}
+
+.project-card-inactive {
+  @apply bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400;
+}
+
+.project-card-slug {
+  @apply text-sm text-gray-500 dark:text-gray-400 mb-2;
+}
+
+.project-card-desc {
+  @apply text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2;
+}
+
+.project-card-badges {
+  @apply flex flex-wrap gap-2 mb-4;
+}
+
+.project-card-badge {
+  @apply text-xs px-2 py-1 rounded-full;
+  @apply bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400;
+}
+
+.project-card-badge-donate {
+  @apply bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400;
+}
+
+.project-card-actions {
+  @apply flex items-center justify-between pt-4;
+  @apply border-t border-gray-100 dark:border-gray-700;
+}
+
+.project-card-link {
+  @apply text-sm text-indigo-600 dark:text-indigo-400 hover:underline;
+}
+
+.project-card-buttons {
+  @apply flex items-center gap-1;
+}
+
+.project-card-btn {
+  @apply p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply transition-colors duration-200;
+}
+
+.project-card-btn-delete {
+  @apply hover:bg-red-100 dark:hover:bg-red-900/30;
+}
+
+/* ============================================
+   Projects - Retro Styles
+   ============================================ */
+
+.retro-projects {
+  @apply p-4 h-full overflow-auto;
+  font-family: "MS Sans Serif", Tahoma, sans-serif;
+}
+
+.retro-projects-loading {
+  @apply p-4 text-center;
+}
+
+.retro-projects-banner {
+  @apply flex items-center justify-center gap-2 py-2 mb-4;
+  @apply text-xl font-bold;
+  color: #000080;
+}
+
+.retro-projects-actions {
+  @apply flex gap-2 mb-4;
+}
+
+.retro-projects-stats {
+  @apply flex items-center gap-4;
+  font-size: 12px;
+}
+
+.retro-form {
+  @apply space-y-3;
+}
+
+.retro-btn-sm {
+  padding: 2px 8px;
+  font-size: 11px;
+  min-width: auto;
+}
