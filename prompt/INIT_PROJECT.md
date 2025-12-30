@@ -22,4 +22,4 @@ MainLayout และ RetroLayout ต้องให้ออกแบบให�
 
 ให้ใช้ tailwindcss v4 สำหรับทำ style ที่ /Users/marosdeeuma/play-stack-nextjs/public/styles/index.css แยกไฟล์ css 2 ไฟล์ คือ main-layout.css และ retro-layout.css
 
-3. จากนั้น สร้างหน้า app/landing/page.tsx (ทุก compoment ต้องแยกตาม layout ที่ user เลือก)
+3. จากนั้น สร้างหน้า app/page.tsx (ทุก compoment ต้องแยกตาม layout ที่ user เลือก)

@@ -17,7 +17,7 @@
   --win98-button-face: #c0c0c0;
 }
 
-/* Dark mode - slightly adjusted for readability */
+/* Dark mode - adjusted for readability */
 .dark {
   --win98-bg: #404040;
   --win98-bg-dark: #282828;
@@ -395,6 +395,33 @@
 }
 
 /* ============================================
+   Retro Content Area
+   ============================================ */
+.retro-page {
+  @apply p-4;
+  color: var(--win98-text);
+}
+
+.retro-page-title {
+  @apply text-base font-bold mb-4;
+  color: var(--win98-text);
+}
+
+/* Group Box */
+.retro-groupbox {
+  @apply p-3 mt-3;
+  border: 1px solid var(--win98-border-dark);
+  position: relative;
+}
+
+.retro-groupbox-title {
+  @apply absolute -top-2 left-2 px-1;
+  @apply text-xs;
+  background-color: var(--win98-bg);
+  color: var(--win98-text);
+}
+
+/* ============================================
    Retro Typography & Utilities
    ============================================ */
 .retro-text {
@@ -417,16 +444,53 @@
   color: #ff0000;
 }
 
-/* Group Box */
-.retro-groupbox {
-  @apply p-3 mt-3;
-  border: 1px solid var(--win98-border-dark);
-  position: relative;
+/* ============================================
+   Retro Hero Section
+   ============================================ */
+.retro-hero {
+  @apply flex-1 flex flex-col items-center justify-center;
+  @apply p-4;
+  @apply text-center;
+  background-color: var(--win98-input-bg);
 }
 
-.retro-groupbox-title {
-  @apply absolute -top-2 left-2 px-1;
-  @apply text-xs;
+.retro-hero-title {
+  @apply text-xl font-bold mb-2;
+  color: var(--win98-text);
+}
+
+.retro-hero-subtitle {
+  @apply text-sm mb-4;
+  color: var(--win98-text);
+}
+
+.retro-hero-actions {
+  @apply flex items-center gap-2;
+}
+
+/* ============================================
+   Retro Cards
+   ============================================ */
+.retro-card {
   background-color: var(--win98-bg);
+  border: 2px outset var(--win98-border-light);
+  @apply p-3 mb-2;
+}
+
+.retro-card-header {
+  @apply flex items-center gap-2 mb-2;
+}
+
+.retro-card-icon {
+  @apply text-lg;
+}
+
+.retro-card-title {
+  @apply text-xs font-bold;
+  color: var(--win98-text);
+}
+
+.retro-card-description {
+  @apply text-xs;
   color: var(--win98-text);
 }

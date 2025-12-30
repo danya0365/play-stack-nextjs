@@ -5,7 +5,7 @@
 /* Layout Structure */
 .main-layout {
   @apply h-screen flex flex-col overflow-hidden;
-  @apply bg-gradient-to-br from-gray-50 via-white to-gray-100;
+  @apply bg-linear-to-br from-gray-50 via-white to-gray-100;
   @apply dark:from-gray-900 dark:via-gray-900 dark:to-gray-800;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .main-logo-text {
-  @apply bg-gradient-to-r from-indigo-600 to-purple-600;
+  @apply bg-linear-to-r from-indigo-600 to-purple-600;
   @apply bg-clip-text text-transparent;
 }
 
@@ -65,7 +65,6 @@
 .main-nav-icon {
   @apply text-base;
 }
-
 
 /* Header Actions */
 .main-header-actions {
@@ -93,7 +92,7 @@
 .main-button-primary {
   @apply px-4 py-2 rounded-lg;
   @apply text-sm font-medium text-white;
-  @apply bg-gradient-to-r from-indigo-600 to-purple-600;
+  @apply bg-linear-to-r from-indigo-600 to-purple-600;
   @apply hover:from-indigo-700 hover:to-purple-700;
   @apply shadow-lg shadow-indigo-500/25;
   @apply transition-all duration-200;
@@ -228,7 +227,7 @@
 
 .main-btn-primary {
   @apply text-white;
-  @apply bg-gradient-to-r from-indigo-600 to-purple-600;
+  @apply bg-linear-to-r from-indigo-600 to-purple-600;
   @apply hover:from-indigo-700 hover:to-purple-700;
   @apply shadow-lg shadow-indigo-500/25;
 }
@@ -261,4 +260,63 @@
   @apply hover:bg-gray-100 dark:hover:bg-gray-700;
   @apply transition-colors duration-150;
   @apply cursor-pointer;
+}
+
+/* ============================================
+   Hero Section
+   ============================================ */
+.main-hero {
+  @apply flex-1 flex flex-col items-center justify-center;
+  @apply px-4 sm:px-6 lg:px-8;
+  @apply text-center;
+}
+
+.main-hero-title {
+  @apply text-4xl sm:text-5xl lg:text-6xl font-bold;
+  @apply text-gray-900 dark:text-white;
+  @apply mb-4;
+}
+
+.main-hero-gradient {
+  @apply bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600;
+  @apply bg-clip-text text-transparent;
+}
+
+.main-hero-subtitle {
+  @apply text-lg sm:text-xl;
+  @apply text-gray-600 dark:text-gray-300;
+  @apply max-w-2xl mx-auto mb-8;
+}
+
+.main-hero-actions {
+  @apply flex flex-col sm:flex-row items-center gap-4;
+}
+
+/* ============================================
+   Cards
+   ============================================ */
+.main-card {
+  @apply bg-white dark:bg-gray-800;
+  @apply rounded-2xl shadow-lg;
+  @apply border border-gray-200 dark:border-gray-700;
+  @apply p-6;
+  @apply transition-all duration-300;
+  @apply hover:shadow-xl hover:-translate-y-1;
+}
+
+.main-card-header {
+  @apply flex items-center gap-3 mb-4;
+}
+
+.main-card-icon {
+  @apply text-3xl;
+}
+
+.main-card-title {
+  @apply text-lg font-semibold;
+  @apply text-gray-900 dark:text-white;
+}
+
+.main-card-description {
+  @apply text-sm text-gray-600 dark:text-gray-400;
 }
