@@ -3,6 +3,7 @@
 import { ModuleViewModel } from "@/src/presentation/presenters/module/ModulePresenter";
 import { useModulePresenter } from "@/src/presentation/presenters/module/useModulePresenter";
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
+import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import Link from "next/link";
 
 interface ModuleViewProps {
@@ -86,23 +87,27 @@ export function ModuleView({
           <div className="retro-groupbox">
             <span className="retro-groupbox-title">📖 Lessons</span>
             <div className="space-y-1 mt-2">
-              {lessons.map((lesson, index) => (
-                <div
-                  key={lesson.id}
-                  className="flex items-center gap-2 p-2 border border-gray-300 hover:bg-blue-900 hover:text-white cursor-pointer text-xs"
-                >
-                  <span className="w-6 h-6 flex items-center justify-center bg-gray-200 text-gray-700">
-                    {index + 1}
-                  </span>
-                  <div className="flex-1">
-                    <div className="font-bold">{lesson.titleTh}</div>
-                    <div className="text-xs opacity-75">
-                      {lesson.descriptionTh}
+              {lessons.map((lesson, index) => {
+                const isComplete = useProgressStore.getState().isLessonComplete(lesson.id);
+                return (
+                  <Link
+                    key={lesson.id}
+                    href={`/courses/${phaseNumber}/${module.id}/${lesson.id}`}
+                    className="flex items-center gap-2 p-2 border border-gray-300 hover:bg-blue-900 hover:text-white cursor-pointer text-xs"
+                  >
+                    <span className={`w-6 h-6 flex items-center justify-center ${isComplete ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}`}>
+                      {isComplete ? '✓' : index + 1}
+                    </span>
+                    <div className="flex-1">
+                      <div className="font-bold">{lesson.titleTh}</div>
+                      <div className="text-xs opacity-75">
+                        {lesson.descriptionTh}
+                      </div>
                     </div>
-                  </div>
-                  <span className="text-xs">{lesson.duration}</span>
-                </div>
-              ))}
+                    <span className="text-xs">{lesson.duration}</span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}
@@ -220,38 +225,42 @@ export function ModuleView({
               📖 Lessons
             </h2>
             <div className="space-y-3">
-              {lessons.map((lesson, index) => (
-                <div
-                  key={lesson.id}
-                  className="main-card flex items-center gap-4 cursor-pointer"
-                >
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 font-bold">
-                    {index + 1}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">
-                      {lesson.titleTh}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {lesson.descriptionTh}
-                    </p>
-                  </div>
-                  <div className="text-sm text-gray-500">{lesson.duration}</div>
-                  <span
-                    className={`px-2 py-0.5 text-xs rounded-full ${
-                      lesson.type === "theory"
-                        ? "bg-blue-100 text-blue-700"
-                        : lesson.type === "practice"
-                        ? "bg-green-100 text-green-700"
-                        : lesson.type === "project"
-                        ? "bg-purple-100 text-purple-700"
-                        : "bg-orange-100 text-orange-700"
-                    }`}
+              {lessons.map((lesson, index) => {
+                const isComplete = useProgressStore.getState().isLessonComplete(lesson.id);
+                return (
+                  <Link
+                    key={lesson.id}
+                    href={`/courses/${phaseNumber}/${module.id}/${lesson.id}`}
+                    className="main-card flex items-center gap-4 cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-shadow"
                   >
-                    {lesson.type}
-                  </span>
-                </div>
-              ))}
+                    <div className={`w-10 h-10 flex items-center justify-center rounded-full font-bold ${isComplete ? 'bg-green-500 text-white' : 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'}`}>
+                      {isComplete ? '✓' : index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {lesson.titleTh}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {lesson.descriptionTh}
+                      </p>
+                    </div>
+                    <div className="text-sm text-gray-500">{lesson.duration}</div>
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded-full ${
+                        lesson.type === "theory"
+                          ? "bg-blue-100 text-blue-700"
+                          : lesson.type === "practice"
+                          ? "bg-green-100 text-green-700"
+                          : lesson.type === "project"
+                          ? "bg-purple-100 text-purple-700"
+                          : "bg-orange-100 text-orange-700"
+                      }`}
+                    >
+                      {lesson.type}
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}
