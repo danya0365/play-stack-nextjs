@@ -1,5 +1,6 @@
 "use client";
 
+import { LoginModal } from "@/src/presentation/components/auth/LoginModal";
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
 import { ReactNode, useEffect, useState } from "react";
 import { MainLayout } from "./MainLayout";
@@ -34,9 +35,14 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
     );
   }
 
-  if (layout === "retro") {
-    return <RetroLayout>{children}</RetroLayout>;
-  }
-
-  return <MainLayout>{children}</MainLayout>;
+  return (
+    <>
+      <LoginModal />
+      {layout === "retro" ? (
+        <RetroLayout>{children}</RetroLayout>
+      ) : (
+        <MainLayout>{children}</MainLayout>
+      )}
+    </>
+  );
 }

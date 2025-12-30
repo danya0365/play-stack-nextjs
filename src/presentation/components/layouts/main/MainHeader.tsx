@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/src/presentation/stores/authStore";
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -7,6 +8,7 @@ import Link from "next/link";
 export function MainHeader() {
   const { theme, setTheme } = useTheme();
   const { toggleLayout } = useLayoutStore();
+  const { isLoggedIn, user, openLoginModal, logout } = useAuthStore();
 
   const navLinks = [
     { href: "/", label: "หน้าแรก", icon: "🏠" },
@@ -54,8 +56,21 @@ export function MainHeader() {
             💾
           </button>
 
-          {/* Login Button */}
-          <button className="main-button-primary">เข้าสู่ระบบ</button>
+          {/* Auth */}
+          {isLoggedIn && user ? (
+            <div className="flex items-center gap-2">
+              <Link href="/profile" className="main-icon-button" title="โปรไฟล์">
+                {user.avatar}
+              </Link>
+              <button onClick={logout} className="main-button-outline text-sm">
+                ออก
+              </button>
+            </div>
+          ) : (
+            <button onClick={openLoginModal} className="main-button-primary">
+              เข้าสู่ระบบ
+            </button>
+          )}
         </div>
       </div>
     </header>
