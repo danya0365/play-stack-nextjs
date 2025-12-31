@@ -3,9 +3,10 @@
 import { LessonContent } from "@/src/data/master/lessonContents";
 import { getLessonComponent, hasLessonComponent } from "@/src/presentation/components/lessons";
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
+import { usePresentationStore } from "@/src/presentation/stores/presentationStore";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface LessonViewProps {
   lesson: LessonContent;
@@ -30,10 +31,14 @@ export function LessonView({
     totalPoints,
     getCompletedLessonCount 
   } = useProgressStore();
+  const { enterPresentation } = usePresentationStore();
   
   const [activeTab, setActiveTab] = useState<"content" | "code" | "challenge">("content");
   const [isCompleted, setIsCompleted] = useState(false);
   const [showCompletedMessage, setShowCompletedMessage] = useState(false);
+  
+  // Ref for extracting slides
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Check completion status on mount
   useEffect(() => {
@@ -46,6 +51,21 @@ export function LessonView({
     setIsCompleted(true);
     setShowCompletedMessage(true);
     setTimeout(() => setShowCompletedMessage(false), 3000);
+  };
+
+  // Enter presentation mode
+  const handleEnterPresentation = () => {
+    if (!contentRef.current) return;
+    
+    const sections = contentRef.current.querySelectorAll("section.mb-8");
+    const slides = Array.from(sections).map((s, idx) => ({
+      html: s.outerHTML,
+      title: `Slide ${idx + 1}`,
+    }));
+    
+    if (slides.length > 0) {
+      enterPresentation(slides);
+    }
   };
 
   // Parse markdown to simple HTML
@@ -275,14 +295,30 @@ export function LessonView({
         <div className="main-card mb-6">
           {activeTab === "content" && (
             <>
-              {hasLessonComponent(lesson.id) ? (
-                (() => {
-                  const LessonComponent = getLessonComponent(lesson.id);
-                  return LessonComponent ? <LessonComponent /> : null;
-                })()
-              ) : (
-                <div className="lesson-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(lesson.content) }} />
+              {/* Presentation Mode Button */}
+              {hasLessonComponent(lesson.id) && (
+                <div className="flex justify-end mb-4">
+                  <button
+                    onClick={handleEnterPresentation}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
+                  >
+                    <span>📺</span>
+                    <span>Presentation Mode</span>
+                  </button>
+                </div>
               )}
+              
+              {/* Content with ref for extracting slides */}
+              <div ref={contentRef}>
+                {hasLessonComponent(lesson.id) ? (
+                  (() => {
+                    const LessonComponent = getLessonComponent(lesson.id);
+                    return LessonComponent ? <LessonComponent /> : null;
+                  })()
+                ) : (
+                  <div className="lesson-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(lesson.content) }} />
+                )}
+              </div>
             </>
           )}
           {activeTab === "code" && (
