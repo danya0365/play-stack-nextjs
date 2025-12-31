@@ -30,8 +30,20 @@ const lessonComponents: Record<string, ComponentType> = {
   "lesson-2-1-3": dynamic(() => import("./phase2/Lesson_2_1_3")),
   "lesson-2-1-4": dynamic(() => import("./phase2/Lesson_2_1_4")),
   
-  // Module 2.2: Phaser.js (Coming Soon)
-  // Module 2.3: PixiJS (Coming Soon)
+  // Module 2.2: Phaser.js
+  "lesson-2-2-1": dynamic(() => import("./phase2/Lesson_2_2_1")),
+  "lesson-2-2-2": dynamic(() => import("./phase2/Lesson_2_2_2")),
+  "lesson-2-2-3": dynamic(() => import("./phase2/Lesson_2_2_3")),
+  "lesson-2-2-4": dynamic(() => import("./phase2/Lesson_2_2_4")),
+  
+  // Module 2.3: PixiJS
+  "lesson-2-3-1": dynamic(() => import("./phase2/Lesson_2_3_1")),
+  "lesson-2-3-2": dynamic(() => import("./phase2/Lesson_2_3_2")),
+  "lesson-2-3-3": dynamic(() => import("./phase2/Lesson_2_3_3")),
+  
+  // ==========================================
+  // Phase 3: 3D Games (Coming Soon)
+  // ==========================================
 };
 
 export function getLessonComponent(lessonId: string): ComponentType | null {
@@ -44,3 +56,4 @@ export function hasLessonComponent(lessonId: string): boolean {
 
 // Export lesson components map for reference
 export { lessonComponents };
+
