@@ -21,9 +21,17 @@ const lessonComponents: Record<string, ComponentType> = {
   "lesson-1-2-3": dynamic(() => import("./phase1/Lesson_1_2_3")),
   
   // ==========================================
-  // Phase 2: 2D Games (Coming Soon)
+  // Phase 2: 2D Games
   // ==========================================
-  // "lesson-2-1-1": dynamic(() => import("./phase2/Lesson_2_1_1")),
+  
+  // Module 2.1: Canvas API
+  "lesson-2-1-1": dynamic(() => import("./phase2/Lesson_2_1_1")),
+  "lesson-2-1-2": dynamic(() => import("./phase2/Lesson_2_1_2")),
+  "lesson-2-1-3": dynamic(() => import("./phase2/Lesson_2_1_3")),
+  "lesson-2-1-4": dynamic(() => import("./phase2/Lesson_2_1_4")),
+  
+  // Module 2.2: Phaser.js (Coming Soon)
+  // Module 2.3: PixiJS (Coming Soon)
 };
 
 export function getLessonComponent(lessonId: string): ComponentType | null {
@@ -36,4 +44,3 @@ export function hasLessonComponent(lessonId: string): boolean {
 
 // Export lesson components map for reference
 export { lessonComponents };
-
