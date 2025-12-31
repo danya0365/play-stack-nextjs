@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_1_1() {
   return (
@@ -352,6 +352,37 @@ window.addEventListener('resize', () => {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Three.js Scene คืออะไร?",
+              options: ["หน้าจอ", "Container สำหรับ objects ทั้งหมด", "กล้อง", "แสง"],
+              correctIndex: 1,
+              explanation: "Scene เป็น container ที่เก็บ objects, lights, cameras ทั้งหมด"
+            },
+            {
+              question: "PerspectiveCamera FOV คืออะไร?",
+              options: ["Frame Per Second", "Field of View (มุมมอง)", "Forward Vector", "Focus Distance"],
+              correctIndex: 1,
+              explanation: "FOV = Field of View กำหนดว่ากล้องจะเห็นกว้างแค่ไหน (หน่วย degrees)"
+            },
+            {
+              question: "Mesh ประกอบด้วยอะไรบ้าง?",
+              options: ["Scene + Camera", "Geometry + Material", "Light + Shadow", "Renderer + Canvas"],
+              correctIndex: 1,
+              explanation: "Mesh = Geometry (รูปร่าง) + Material (พื้นผิว/สี)"
+            },
+            {
+              question: "THREE.Clock ใช้ทำอะไร?",
+              options: ["แสดงเวลา", "คำนวณ delta time สำหรับ animation", "สร้าง timer", "จับเวลา game"],
+              correctIndex: 1,
+              explanation: "Clock ใช้ getDelta() และ getElapsedTime() สำหรับ frame-independent animation"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "คำอธิบาย"]}
@@ -362,6 +393,16 @@ window.addEventListener('resize', () => {
             ["Mesh", "Geometry + Material"],
             ["Light", "Ambient, Directional, Point, Spot"],
             ["Clock", "Delta time สำหรับ animation"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ตั้งค่า Three.js project ได้",
+            "เข้าใจ Scene, Camera, Renderer",
+            "สร้าง Mesh จาก Geometry + Material ได้",
+            "ใช้ Light ต่างๆ ได้",
+            "พร้อมเรียน Materials และ Textures!"
           ]}
         />
 

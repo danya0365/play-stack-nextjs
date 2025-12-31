@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_1_3() {
   return (
@@ -410,6 +410,37 @@ function animate() {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "GLTF format ดีกว่า OBJ อย่างไร?",
+              options: ["ไฟล์เล็กกว่า", "รองรับ animations และ PBR materials", "เร็วกว่า", "ใช้ได้ทุกโปรแกรม"],
+              correctIndex: 1,
+              explanation: "GLTF รองรับ meshes, materials, textures, animations ครบถ้วน"
+            },
+            {
+              question: "AnimationMixer ใช้ทำอะไร?",
+              options: ["โหลด textures", "ควบคุมและเล่น animations ของ model", "สร้าง materials", "จัดการ physics"],
+              correctIndex: 1,
+              explanation: "AnimationMixer ใช้เล่น, หยุด, ผสม (blend) animations"
+            },
+            {
+              question: "mixer.update(delta) ต้องเรียกที่ไหน?",
+              options: ["เมื่อโหลด model", "ใน animation loop ทุก frame", "เมื่อคลิก", "เมื่อเปลี่ยน animation"],
+              correctIndex: 1,
+              explanation: "mixer.update(delta) ต้องเรียกทุก frame เพื่ออัพเดต animation"
+            },
+            {
+              question: "DRACOLoader ใช้ทำอะไร?",
+              options: ["โหลด textures", "โหลด compressed models (ไฟล์เล็กกว่า)", "สร้าง animations", "เพิ่มแสง"],
+              correctIndex: 1,
+              explanation: "DRACO เป็น compression format ที่ลดขนาด model ได้มาก"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Loader", "Format", "Animations"]}
@@ -418,6 +449,16 @@ function animate() {
             ["FBXLoader", ".fbx", "✅ Yes"],
             ["OBJLoader", ".obj", "❌ No"],
             ["DRACOLoader", "compressed", "N/A"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "โหลด GLTF/GLB models ได้",
+            "ใช้ AnimationMixer เล่น animations ได้",
+            "ทำ animation transitions (fadeIn/fadeOut) ได้",
+            "เข้าใจ model optimization (DRACO, LOD)",
+            "พร้อมเรียน Camera Controls!"
           ]}
         />
 

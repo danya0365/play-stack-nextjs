@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_1_2_1() {
   return (
@@ -263,6 +263,42 @@ displayHealthBar(75, 100); // HP: [███████████████
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Module ใดใช้รับ input ใน Node.js?",
+              options: ["fs", "path", "readline", "http"],
+              correctIndex: 2,
+              explanation: "readline เป็น built-in module สำหรับรับ input จากผู้ใช้"
+            },
+            {
+              question: "ทำไมต้องเรียก rl.close()?",
+              options: [
+                "เพื่อล้างหน้าจอ",
+                "เพื่อปิดโปรแกรมให้สมบูรณ์",
+                "เพื่อบันทึกข้อมูล",
+                "เพื่อรีเซ็ต input"
+              ],
+              correctIndex: 1,
+              explanation: "ถ้าไม่เรียก rl.close() โปรแกรมจะไม่สิ้นสุดการทำงาน"
+            },
+            {
+              question: "Promisify ใช้ทำอะไร?",
+              options: ["เพิ่มความเร็ว", "แปลง callback เป็น Promise", "ลด memory", "เพิ่ม security"],
+              correctIndex: 1,
+              explanation: "การแปลง callback เป็น Promise ทำให้ใช้ async/await ได้"
+            },
+            {
+              question: "ANSI Escape Codes ใช้ทำอะไร?",
+              options: ["เข้ารหัสข้อมูล", "ใส่สีให้ text ใน terminal", "บีบอัดข้อมูล", "สร้างไฟล์"],
+              correctIndex: 1,
+              explanation: "ANSI Codes ใช้ใส่สีและ style ให้กับ text ใน terminal"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "คำอธิบาย"]}
@@ -272,6 +308,16 @@ displayHealthBar(75, 100); // HP: [███████████████
             ["Promisify", "แปลง callback เป็น Promise"],
             ["clearScreen", "console.clear() ล้างหน้าจอ"],
             ["ANSI Colors", "ใส่สีให้ text ใน terminal"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ readline รับ input ได้",
+            "แปลง callback เป็น Promise ได้",
+            "สร้างเมนูเกมแบบ text-based ได้",
+            "ใช้ ANSI Colors ตกแต่ง output ได้",
+            "พร้อมเรียน State Management!"
           ]}
         />
 

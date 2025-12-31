@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_4_1_4() {
   return (
@@ -377,6 +377,37 @@ audio3d.play3D(explosionBuffer, { x: 10, y: 0, z: 5 });
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "AudioContext คืออะไร?",
+              options: ["ไฟล์เสียง", "Core ของ Web Audio API", "HTML element", "Video player"],
+              correctIndex: 1,
+              explanation: "AudioContext เป็น core ที่ใช้สร้างและเชื่อม audio nodes"
+            },
+            {
+              question: "GainNode ใช้ทำอะไร?",
+              options: ["เปลี่ยน pitch", "ควบคุมเสียง (volume)", "ทำ 3D", "เล่นวน"],
+              correctIndex: 1,
+              explanation: "GainNode ควบคุมความดังของเสียง"
+            },
+            {
+              question: "PannerNode ใช้ทำอะไร?",
+              options: ["เล่นวน", "3D positional audio", "ควบคุม volume", "บันทึก"],
+              correctIndex: 1,
+              explanation: "PannerNode ทำให้เสียงมาจากตำแหน่งใน 3D space"
+            },
+            {
+              question: "ทำไม AudioContext ต้อง resume หลัง user interaction?",
+              options: ["Bug ของ browser", "Browser policy ป้องกัน autoplay เสียงรบกวน", "ประหยัด memory", "ไม่จำเป็น"],
+              correctIndex: 1,
+              explanation: "Browser บล็อก autoplay audio เพื่อ user experience"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "Use Case"]}
@@ -386,6 +417,16 @@ audio3d.play3D(explosionBuffer, { x: 10, y: 0, z: 5 });
             ["StereoPanner", "Left/Right panning"],
             ["PannerNode", "3D positional audio"],
             ["playbackRate", "Pitch/speed control"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ Web Audio API ได้",
+            "สร้าง Sound Manager ได้",
+            "ใช้ 3D Positional Audio ได้",
+            "จัดการ music fade in/out ได้",
+            "พร้อมเรียน Performance Optimization!"
           ]}
         />
 

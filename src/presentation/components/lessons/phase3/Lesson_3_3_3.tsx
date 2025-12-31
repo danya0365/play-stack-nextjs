@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_3_3() {
   return (
@@ -363,6 +363,37 @@ export default function Game() {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "type='fixed' หมายความว่าอะไร?",
+              options: ["เคลื่อนที่เร็ว", "Static object (ไม่เคลื่อนที่)", "ลอยได้", "ไม่มี collision"],
+              correctIndex: 1,
+              explanation: "type='fixed' ทำให้เป็น static object เช่น ground"
+            },
+            {
+              question: "applyImpulse() ใช้ทำอะไร?",
+              options: ["แรงต่อเนื่อง", "แรงทันที (เช่น jump)", "หมุน", "ย้าย"],
+              correctIndex: 1,
+              explanation: "applyImpulse ใช้แรงทันที เช่น jump, explosion"
+            },
+            {
+              question: "sensor collider ทำอะไร?",
+              options: ["ชนแล้วเด้งออก", "ตรวจจับโดยไม่ชน (trigger zone)", "สร้างแสง", "เล่นเสียง"],
+              correctIndex: 1,
+              explanation: "sensor ตรวจจับโดยไม่มี physics response"
+            },
+            {
+              question: "enabledRotations={[false, false, false]} ใช้ทำอะไร?",
+              options: ["หมุนเร็วขึ้น", "ไม่ให้หมุน (character controller)", "หมุนกลับด้าน", "หมุนตามเมาส์"],
+              correctIndex: 1,
+              explanation: "ปิดการหมุน เหมาะกับ character controllers"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Component", "Use Case"]}
@@ -373,6 +404,16 @@ export default function Game() {
             ["type='dynamic'", "Moving objects"],
             ["<CapsuleCollider>", "Character collider"],
             ["applyImpulse()", "Instant force (jump)"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ตั้งค่า Rapier physics ได้",
+            "ใช้ RigidBody types ได้",
+            "ใช้ Colliders และ sensors ได้",
+            "สร้าง character controller ได้",
+            "พร้อมสำหรับ Phase 4!"
           ]}
         />
 

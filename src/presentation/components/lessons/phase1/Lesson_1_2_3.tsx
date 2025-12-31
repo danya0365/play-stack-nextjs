@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_1_2_3() {
   return (
@@ -398,6 +398,42 @@ main().catch(console.error);
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Story node ประกอบด้วยอะไรบ้าง?",
+              options: ["แค่ text", "text และ choices", "แค่ choices", "text, choices และ callbacks"],
+              correctIndex: 1,
+              explanation: "Story node มี text แสดงเนื้อเรื่อง และ choices นำไป node ถัดไป"
+            },
+            {
+              question: "onEnter callback ถูกเรียกเมื่อไหร่?",
+              options: [
+                "เมื่อเลือก choice",
+                "เมื่อเข้าสู่ node นั้น",
+                "เมื่อออกจาก node",
+                "เมื่อเกมเริ่ม"
+              ],
+              correctIndex: 1,
+              explanation: "onEnter ถูกเรียกทันทีที่เข้าสู่ node ก่อนแสดง text"
+            },
+            {
+              question: "choice.requires ใช้ทำอะไร?",
+              options: ["กำหนด node ถัดไป", "เงื่อนไขการแสดง choice", "กำหนด ending", "เพิ่ม effect"],
+              correctIndex: 1,
+              explanation: "requires กำหนดว่าต้องมีไอเทมนั้นจึงจะแสดง choice นี้"
+            },
+            {
+              question: "node.isEnding = true หมายความว่าอะไร?",
+              options: ["เกมหยุดชั่วคราว", "เป็น node สุดท้าย (จบเกม)", "ต้องเริ่มใหม่", "บันทึกเกม"],
+              correctIndex: 1,
+              explanation: "เมื่อ isEnding เป็น true จะหยุดการเล่าเรื่องและแสดงผล ending"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "คำอธิบาย"]}
@@ -407,6 +443,16 @@ main().catch(console.error);
             ["Conditions", "เงื่อนไขในการแสดง choice"],
             ["Callbacks", "onEnter, onSelect สำหรับ side effects"],
             ["Endings", "nodes ที่ isEnding = true"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ออกแบบ Story Graph แบบกิ่งได้",
+            "สร้าง Story Nodes ที่มี choices ได้",
+            "ใช้ conditions แสดง/ซ่อน choices ได้",
+            "ใช้ callbacks สร้าง side effects ได้",
+            "พร้อมสำหรับ Phase 2: 2D Game Development!"
           ]}
         />
 

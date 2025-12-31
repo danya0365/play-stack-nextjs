@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_3_1() {
   return (
@@ -308,6 +308,37 @@ app.ticker.maxFPS = 60;
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "PixiJS มีข้อดีอะไรเหนือ Phaser?",
+              options: ["Physics ดีกว่า", "เร็วกว่าและ control สูงกว่า", "Tilemap support", "Sound system"],
+              correctIndex: 1,
+              explanation: "PixiJS เป็น renderer อย่างเดียว เร็วและยืดหยุ่นกว่า"
+            },
+            {
+              question: "PIXI.Assets.loadBundle() ใช้ทำอะไร?",
+              options: ["สร้าง sprite", "โหลดหลาย assets พร้อมกัน", "สร้าง animation", "จัดการ physics"],
+              correctIndex: 1,
+              explanation: "loadBundle โหลดหลาย assets ที่กำหนดไว้ใน bundle"
+            },
+            {
+              question: "PIXI.Container ใช้ทำอะไร?",
+              options: ["โหลด textures", "จัดกลุ่ม sprites เข้าด้วยกัน", "สร้าง filters", "จัดการ input"],
+              correctIndex: 1,
+              explanation: "Container ช่วยจัดกลุ่ม sprites และย้าย/หมุน/scale พร้อมกัน"
+            },
+            {
+              question: "app.ticker ใช้ทำอะไร?",
+              options: ["โหลด assets", "Game loop (เรียกทุก frame)", "สร้าง sprites", "จัดการ sound"],
+              correctIndex: 1,
+              explanation: "ticker เป็น game loop ที่เรียก callback ทุก frame"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "คำอธิบาย"]}
@@ -318,6 +349,16 @@ app.ticker.maxFPS = 60;
             ["PIXI.Container", "Group sprites"],
             ["app.ticker", "Game loop"],
             ["app.stage", "Root container"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ตั้งค่า PixiJS project ได้",
+            "โหลด assets ด้วย PIXI.Assets ได้",
+            "สร้างและจัดการ Sprites ได้",
+            "ใช้ Container จัดกลุ่ม objects ได้",
+            "พร้อมเรียน Rendering และ Filters!"
           ]}
         />
 

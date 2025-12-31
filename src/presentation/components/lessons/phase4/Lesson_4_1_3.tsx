@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_4_1_3() {
   return (
@@ -397,6 +397,37 @@ function render() {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "WebSocket ดีกว่า HTTP อย่างไร?",
+              options: ["เร็วกว่า", "Bidirectional real-time", "ปลอดภัยกว่า", "ใช้ง่ายกว่า"],
+              correctIndex: 1,
+              explanation: "WebSocket เปิด connection ค้างไว้ ส่งข้อมูลได้ทั้งสองทาง"
+            },
+            {
+              question: "Client Prediction ทำอะไร?",
+              options: ["ทำนายอนาคต", "ทำเลยโดยไม่รอ server เพื่อลด lag", "ส่ง chat", "สร้าง animation"],
+              correctIndex: 1,
+              explanation: "Prediction ทำให้เกมรู้สึก responsive แม้มี latency"
+            },
+            {
+              question: "Entity Interpolation ใช้ทำอะไร?",
+              options: ["สร้าง entities", "ทำให้ other players เคลื่อนที่ลื่นไหล", "โหลด models", "ส่ง effects"],
+              correctIndex: 1,
+              explanation: "Interpolation เติม positions ระหว่าง updates"
+            },
+            {
+              question: "Server Authoritative หมายความว่าอะไร?",
+              options: ["Client ตัดสินใจทุกอย่าง", "Server ตัดสินใจ game state (ป้องกันโกง)", "P2P", "ไม่มี server"],
+              correctIndex: 1,
+              explanation: "Server เป็นคนตัดสินใจสุดท้ายเพื่อป้องกันโกง"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Technique", "Purpose"]}
@@ -406,6 +437,16 @@ function render() {
             ["Server Reconciliation", "Fix prediction errors"],
             ["Entity Interpolation", "Smooth other players"],
             ["Lag Compensation", "Fair hit detection"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ WebSocket client/server ได้",
+            "เข้าใจ Client Prediction ได้",
+            "ใช้ Entity Interpolation ได้",
+            "ออกแบบ multiplayer architecture ได้",
+            "พร้อมเรียน Audio!"
           ]}
         />
 

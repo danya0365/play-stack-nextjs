@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, CodeChallenge, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_1_4() {
   return (
@@ -351,6 +351,83 @@ if (Collision.aabb(player, enemy)) {
         />
       </Section>
 
+      <Section title="🏆 ลองทำ Challenge!" icon="🧪">
+        <CodeChallenge
+          title="เขียน AABB Collision"
+          description="เขียน function ตรวจสอบว่า 2 กล่องชนกันหรือไม่"
+          starterCode={`
+// a และ b มี x, y, width, height
+// return true ถ้าชนกัน
+
+function aabbCollision(a, b) {
+  // เติมโค้ดที่นี่
+}
+
+// ทดสอบ
+const box1 = { x: 0, y: 0, width: 50, height: 50 };
+const box2 = { x: 30, y: 30, width: 50, height: 50 };
+const box3 = { x: 100, y: 100, width: 50, height: 50 };
+
+console.log(aabbCollision(box1, box2)); // true (overlap)
+console.log(aabbCollision(box1, box3)); // false (no overlap)
+          `}
+          solution={`
+function aabbCollision(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
+// ทดสอบ
+const box1 = { x: 0, y: 0, width: 50, height: 50 };
+const box2 = { x: 30, y: 30, width: 50, height: 50 };
+const box3 = { x: 100, y: 100, width: 50, height: 50 };
+
+console.log(aabbCollision(box1, box2)); // true
+console.log(aabbCollision(box1, box3)); // false
+          `}
+          hints={[
+            "เช็คว่า a อยู่ทางซ้ายของ b ด้านขวาหรือไม่",
+            "เช็ค 4 ด้าน: ซ้าย, ขวา, บน, ล่าง",
+            "ใช้ && เชื่อมทุกเงื่อนไขเข้าด้วยกัน"
+          ]}
+        />
+      </Section>
+
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "AABB ย่อมาจากอะไร?",
+              options: ["Any Angle Bounding Box", "Axis-Aligned Bounding Box", "Accurate Bounding Box", "Advanced Bounding Box"],
+              correctIndex: 1,
+              explanation: "AABB = Axis-Aligned Bounding Box คือกล่องที่ขอบขนานกับแกน X, Y"
+            },
+            {
+              question: "Circle Collision เปรียบเทียบอะไร?",
+              options: ["width กับ height", "distance กับ ผลรวมรัศมี", "angle", "velocity"],
+              correctIndex: 1,
+              explanation: "วงกลมชนกันเมื่อ distance < radius1 + radius2"
+            },
+            {
+              question: "ทำไม distance squared เร็วกว่า?",
+              options: ["ใช้ memory น้อยกว่า", "ไม่ต้อง Math.sqrt()", "ใช้ integer ได้", "แม่นยำกว่า"],
+              correctIndex: 1,
+              explanation: "Math.sqrt() ช้า การเปรียบเทียบ squared values เร็วกว่า"
+            },
+            {
+              question: "pointInRect ใช้ทำอะไรเป็นหลัก?",
+              options: ["Character collision", "Mouse click detection", "Physics simulation", "AI pathfinding"],
+              correctIndex: 1,
+              explanation: "pointInRect ใช้เช็คว่า mouse click อยู่ใน button/UI หรือไม่"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Collision Type", "Use Case", "Performance"]}
@@ -359,6 +436,16 @@ if (Collision.aabb(player, enemy)) {
             ["Circle", "วงกลม/ลูกบอล", "เร็ว"],
             ["Circle-Rect", "ผสม", "ปานกลาง"],
             ["Point-Rect", "Mouse click", "เร็วมาก"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "เขียน AABB Collision ได้",
+            "เขียน Circle Collision ได้",
+            "เข้าใจ Circle-Rect collision",
+            "ใช้ pointInRect ตรวจ mouse click ได้",
+            "พร้อมเรียน Phaser.js!"
           ]}
         />
 

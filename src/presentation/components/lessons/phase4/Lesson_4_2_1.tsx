@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_4_2_1() {
   return (
@@ -518,6 +518,37 @@ function checkCollisions(entity) {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Object Pooling ช่วยแก้ปัญหาอะไร?",
+              options: ["โหลดเร็วขึ้น", "ลด GC spikes จากการสร้าง/ทำลาย objects", "เพิ่ม memory", "ทำ graphics สวยขึ้น"],
+              correctIndex: 1,
+              explanation: "Pooling reuse objects แทนการสร้างใหม่ ลด garbage collection"
+            },
+            {
+              question: "Spatial Hashing ใช้ทำอะไร?",
+              options: ["เข้ารหัส password", "หา entities ใกล้เคียงแบบ O(1)", "บีบอัดภาพ", "เล่นเสียง"],
+              correctIndex: 1,
+              explanation: "Spatial Hash แบ่ง world เป็น cells หา nearby ได้เร็ว"
+            },
+            {
+              question: "ทำไมต้อง cleanup event listeners?",
+              options: ["ไม่จำเป็น", "ป้องกัน memory leaks", "เพิ่มความเร็ว", "ลดขนาดไฟล์"],
+              correctIndex: 1,
+              explanation: "Listeners ที่ไม่ลบจะอ้างถึง objects ทำให้ memory leak"
+            },
+            {
+              question: "Batch rendering ช่วยอย่างไร?",
+              options: ["เพิ่มสีสัน", "ลด draw calls และ context switches", "เพิ่มขนาดภาพ", "เพิ่ม animation speed"],
+              correctIndex: 1,
+              explanation: "การ group draw calls ที่เหมือนกันลด overhead"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Technique", "Improvement"]}
@@ -527,6 +558,16 @@ function checkCollisions(entity) {
             ["Spatial Hashing", "O(1) nearby lookup"],
             ["Dirty Rectangles", "Partial screen update"],
             ["Listener Cleanup", "Prevent memory leaks"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ Object Pooling ได้",
+            "Batch rendering ได้",
+            "ใช้ Spatial Hashing ได้",
+            "Cleanup memory leaks ได้",
+            "พร้อมเรียน Save/Load!"
           ]}
         />
 

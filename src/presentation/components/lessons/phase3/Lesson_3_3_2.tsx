@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_3_2() {
   return (
@@ -389,16 +389,57 @@ function LoadingScreen() {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "OrbitControls ใช้ทำอะไร?",
+              options: ["โหลด models", "หมุนกล้องรอบ target", "สร้างแสง", "เล่นเสียง"],
+              correctIndex: 1,
+              explanation: "OrbitControls ช่วยหมุนกล้องรอบ objects"
+            },
+            {
+              question: "useGLTF() hook ใช้ทำอะไร?",
+              options: ["สร้างแสง", "โหลด 3D models", "เล่น animation", "สร้าง text"],
+              correctIndex: 1,
+              explanation: "useGLTF โหลด GLTF models แบบ React hook"
+            },
+            {
+              question: "<Environment preset='sunset'/> ทำอะไร?",
+              options: ["เพิ่ม object", "ตั้งค่า HDRI lighting", "โหลด textures", "สร้าง shadows"],
+              correctIndex: 1,
+              explanation: "Environment ให้ HDRI lighting อัตโนมัติ"
+            },
+            {
+              question: "<Html> component ใช้ทำอะไร?",
+              options: ["สร้าง 3D text", "แสดง HTML ใน 3D space", "โหลด HTML files", "สร้าง website"],
+              correctIndex: 1,
+              explanation: "Html แสดง React components ใน 3D"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Component", "Use Case"]}
           rows={[
-            ["OrbitControls", "Camera orbit around target"],
+            ["OrbitControls", "Camera orbit"],
             ["Environment", "HDRI lighting"],
             ["useGLTF", "Load 3D models"],
-            ["Text / Html", "Text in 3D space"],
+            ["Text / Html", "Text in 3D"],
             ["Float", "Floating animation"],
             ["ContactShadows", "Soft shadows"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ OrbitControls ได้",
+            "โหลด models ด้วย useGLTF ได้",
+            "ใช้ Environment ได้",
+            "ใช้ Html แสดง UI ได้",
+            "พร้อมเรียน Rapier Physics!"
           ]}
         />
 

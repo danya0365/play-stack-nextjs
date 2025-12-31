@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_5_1_3() {
   return (
@@ -259,6 +259,37 @@ If I were to improve it, I would [future improvement]."
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Game Loop ประกอบด้วยอะไรบ้าง?",
+              options: ["Render อย่างเดียว", "Input, Update, Render", "โหลด กับ เล่น", "เชื่อมต่อ network"],
+              correctIndex: 1,
+              explanation: "Game Loop ประกอบด้วย Input -> Update -> Render ทุก frame"
+            },
+            {
+              question: "STAR method ใช้ตอบคำถาม behavioral อย่างไร?",
+              options: ["Situation, Task, Action, Result", "Start, Tell, Answer, Respond", "Story, Theme, Action, Review", "Simple, True, Accurate, Real"],
+              correctIndex: 0,
+              explanation: "STAR: Situation, Task, Action, Result ช่วยเล่าเรื่องราวอย่างมีโครงสร้าง"
+            },
+            {
+              question: "ก่อน interview ต้องทำอะไร?",
+              options: ["ไปเลย", "Research บริษัทและเตรียม portfolio", "ท่องจำ code", "อดนอนให้เต็มที่"],
+              correctIndex: 1,
+              explanation: "Research บริษัท, เตรียม portfolio และ test demos"
+            },
+            {
+              question: "ควรถามคำถาม interviewer ไหม?",
+              options: ["ไม่ต้องถาม", "ถามเรื่อง role, team, และบริษัท", "ถามเงินเดือนทันที", "ถามวันหยุด"],
+              correctIndex: 1,
+              explanation: "ถามเกี่ยวกับ role, team, และวัฒนธรรมบริษัท"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Before", "During", "After"]}
@@ -267,6 +298,16 @@ If I were to improve it, I would [future improvement]."
             ["Practice problems", "Ask questions", "Follow up"],
             ["Prepare portfolio", "Show enthusiasm", "Reflect & learn"],
             ["Test all demos", "Be honest", ""],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "เตรียมคำตอบ technical questions ได้",
+            "ใช้ STAR method ได้",
+            "เตรียม portfolio presentation ได้",
+            "มีคำถามสำหรับ interviewer ได้",
+            "🎉 พร้อมสำหรับงาน Game Dev!"
           ]}
         />
 

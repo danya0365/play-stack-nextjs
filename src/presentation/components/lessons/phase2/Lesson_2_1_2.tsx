@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_1_2() {
   return (
@@ -323,6 +323,37 @@ function render() {
         </Diagram>
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "requestAnimationFrame ทำงานกี่ FPS?",
+              options: ["30 FPS", "60 FPS (sync กับ monitor)", "120 FPS", "ไม่จำกัด"],
+              correctIndex: 1,
+              explanation: "requestAnimationFrame sync กับ monitor refresh rate ซึ่งส่วนใหญ่คือ 60 FPS"
+            },
+            {
+              question: "Delta Time คืออะไร?",
+              options: ["ความเร็วเกม", "เวลาระหว่าง frames (วินาที)", "จำนวน frames", "ขนาดหน้าจอ"],
+              correctIndex: 1,
+              explanation: "Delta Time คือเวลาที่ผ่านไปตั้งแต่ frame ก่อนหน้า หน่วยเป็นวินาที"
+            },
+            {
+              question: "ถ้า speed = 200 และ dt = 0.016, จะเคลื่อนที่กี่ px?",
+              options: ["0.16 px", "3.2 px", "12.5 px", "200 px"],
+              correctIndex: 1,
+              explanation: "200 × 0.016 = 3.2 px ต่อ frame"
+            },
+            {
+              question: "Sprite animation ใช้อะไรควบคุมความเร็ว?",
+              options: ["FPS", "Frame Time (วินาทีต่อ frame)", "Canvas size", "Image format"],
+              correctIndex: 1,
+              explanation: "frameTime กำหนดว่าจะเปลี่ยน frame ทุกๆ กี่วินาที"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "คำอธิบาย"]}
@@ -332,6 +363,16 @@ function render() {
             ["speed * dt", "Frame-rate independent movement"],
             ["Sprite Animation", "แสดง frames จาก sprite sheet"],
             ["FPS Counter", "ตรวจสอบ performance"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ requestAnimationFrame สร้าง animation loop ได้",
+            "คำนวณ Delta Time ได้",
+            "ใช้ speed * dt ทำ movement สม่ำเสมอได้",
+            "เข้าใจ Sprite Sheet animation",
+            "พร้อมเรียน Input Handling!"
           ]}
         />
 

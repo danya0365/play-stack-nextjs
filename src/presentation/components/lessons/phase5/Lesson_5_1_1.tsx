@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_5_1_1() {
   return (
@@ -231,7 +231,48 @@ portfolio-site/
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Portfolio ที่ดีควรมีอะไรบ้าง?",
+              options: ["Projects เยอะมาก", "Playable demos และ case studies", "Screenshots อย่างเดียว", "ข้อมูลส่วนตัวมากๆ"],
+              correctIndex: 1,
+              explanation: "Playable demos แสดง skills จริง, case studies แสดงการคิด"
+            },
+            {
+              question: "ควรมีกี่ projects ใน portfolio?",
+              options: ["1-2", "3-5 ที่ดีที่สุด", "10+", "ทุก project ตั้งแต่เคยทำ"],
+              correctIndex: 1,
+              explanation: "Quality over quantity - 3-5 projects ที่ polished ดีกว่าเยอะแต่ไม่ดี"
+            },
+            {
+              question: "GitHub profile ที่ดีควรมีอะไร?",
+              options: ["Repo เยอะๆ", "Profile README, pinned repos, และ commits สม่ำเสมอ", "ภาพ profile สวยๆ", "ชื่อเท่ห์"],
+              correctIndex: 1,
+              explanation: "Profile README และ pinned repos แสดง best work, commits แสดง consistency"
+            },
+            {
+              question: "Project case study ควรมีอะไรบ้าง?",
+              options: ["แค่ screenshots", "Tech stack, challenges, solutions, และ learnings", "Code ทั้งหมด", "ไม่จำเป็น"],
+              correctIndex: 1,
+              explanation: "Case study แสดงการคิด problem-solving และ technical skills"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="📝">
+        <ProgressCheck
+          items={[
+            "เข้าใจ portfolio ที่ดีควรมีอะไร",
+            "สร้าง project showcases ได้",
+            "ตั้งค่า GitHub profile ได้",
+            "ออกแบบ portfolio website ได้",
+            "พร้อมเรียนการเขียน Resume!"
+          ]}
+        />
+
         <TipBox type="success">
           <strong>Portfolio Checklist:</strong>
           <ul className="mt-2 space-y-1">

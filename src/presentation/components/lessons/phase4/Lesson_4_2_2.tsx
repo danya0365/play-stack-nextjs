@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_4_2_2() {
   return (
@@ -474,6 +474,37 @@ function onLevelComplete(levelId) {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "LocalStorage เหมาะกับข้อมูลแบบไหน?",
+              options: ["ขนาดใหญ่ (GB)", "ขนาดเล็ก (5-10 MB)", "Binary data", "วีดีโอ"],
+              correctIndex: 1,
+              explanation: "LocalStorage เก็บได้แค่ 5-10 MB เหมาะกับ settings, saves เล็กๆ"
+            },
+            {
+              question: "IndexedDB ดีกว่า LocalStorage ตรงไหน?",
+              options: ["เร็วกว่า", "เก็บข้อมูลขนาดใหญ่กว่า รวมถึง binary", "ง่ายกว่า", "แชร์ข้าม tabs ได้"],
+              correctIndex: 1,
+              explanation: "IndexedDB เก็บข้อมูลขนาดใหญ่รวมถึง blobs, screenshots"
+            },
+            {
+              question: "Save data ควรมี version number เพื่ออะไร?",
+              options: ["ดูสวย", "สำหรับ migrate saves เก่าเมื่อ format เปลี่ยน", "ป้องกัน duplicates", "เพิ่มความเร็ว"],
+              correctIndex: 1,
+              explanation: "Version number ช่วย migrate saves เมื่อ update เกม"
+            },
+            {
+              question: "Auto-save ควรทำเมื่อไหร่?",
+              options: ["ทุก frame", "เว้น cutscenes/battle และเมื่อ tab hidden", "ตอนเปิดเกมเท่านั้น", "ทุก click"],
+              correctIndex: 1,
+              explanation: "Auto-save ควรเว้นช่วงสำคัญ และ save เมื่อ user ออกจาก tab"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Storage", "Use Case"]}
@@ -483,6 +514,16 @@ function onLevelComplete(levelId) {
             ["Cloud Save", "Cross-device sync"],
             ["Auto-Save", "Prevent progress loss"],
             ["Checkpoints", "Critical progress points"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ LocalStorage ได้",
+            "ใช้ IndexedDB ได้",
+            "ออกแบบ save data structure ได้",
+            "สร้าง auto-save system ได้",
+            "พร้อมเรียน Deployment!"
           ]}
         />
 

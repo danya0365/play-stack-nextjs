@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_2_1() {
   return (
@@ -426,6 +426,37 @@ function hitBomb(player, bomb) {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Phaser Scene lifecycle เริ่มจาก function ไหน?",
+              options: ["create", "preload", "update", "init"],
+              correctIndex: 1,
+              explanation: "preload() ถูกเรียกก่อนเพื่อโหลด assets"
+            },
+            {
+              question: "this.physics.add.staticGroup() ใช้สร้างอะไร?",
+              options: ["Player ที่เคลื่อนที่ได้", "Objects ที่ไม่เคลื่อนที่ (เช่น platform)", "Animations", "Particles"],
+              correctIndex: 1,
+              explanation: "staticGroup สร้าง objects ที่ไม่เคลื่อนที่ เช่น platform, กำแพง"
+            },
+            {
+              question: "player.body.touching.down หมายความว่าอะไร?",
+              options: ["กำลังตก", "Player ยืนบนพื้น/platform", "กำลังกระโดด", "ชนกับผนัง"],
+              correctIndex: 1,
+              explanation: "touching.down = true เมื่อเท้าสัมผัสพื้นด้านล่าง"
+            },
+            {
+              question: "this.physics.add.overlap() ใช้ทำอะไร?",
+              options: ["ทำให้ objects ชนแล้วเด้งออก", "เรียก callback เมื่อชนกัน (ไม่มี physics response)", "สร้าง gravity", "ทำให้วัตถุหายไป"],
+              correctIndex: 1,
+              explanation: "overlap ใช้เมื่อต้องการตรวจจับการชนแต่ไม่ต้องการ physics response"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "คำอธิบาย"]}
@@ -437,6 +468,16 @@ function hitBomb(player, bomb) {
             ["update()", "game loop"],
             ["this.physics.add", "สร้าง physics objects"],
             ["this.anims.create", "สร้าง animations"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ติดตั้ง Phaser project ได้",
+            "เข้าใจ Scene lifecycle (preload, create, update)",
+            "โหลด assets และแสดง sprites ได้",
+            "สร้าง physics objects และ collisions ได้",
+            "พร้อมเรียน Sprites & Animations!"
           ]}
         />
 

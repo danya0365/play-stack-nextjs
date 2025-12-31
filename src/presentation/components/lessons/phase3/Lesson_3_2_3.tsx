@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_2_3() {
   return (
@@ -402,6 +402,37 @@ ragdoll.parts.torso.applyImpulse(
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "PointToPointConstraint ใช้ทำอะไร?",
+              options: ["บานพับ", "เชื่อมแบบ ball joint (หมุนได้ทุกทิศ)", "ยึดติดกัน", "เพิ่มแรง"],
+              correctIndex: 1,
+              explanation: "PointToPoint เชื่อม 2 bodies ให้หมุนรอบ pivot ได้อิสระ"
+            },
+            {
+              question: "HingeConstraint เหมาะกับอะไร?",
+              options: ["เชือก", "ประตู / ล้อ (หมุนรอบแกนเดียว)", "สะพาน", "พื้น"],
+              correctIndex: 1,
+              explanation: "Hinge หมุนรอบแกนเดียว เหมาะกับประตู, ล้อรถ"
+            },
+            {
+              question: "RaycastVehicle ใช้สร้างอะไร?",
+              options: ["เชือก", "รถยนต์แบบ realistic", "Ragdoll", "พื้น"],
+              correctIndex: 1,
+              explanation: "RaycastVehicle สร้างระบบรถพร้อม suspension, steering, engine"
+            },
+            {
+              question: "Ragdoll physics ใช้ constraint แบบไหนเป็นหลัก?",
+              options: ["Lock", "PointToPoint (เชื่อมแขนขา)", "Distance", "Hinge"],
+              correctIndex: 1,
+              explanation: "Ragdoll ใช้ PointToPoint เชื่อมส่วนต่างๆ ของร่างกาย"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Constraint", "Use Case"]}
@@ -411,6 +442,16 @@ ragdoll.parts.torso.applyImpulse(
             ["Lock", "Fixed connections"],
             ["Distance", "Rope, spring"],
             ["RaycastVehicle", "Cars, bikes"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ PointToPoint constraint ได้",
+            "ใช้ Hinge constraint ได้",
+            "สร้างเชือก/โซ่ (chain) ได้",
+            "สร้าง vehicle ได้",
+            "พร้อมเรียน React Three Fiber!"
           ]}
         />
 

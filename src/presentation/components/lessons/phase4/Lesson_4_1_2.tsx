@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_4_1_2() {
   return (
@@ -464,6 +464,37 @@ function updateEnemy() {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "A* Pathfinding ใช้ทำอะไร?",
+              options: ["สร้าง animation", "หาทางรอบสิ่งกีดขวาง", "เล่นเสียง", "โหลดรูป"],
+              correctIndex: 1,
+              explanation: "A* หาทางที่สั้นที่สุดจากจุด A ไป B"
+            },
+            {
+              question: "Seek behavior ทำอะไร?",
+              options: ["หนีจาก target", "เคลื่อนที่เข้าหา target", "หยุดนิ่ง", "หมุนสุ่ม"],
+              correctIndex: 1,
+              explanation: "Seek คำนวณ steering force เข้าหา target"
+            },
+            {
+              question: "Behavior Tree Selector ทำงานอย่างไร?",
+              options: ["รันทุก child", "หยุดเมื่อ child แรกที่ไม่ fail สำเร็จ", "รัน child สุดท้าย", "สุ่มเลือก"],
+              correctIndex: 1,
+              explanation: "Selector หยุดเมื่อเจอ success หรือ running"
+            },
+            {
+              question: "Arrive behavior ต่างจาก Seek อย่างไร?",
+              options: ["เร็วกว่า", "ชะลอตัวลงเมื่อใกล้ target", "วิ่งไปทิศตรงข้าม", "หมุนสุ่ม"],
+              correctIndex: 1,
+              explanation: "Arrive ชะลอเมื่อใกล้จุดหมาย ไม่วิ่งผ่าน"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Technique", "Use Case"]}
@@ -473,6 +504,16 @@ function updateEnemy() {
             ["Arrive", "Slow down at destination"],
             ["Wander", "Random natural movement"],
             ["Behavior Tree", "Complex AI decisions"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ A* Pathfinding ได้",
+            "เข้าใจ Steering Behaviors ได้",
+            "สร้าง Behavior Tree ได้",
+            "ออกแบบ AI สำหรับศัตรูได้",
+            "พร้อมเรียน Networking!"
           ]}
         />
 

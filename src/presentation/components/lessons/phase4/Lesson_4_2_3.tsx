@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_4_2_3() {
   return (
@@ -338,6 +338,37 @@ if ('serviceWorker' in navigator) {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "WebP ดีกว่า PNG/JPG อย่างไร?",
+              options: ["สวยกว่า", "ขนาดเล็กกว่า 30-50%", "รองรับหลาย browsers กว่า", "เร็วกว่า"],
+              correctIndex: 1,
+              explanation: "WebP มีขนาดเล็กกว่า แต่คุณภาพใกล้เคียง"
+            },
+            {
+              question: "PWA คืออะไร?",
+              options: ["PHP Web App", "Progressive Web App (ติดตั้งได้เหมือน app)", "Portable Web Archive", "Public Web Access"],
+              correctIndex: 1,
+              explanation: "PWA ทำให้ website ติดตั้งลงเครื่องและทำงาน offline ได้"
+            },
+            {
+              question: "Service Worker ใช้ทำอะไร?",
+              options: ["เล่นเกม", "Cache files สำหรับใช้งาน offline", "ส่ง notifications", "วิเคราะห์ข้อมูล"],
+              correctIndex: 1,
+              explanation: "Service Worker cache files ทำให้เกมทำงาน offline ได้"
+            },
+            {
+              question: "OG tags ใช้ทำอะไร?",
+              options: ["เล่นเกม", "แสดง preview เมื่อ share link บน social media", "ติดตั้ง analytics", "เพิ่มความเร็ว"],
+              correctIndex: 1,
+              explanation: "Open Graph tags กำหนดรูปและข้อความเมื่อ share"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Step", "Action"]}
@@ -348,6 +379,16 @@ if ('serviceWorker' in navigator) {
             ["4. Deploy", "itch.io, Vercel, etc."],
             ["5. PWA", "Manifest + Service Worker"],
             ["6. Share", "OG tags, screenshots"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "Build production ได้",
+            "Optimize assets ได้",
+            "Deploy ลง hosting ได้",
+            "ตั้งค่า PWA ได้",
+            "พร้อมสำหรับ Phase 5: Career!"
           ]}
         />
 

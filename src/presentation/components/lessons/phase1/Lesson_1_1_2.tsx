@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_1_1_2() {
   return (
@@ -270,6 +270,42 @@ console.log('🎮 Game Started!');
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Game Loop ประกอบด้วยกี่ขั้นตอนหลัก?",
+              options: ["2 ขั้นตอน", "3 ขั้นตอน", "4 ขั้นตอน", "5 ขั้นตอน"],
+              correctIndex: 1,
+              explanation: "Game Loop มี 3 ขั้นตอนหลัก: Input → Update → Render"
+            },
+            {
+              question: "ทำไมต้องใช้ Delta Time?",
+              options: [
+                "เพื่อให้เกมทำงานเร็วขึ้น",
+                "เพื่อให้การเคลื่อนไหวสม่ำเสมอไม่ว่า FPS จะเป็นเท่าไร",
+                "เพื่อลดการใช้ memory",
+                "เพื่อให้กราฟิกสวยขึ้น"
+              ],
+              correctIndex: 1,
+              explanation: "Delta Time ทำให้เกมเคลื่อนไหวเท่ากันบนทุกเครื่อง ไม่ว่า FPS จะต่างกัน"
+            },
+            {
+              question: "requestAnimationFrame ให้ FPS ประมาณเท่าไร?",
+              options: ["30 FPS", "60 FPS", "120 FPS", "ไม่จำกัด"],
+              correctIndex: 1,
+              explanation: "requestAnimationFrame sync กับ monitor refresh rate ซึ่งส่วนใหญ่คือ 60 FPS"
+            },
+            {
+              question: "ถ้า player.speed = 200 และ deltaTime = 0.5, player จะเคลื่อนที่ไปกี่ pixels?",
+              options: ["50 pixels", "100 pixels", "200 pixels", "400 pixels"],
+              correctIndex: 1,
+              explanation: "movement = speed × deltaTime = 200 × 0.5 = 100 pixels"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "คำอธิบาย"]}
@@ -280,6 +316,16 @@ console.log('🎮 Game Started!');
             ["Input Phase", "รับ input จากผู้เล่น"],
             ["Update Phase", "อัพเดท game logic"],
             ["Render Phase", "วาดกราฟิก"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "เข้าใจ 3 ขั้นตอนของ Game Loop (Input → Update → Render)",
+            "ใช้ requestAnimationFrame ได้",
+            "เข้าใจว่า Delta Time คืออะไรและทำไมต้องใช้",
+            "คำนวณ movement ด้วย speed × deltaTime ได้",
+            "พร้อมเรียนคณิตศาสตร์สำหรับเกม!"
           ]}
         />
 

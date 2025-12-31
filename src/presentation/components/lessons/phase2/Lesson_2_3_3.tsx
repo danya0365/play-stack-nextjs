@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_3_3() {
   return (
@@ -422,6 +422,37 @@ function collectCoin(coin) {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "ParticleContainer ดีกว่า Container ธรรมดาอย่างไร?",
+              options: ["รองรับ filters", "เร็วกว่าสำหรับ sprites จำนวนมาก", "รองรับ physics", "รองรับ sound"],
+              correctIndex: 1,
+              explanation: "ParticleContainer optimized สำหรับแสดง sprites ที่เหมือนกันจำนวนมาก"
+            },
+            {
+              question: "Fire effect ต้องใช้ gravity แบบไหน?",
+              options: ["ค่าบวก (particles ตกลง)", "ค่าลบ (particles ลอยขึ้น)", "ไม่มี gravity", "ค่าสุ่ม"],
+              correctIndex: 1,
+              explanation: "gravity ลบ (negative) ทำให้ particles ลอยขึ้นเหมือนไฟ"
+            },
+            {
+              question: "Smoke effect ต้องตั้ง scale อย่างไร?",
+              options: ["startScale > endScale", "endScale > startScale (ขยายขึ้น)", "เท่ากัน", "ไม่ต้องตั้ง"],
+              correctIndex: 1,
+              explanation: "Smoke ขยายตัวเมื่อเวลาผ่านไป"
+            },
+            {
+              question: "emitRate vs emit() ต่างกันอย่างไร?",
+              options: ["เหมือนกัน", "emitRate ปล่อยต่อเนื่อง, emit() burst ทีเดียว", "emit() เร็วกว่า", "emitRate ใช้ memory น้อยกว่า"],
+              correctIndex: 1,
+              explanation: "emitRate ปล่อยต่อเนื่อง, emit(count) ปล่อยทีเดียว (เช่น explosion)"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Effect", "Config Key Points"]}
@@ -431,6 +462,16 @@ function collectCoin(coin) {
             ["Sparks", "angleVariance: PI, short life"],
             ["Rain", "angle: down, high emit rate"],
             ["Explosion", "burst emit, all angles"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ ParticleContainer ได้",
+            "สร้าง Particle System class ได้",
+            "ตั้งค่าสร้าง Fire/Smoke/Rain effect ได้",
+            "สร้าง collectible effects ได้",
+            "พร้อมสำหรับ Phase 3: 3D Games!"
           ]}
         />
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_4_1_1() {
   return (
@@ -416,6 +416,37 @@ class Enemy {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "ECS ย่อมาจากอะไร?",
+              options: ["Extra Code System", "Entity Component System", "Event Control State", "Element CSS Style"],
+              correctIndex: 1,
+              explanation: "ECS = Entity Component System แยก data (Components) ออกจาก logic (Systems)"
+            },
+            {
+              question: "State Machine เหมาะกับอะไร?",
+              options: ["การรับ input", "การจัดการ character states (idle, walk, attack)", "การวาดภาพ", "การโหลด assets"],
+              correctIndex: 1,
+              explanation: "State Machine จัดการ transitions ระหว่าง states"
+            },
+            {
+              question: "Event Bus ใช้ทำอะไร?",
+              options: ["เคลื่อนย้าย objects", "Decouple systems (ส่ง events แทนการเรียกตรง)", "โหลดไฟล์", "วาดรูป"],
+              correctIndex: 1,
+              explanation: "Event Bus ช่วยให้ systems สื่อสารโดยไม่ต้องรู้จักกัน"
+            },
+            {
+              question: "Component ใน ECS ควรมีอะไร?",
+              options: ["เฉพาะ data", "เฉพาะ logic", "ทั้ง data และ logic", "ไม่มีอะไร"],
+              correctIndex: 0,
+              explanation: "Components เก็บเฉพาะ data, Systems ทำ logic"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Pattern", "Use Case"]}
@@ -424,6 +455,16 @@ class Enemy {
             ["State Machine", "Character AI, game states"],
             ["Event Bus", "Decouple systems, UI updates"],
             ["Component", "Reusable behaviors"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "เข้าใจ ECS pattern ได้",
+            "สร้าง State Machine ได้",
+            "ใช้ Event Bus decouple systems ได้",
+            "ออกแบบ game architecture ได้",
+            "พร้อมเรียน AI และ Pathfinding!"
           ]}
         />
 

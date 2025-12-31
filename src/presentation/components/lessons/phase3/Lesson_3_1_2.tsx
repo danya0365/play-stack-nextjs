@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_1_2() {
   return (
@@ -330,6 +330,37 @@ newMaterial.color.setHex(0x00ff00);
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "MeshStandardMaterial เหมาะกับอะไร?",
+              options: ["ไม่ต้องการ lighting", "PBR realistic rendering", "Wireframe only", "2D sprites"],
+              correctIndex: 1,
+              explanation: "MeshStandardMaterial ใช้ PBR (Physically Based Rendering) สำหรับ realistic look"
+            },
+            {
+              question: "metalness: 1 หมายความว่าอะไร?",
+              options: ["พลาสติก 100%", "โลหะ 100%", "โปร่งใส 100%", "ปิด lighting"],
+              correctIndex: 1,
+              explanation: "metalness: 1 = โลหะเต็มที่ (chrome, gold)"
+            },
+            {
+              question: "normalMap ใช้ทำอะไร?",
+              options: ["เปลี่ยนสี", "สร้างรายละเอียดพื้นผิวโดยไม่เพิ่ม geometry", "เพิ่มความสว่าง", "ทำให้โปร่งใส"],
+              correctIndex: 1,
+              explanation: "normalMap สร้าง fake surface detail โดยไม่ต้องเพิ่ม polygons"
+            },
+            {
+              question: "envMap ใช้ทำอะไร?",
+              options: ["สร้างเงา", "สะท้อนสิ่งแวดล้อม (reflections)", "เพิ่มแสง", "ทำให้สีเทา"],
+              correctIndex: 1,
+              explanation: "envMap ใช้สะท้อน environment ทำให้เห็น reflections บน material"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Property", "คำอธิบาย"]}
@@ -340,6 +371,16 @@ newMaterial.color.setHex(0x00ff00);
             ["metalnessMap", "Metal areas"],
             ["envMap", "Reflections"],
             ["emissive", "Glow color"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "เข้าใจความต่าง Material types",
+            "โหลดและใช้ Textures ได้",
+            "สร้าง PBR Material ได้",
+            "ใช้ Environment Maps สำหรับ reflections ได้",
+            "พร้อมเรียน 3D Models!"
           ]}
         />
 

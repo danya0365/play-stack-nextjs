@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_2_3() {
   return (
@@ -384,6 +384,37 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Arcade Physics แตกต่างจาก Matter.js อย่างไร?",
+              options: ["รองรับ rotation", "เร็วกว่าและเหมาะกับ platformer", "รองรับ joints", "รูปทรงซับซ้อน"],
+              correctIndex: 1,
+              explanation: "Arcade Physics เร็วกว่าแต่รองรับแค่กล่อง/วงกลม"
+            },
+            {
+              question: "collider vs overlap ต่างกันอย่างไร?",
+              options: ["collider เร็วกว่า", "overlap ไม่มี physics response (ไม่เด้งกลับ)", "overlap ใช้ memory น้อยกว่า", "เหมือนกัน"],
+              correctIndex: 1,
+              explanation: "overlap เรียก callback แต่ไม่ block, collider เรียกและ block"
+            },
+            {
+              question: "body.touching.down ใช้ทำอะไร?",
+              options: ["เช็คว่ากำลังตก", "เช็คว่ายืนบนพื้น", "เช็ค velocity", "เช็คว่าชนกำแพง"],
+              correctIndex: 1,
+              explanation: "touching.down = true เมื่อสัมผัสพื้นด้านล่าง"
+            },
+            {
+              question: "staticGroup ใช้สำหรับอะไร?",
+              options: ["Player", "Bullets", "Platforms/กำแพง", "Enemies"],
+              correctIndex: 2,
+              explanation: "staticGroup สำหรับ objects ที่ไม่เคลื่อนที่ เช่น platform"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Method", "คำอธิบาย"]}
@@ -394,6 +425,16 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
             ["body.blocked", "Check against world bounds"],
             ["setCollideWorldBounds()", "Keep in world"],
             ["physics.add.group()", "Group for pooling"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "เข้าใจความต่าง Arcade vs Matter.js",
+            "ใช้ collider และ overlap ได้",
+            "ตรวจสอบทิศทางการชนด้วย touching/blocked",
+            "สร้าง physics groups ได้",
+            "พร้อมเรียน Tilemaps!"
           ]}
         />
 

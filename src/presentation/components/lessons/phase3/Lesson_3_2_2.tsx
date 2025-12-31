@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_2_2() {
   return (
@@ -384,6 +384,37 @@ function throwGrenade(position, velocity) {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "applyForce() vs applyImpulse() ต่างกันอย่างไร?",
+              options: ["เหมือนกัน", "Force ต่อเนื่อง, Impulse ทีเดียว", "Impulse เร็วกว่า", "Force แรงกว่า"],
+              correctIndex: 1,
+              explanation: "Force ใช้ต่อเนื่อง (เช่น thrust), Impulse ใช้ครั้งเดียว (เช่น jump)"
+            },
+            {
+              question: "fixedRotation: true ทำอะไร?",
+              options: ["หมุนเร็วขึ้น", "ไม่ให้ body หมุน (tumble)", "หมุนตลอดเวลา", "ล็อคตำแหน่ง"],
+              correctIndex: 1,
+              explanation: "ป้องกันตัวละครหมุน เหมาะกับ character controllers"
+            },
+            {
+              question: "getImpactVelocityAlongNormal() ใช้ทำอะไร?",
+              options: ["วัดความเร็ว", "วัดความแรงกระแทก (impact strength)", "หาตำแหน่ง", "คำนวณเสียง"],
+              correctIndex: 1,
+              explanation: "ใช้วัดว่ากระแทกแรงแค่ไหน สำหรับคำนวณ damage"
+            },
+            {
+              question: "linearDamping คืออะไร?",
+              options: ["แรงโน้มถ่วง", "แรงต้านอากาศ (ชะลอตัว)", "แรงเกิด", "เสียง"],
+              correctIndex: 1,
+              explanation: "linearDamping ทำให้วัตถุชะลอตัวลงเมื่อเวลาผ่านไป"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Method", "Use Case"]}
@@ -394,6 +425,16 @@ function throwGrenade(position, velocity) {
             ["addEventListener('collide')", "On collision"],
             ["fixedRotation: true", "Prevent tumbling"],
             ["linearDamping", "Slow down over time"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ collision events ได้",
+            "ใช้ applyForce/applyImpulse ได้",
+            "สร้าง physics character controller ได้",
+            "สร้าง projectiles ได้",
+            "พร้อมเรียน Constraints!"
           ]}
         />
 

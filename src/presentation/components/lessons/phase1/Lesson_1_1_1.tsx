@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, CodeChallenge, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_1_1_1() {
   return (
@@ -188,6 +188,47 @@ console.log(player.x, player.y); // 100, 200
         />
       </Section>
 
+      <Section title="🏆 ลองทำ Challenge!" icon="🧪">
+        <CodeChallenge
+          title="สร้าง Enemy Object"
+          description="สร้าง object สำหรับ enemy ที่มี name, health, damage, x, y และ isAlive"
+          starterCode={`
+// สร้าง enemy object ที่มี:
+// - name: "Goblin"
+// - health: 50
+// - damage: 10
+// - x: 200
+// - y: 100
+// - isAlive: true
+
+const enemy = {
+  // เติมโค้ดของคุณที่นี่
+};
+
+console.log(enemy.name);   // ควรแสดง "Goblin"
+console.log(enemy.health); // ควรแสดง 50
+          `}
+          solution={`
+const enemy = {
+  name: "Goblin",
+  health: 50,
+  damage: 10,
+  x: 200,
+  y: 100,
+  isAlive: true
+};
+
+console.log(enemy.name);   // "Goblin"
+console.log(enemy.health); // 50
+          `}
+          hints={[
+            "Object ใช้ปีกกา { } ในการสร้าง",
+            "แต่ละ property คั่นด้วย comma",
+            "String ใช้ quotes ครอบ"
+          ]}
+        />
+      </Section>
+
       <Section title="สร้าง Game Entity Pattern" icon="🏗️">
         <p className="mb-4">Pattern ที่ใช้ในเกมจริง - ใช้ Factory Function สร้าง entities:</p>
         
@@ -281,6 +322,37 @@ const gravity = 0.5;
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "ควรใช้อะไรสำหรับค่าที่ไม่เปลี่ยนแปลง เช่น GRAVITY?",
+              options: ["var", "let", "const", "function"],
+              correctIndex: 2,
+              explanation: "const ใช้สำหรับค่าคงที่ที่ไม่ต้องการเปลี่ยนแปลง"
+            },
+            {
+              question: "ชนิดข้อมูลใดเหมาะสำหรับเก็บ isAlive?",
+              options: ["Number", "String", "Boolean", "Array"],
+              correctIndex: 2,
+              explanation: "Boolean ใช้เก็บค่าจริง/เท็จ เหมาะสำหรับ state flags"
+            },
+            {
+              question: "ควรใช้อะไรเก็บข้อมูล player (name, health, x, y)?",
+              options: ["Array", "String", "Number", "Object"],
+              correctIndex: 3,
+              explanation: "Object เหมาะสำหรับเก็บข้อมูลที่เกี่ยวข้องกันไว้ด้วยกัน"
+            },
+            {
+              question: "Naming convention สำหรับค่าคงที่คือ?",
+              options: ["camelCase", "UPPER_CASE", "kebab-case", "PascalCase"],
+              correctIndex: 1,
+              explanation: "ค่าคงที่มักใช้ UPPER_CASE เพื่อให้เห็นชัดว่าเป็น constant"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "ใช้ทำอะไร", "ตัวอย่าง"]}
@@ -295,6 +367,16 @@ const gravity = 0.5;
           ]}
         />
 
+        <ProgressCheck
+          items={[
+            "เข้าใจความแตกต่างระหว่าง let และ const",
+            "รู้จักชนิดข้อมูลหลักทั้ง 5 แบบ",
+            "สามารถสร้าง Object สำหรับ game entity ได้",
+            "เข้าใจ naming conventions",
+            "พร้อมเรียนบทต่อไป: Game Loop!"
+          ]}
+        />
+
         <TipBox type="success">
           <strong>พร้อมสำหรับบทต่อไป: Game Loop! 🎮</strong>
         </TipBox>
@@ -302,3 +384,4 @@ const gravity = 0.5;
     </div>
   );
 }
+

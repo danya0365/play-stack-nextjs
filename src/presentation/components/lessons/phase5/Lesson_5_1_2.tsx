@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_5_1_2() {
   return (
@@ -229,6 +229,37 @@ Best regards,
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "เขียน achievements แบบไหนดีที่สุด?",
+              options: ["บอกว่าทำอะไร", "Action verb + What + Impact/Result", "ยาวๆ มี detail เยอะ", "สั้นๆ เฉยๆ"],
+              correctIndex: 1,
+              explanation: "Formula: [Action verb] + [What you did] + [Impact/Result] ช่วยให้ specific และน่าสนใจ"
+            },
+            {
+              question: "Resume ควรยาวกี่หน้า?",
+              options: ["5+ หน้า", "1-2 หน้า", "10 หน้า", "ไม่จำกัด"],
+              correctIndex: 1,
+              explanation: "1-2 หน้าเพียงพอ กระชับและอ่านง่าย"
+            },
+            {
+              question: "ทำไมต้อง tailor resume สำหรับแต่ละงาน?",
+              options: ["ไม่จำเป็น", "Highlight skills ที่ตรงกับ job description", "เสียเวลา", "ยากกว่า"],
+              correctIndex: 1,
+              explanation: "การ match skills กับ job requirements ช่วยให้โดดเด่น"
+            },
+            {
+              question: "Cover letter ควรเริ่มอย่างไร?",
+              options: ["แนะนำตัวเองยาวๆ", "Hook ที่น่าสนใจและเกี่ยวกับบริษัท", "ลอก resume", "เรียกร้องเงินเดือน"],
+              correctIndex: 1,
+              explanation: "เริ่มด้วย hook และทำไมคุณสนใจบริษัทนี้"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Do", "Don't"]}
@@ -238,6 +269,16 @@ Best regards,
             ["Include portfolio link", "Text-only projects"],
             ["1-2 pages max", "5+ pages"],
             ["Proofread carefully", "Typos/errors"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "เขียน resume แบบมืออาชีพได้",
+            "ใช้ action verbs ได้",
+            "Quantify achievements ได้",
+            "Tailor resume ตามงานได้",
+            "พร้อมเรียน Interview Prep!"
           ]}
         />
 

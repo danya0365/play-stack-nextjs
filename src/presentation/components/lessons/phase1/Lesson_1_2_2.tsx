@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, CodeChallenge, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_1_2_2() {
   return (
@@ -380,6 +380,87 @@ function checkQuestFlag(questName) {
         />
       </Section>
 
+      <Section title="🏆 ลองทำ Challenge!" icon="🧪">
+        <CodeChallenge
+          title="สร้าง addItem function"
+          description="เขียน function เพิ่มไอเทมลง inventory"
+          starterCode={`
+// inventory เป็น array ของ { id, quantity }
+// ถ้ามีไอเทมอยู่แล้ว เพิ่ม quantity
+// ถ้าไม่มี เพิ่มไอเทมใหม่
+
+let inventory = [];
+
+function addItem(itemId, quantity = 1) {
+  // เติมโค้ดของคุณที่นี่
+}
+
+// ทดสอบ
+addItem('sword', 1);
+addItem('potion', 3);
+addItem('potion', 2);
+console.log(inventory);
+// ควรได้:
+// [{ id: 'sword', quantity: 1 }, { id: 'potion', quantity: 5 }]
+          `}
+          solution={`
+let inventory = [];
+
+function addItem(itemId, quantity = 1) {
+  const existing = inventory.find(i => i.id === itemId);
+  
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    inventory.push({ id: itemId, quantity });
+  }
+}
+
+// ทดสอบ
+addItem('sword', 1);
+addItem('potion', 3);
+addItem('potion', 2);
+console.log(inventory);
+// [{ id: 'sword', quantity: 1 }, { id: 'potion', quantity: 5 }]
+          `}
+          hints={[
+            "ใช้ array.find() หาไอเทมที่มีอยู่แล้ว",
+            "ถ้ามีอยู่แล้วเพิ่ม quantity ถ้าไม่มี push ใหม่",
+            "อย่าลืมค่า default parameter quantity = 1"
+          ]}
+        />
+      </Section>
+
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Game State คืออะไร?",
+              options: ["โค้ดโปรแกรม", "ข้อมูลทั้งหมดของเกม ณ ขณะใดขณะหนึ่ง", "ไฟล์ save", "กราฟิกของเกม"],
+              correctIndex: 1,
+              explanation: "Game State เก็บข้อมูลทั้งหมดที่อธิบายสถานะของเกม"
+            },
+            {
+              question: "JSON.stringify() ใช้ทำอะไร?",
+              options: [
+                "แปลง JSON เป็น object",
+                "แปลง object เป็น JSON string",
+                "อ่านไฟล์",
+                "เขียนไฟล์"
+              ],
+              correctIndex: 1,
+              explanation: "stringify แปลง JS object เป็น JSON string สำหรับบันทึกไฟล์"
+            },
+            {
+              question: "ทำไมต้องใช้ try-catch กับ file operations?",
+              options: ["เพิ่มความเร็ว", "จัดการ errors ที่อาจเกิดขึ้น", "ลด memory", "เพิ่ม security"],
+              correctIndex: 1,
+              explanation: "File operations อาจเกิด error ได้หลายกรณี (file ไม่มี, สิทธิ์ไม่พอ)"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "ใช้ทำอะไร"]}
@@ -389,6 +470,16 @@ function checkQuestFlag(questName) {
             ["Flags", "สถานะ quest, unlocks, events"],
             ["Inventory System", "add/remove/use items"],
             ["Save/Load", "JSON + File System"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ออกแบบ Game State structure ได้",
+            "สร้าง Inventory System ได้",
+            "ใช้ JSON บันทึก/โหลดเกมได้",
+            "เขียน state update functions ได้",
+            "พร้อมเรียน Story Branching!"
           ]}
         />
 

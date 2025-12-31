@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_3_1() {
   return (
@@ -325,6 +325,37 @@ function ScreenshotButton() {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "React Three Fiber คืออะไร?",
+              options: ["ไลบรารีใหม่", "React renderer สำหรับ Three.js", "CSS framework", "Database"],
+              correctIndex: 1,
+              explanation: "R3F ทำให้เขียน Three.js ด้วย React components"
+            },
+            {
+              question: "useFrame() ใช้ทำอะไร?",
+              options: ["โหลดรูป", "Animation loop (เรียกทุก frame)", "สร้าง mesh", "จัดการ state"],
+              correctIndex: 1,
+              explanation: "useFrame เป็น hook ที่เรียกทุก frame สำหรับ animation"
+            },
+            {
+              question: "useThree() ให้อะไร?",
+              options: ["สร้าง 3 objects", "Access camera, scene, gl, viewport และอื่นๆ", "โหลด 3 textures", "สร้าง 3 lights"],
+              correctIndex: 1,
+              explanation: "useThree ให้ access Three.js internals เช่น camera, scene, renderer"
+            },
+            {
+              question: "args={[1, 1, 1]} ใน <boxGeometry args={[1,1,1]}/> หมายถึงอะไร?",
+              options: ["position", "Constructor arguments (width, height, depth)", "rotation", "scale"],
+              correctIndex: 1,
+              explanation: "args ส่งค่าไป constructor ของ Three.js class"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "คำอธิบาย"]}
@@ -335,6 +366,16 @@ function ScreenshotButton() {
             ["useThree()", "Access Three.js objects"],
             ["ref", "Reference to Three.js object"],
             ["args={[]}", "Constructor arguments"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ตั้งค่า R3F project ได้",
+            "สร้าง 3D scene ด้วย JSX ได้",
+            "ใช้ useFrame สำหรับ animation ได้",
+            "ใช้ useThree เข้าถึง Three.js objects ได้",
+            "พร้อมเรียน Drei helpers!"
           ]}
         />
 

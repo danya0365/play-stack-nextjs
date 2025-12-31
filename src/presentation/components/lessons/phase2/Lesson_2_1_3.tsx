@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_1_3() {
   return (
@@ -448,6 +448,37 @@ function gameLoop() {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "ทำไมต้องใช้ e.code แทน e.key?",
+              options: ["เร็วกว่า", "ไม่ขึ้นกับภาษา keyboard", "ใช้ memory น้อยกว่า", "ใช้ได้ทุก browser"],
+              correctIndex: 1,
+              explanation: "e.code แสดงตำแหน่งปุ่ม ส่วน e.key แสดงตัวอักษรตามภาษา"
+            },
+            {
+              question: "keysJustPressed ใช้ทำอะไร?",
+              options: ["เก็บปุ่มที่กดค้าง", "ตรวจการกดครั้งเดียว (ไม่ซ้ำ)", "นับจำนวนการกด", "บันทึก input"],
+              correctIndex: 1,
+              explanation: "justPressed ใช้สำหรับ action ที่ต้องการกดครั้งเดียว เช่น ยิง, กระโดด"
+            },
+            {
+              question: "canvas.getBoundingClientRect() ใช้ทำอะไร?",
+              options: ["วาดรูป", "หาตำแหน่ง canvas บนหน้าจอ", "ล้าง canvas", "เปลี่ยนขนาด"],
+              correctIndex: 1,
+              explanation: "ใช้หาตำแหน่ง canvas เพื่อคำนวณ mouse position ที่สัมพันธ์กับ canvas"
+            },
+            {
+              question: "Virtual Joystick ใช้สำหรับอะไร?",
+              options: ["Desktop games", "Mobile games", "Console games", "VR games"],
+              correctIndex: 1,
+              explanation: "Virtual Joystick ใช้แทน physical controls บนหน้าจอมือถือ"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Input Type", "Method", "Use Case"]}
@@ -457,6 +488,16 @@ function gameLoop() {
             ["Mouse position", "mousemove event", "Aiming"],
             ["Mouse click", "mousedown/up events", "Shooting, UI"],
             ["Touch", "touch events", "Mobile games"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ keys object เก็บสถานะปุ่มได้",
+            "แยก hold กับ justPressed ได้",
+            "รับ mouse position บน canvas ได้",
+            "สร้าง UI Button ที่ clickable ได้",
+            "พร้อมเรียน Collision Detection!"
           ]}
         />
 

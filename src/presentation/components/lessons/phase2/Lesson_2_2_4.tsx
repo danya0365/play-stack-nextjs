@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_2_4() {
   return (
@@ -383,6 +383,37 @@ class GameScene extends Phaser.Scene {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "Tilemap layer สร้างจาก function ไหน?",
+              options: ["make.tilemap()", "map.createLayer()", "map.addTilesetImage()", "load.tilemapTiledJSON()"],
+              correctIndex: 1,
+              explanation: "createLayer() สร้าง layer จาก tilemap"
+            },
+            {
+              question: "setCollisionByProperty() ใช้ทำอะไร?",
+              options: ["ตั้ง collision จาก tile index", "ตั้ง collision จาก custom property ใน Tiled", "ตั้ง collision ทุก tile", "ลบ collision"],
+              correctIndex: 1,
+              explanation: "ใช้ property เช่น collides: true ที่ตั้งใน Tiled"
+            },
+            {
+              question: "Object Layer ใช้ทำอะไร?",
+              options: ["วาด tiles", "กำหนด spawn points และ objects", "ตั้ง parallax", "ใส่ collision"],
+              correctIndex: 1,
+              explanation: "Object Layer เก็บตำแหน่ง spawn points, triggers, NPCs"
+            },
+            {
+              question: "refreshBody() ต้องเรียกเมื่อไหร่?",
+              options: ["หลังเปลี่ยน scale หรือ size ของ static body", "ก่อนสร้าง layer", "หลังโหลด assets", "ก่อนเริ่ม game"],
+              correctIndex: 0,
+              explanation: "static body ต้อง refreshBody() หลังเปลี่ยน scale/size"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Method", "คำอธิบาย"]}
@@ -393,6 +424,16 @@ class GameScene extends Phaser.Scene {
             ["setCollisionByProperty()", "ตั้ง collision จาก property"],
             ["getObjectLayer()", "ดึง object layer"],
             ["createFromObjects()", "สร้าง sprites จาก objects"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ Tiled สร้าง level ได้",
+            "โหลดและแสดง Tilemap ได้",
+            "ตั้ง collision layers ได้",
+            "ใช้ Object Layer วาง spawn points ได้",
+            "พร้อมเรียน PixiJS!"
           ]}
         />
 

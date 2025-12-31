@@ -1,8 +1,61 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { useCallback } from "react";
+import { CodeBlock, Diagram, LiveCanvas, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_1_1() {
+  // Live demo draw function
+  const drawDemo = useCallback((ctx: CanvasRenderingContext2D, frame: number) => {
+    // Sky gradient
+    const sky = ctx.createLinearGradient(0, 0, 0, 200);
+    sky.addColorStop(0, '#0f172a');
+    sky.addColorStop(1, '#1e3a8a');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, 400, 200);
+    
+    // Ground
+    ctx.fillStyle = '#166534';
+    ctx.fillRect(0, 200, 400, 100);
+    
+    // Moon with glow
+    const moonGlow = ctx.createRadialGradient(320, 50, 0, 320, 50, 30);
+    moonGlow.addColorStop(0, '#fef3c7');
+    moonGlow.addColorStop(0.8, '#fcd34d');
+    moonGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = moonGlow;
+    ctx.beginPath();
+    ctx.arc(320, 50, 30, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Stars (twinkling)
+    ctx.fillStyle = '#fff';
+    for (let i = 0; i < 20; i++) {
+      const x = (i * 47) % 400;
+      const y = (i * 31) % 180;
+      const twinkle = Math.sin(frame * 0.1 + i) * 0.5 + 1;
+      ctx.beginPath();
+      ctx.arc(x, y, twinkle, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Player with animation
+    const bounce = Math.sin(frame * 0.1) * 3;
+    ctx.fillStyle = '#3b82f6';
+    ctx.fillRect(50, 165 + bounce, 24, 36);
+    
+    // Enemy moving
+    const enemyX = 200 + Math.sin(frame * 0.05) * 50;
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(enemyX, 175, 24, 24);
+    
+    // Coin rotating
+    const coinScale = Math.abs(Math.sin(frame * 0.1));
+    ctx.fillStyle = '#fcd34d';
+    ctx.beginPath();
+    ctx.ellipse(300, 185, 8 * coinScale, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }, []);
+
   return (
     <div className="lesson-content">
       <h1 className="text-3xl font-bold mb-6">พื้นฐาน HTML5 Canvas</h1>
@@ -49,6 +102,14 @@ export default function Lesson_2_1_1() {
           <strong>Pro Tip:</strong> ตั้งค่า width/height ใน HTML attribute โดยตรง 
           ไม่ใช่ CSS เพราะ CSS จะ stretch ไม่ใช่ resize
         </TipBox>
+      </Section>
+
+      <Section title="🎮 Live Demo" icon="▶️">
+        <p className="mb-4">ลองดู demo ที่สร้างด้วย Canvas:</p>
+        <LiveCanvas width={400} height={300} draw={drawDemo} />
+        <p className="text-sm text-gray-500 text-center">
+          กดปุ่มเพื่อดู animation - สังเกตการเคลื่อนไหวของ player, enemy และ coin
+        </p>
       </Section>
 
       <Section title="Getting the Drawing Context" icon="🖌️">
@@ -155,14 +216,6 @@ ctx.closePath();  // ปิด path กลับไปจุดเริ่ม
 ctx.fillStyle = '#34d399';
 ctx.fill();
 ctx.stroke();  // วาดขอบด้วย
-
-// เส้นประ
-ctx.beginPath();
-ctx.setLineDash([10, 5]);  // ยาว 10, ช่องว่าง 5
-ctx.moveTo(400, 300);
-ctx.lineTo(550, 380);
-ctx.stroke();
-ctx.setLineDash([]);  // reset เป็นเส้นปกติ
           `}
         />
       </Section>
@@ -198,87 +251,38 @@ gradient.addColorStop(1, '#f093fb');     // สีสุดท้าย
 // ใช้ gradient เป็น fillStyle
 ctx.fillStyle = gradient;
 ctx.fillRect(0, 0, 800, 100);
-
-// Vertical gradient
-const vGradient = ctx.createLinearGradient(0, 0, 0, 600);
-vGradient.addColorStop(0, '#0f0c29');
-vGradient.addColorStop(0.5, '#302b63');
-vGradient.addColorStop(1, '#24243e');
-ctx.fillStyle = vGradient;
-ctx.fillRect(0, 0, 800, 600);
-          `}
-        />
-
-        <h3 className="font-semibold text-lg mt-6 mb-3">Radial Gradient</h3>
-
-        <CodeBlock
-          title="Radial Gradient"
-          language="javascript"
-          code={`
-// สร้าง radial gradient (centerX, centerY, innerRadius, centerX, centerY, outerRadius)
-const sunGlow = ctx.createRadialGradient(100, 100, 0, 100, 100, 80);
-sunGlow.addColorStop(0, '#fcd34d');    // สีตรงกลาง
-sunGlow.addColorStop(0.6, '#f59e0b');
-sunGlow.addColorStop(1, 'transparent');
-
-// วาดพระอาทิตย์
-ctx.fillStyle = sunGlow;
-ctx.beginPath();
-ctx.arc(100, 100, 80, 0, Math.PI * 2);
-ctx.fill();
           `}
         />
       </Section>
 
-      <Section title="ตัวอย่าง: Game Scene" icon="🎮">
-        <CodeBlock
-          title="Complete Game Scene"
-          language="javascript"
-          code={`
-function drawScene() {
-  // 1. Sky gradient background
-  const sky = ctx.createLinearGradient(0, 0, 0, 400);
-  sky.addColorStop(0, '#0f172a');   // dark blue
-  sky.addColorStop(1, '#1e3a8a');   // lighter blue
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, 800, 400);
-  
-  // 2. Ground
-  ctx.fillStyle = '#166534';  // dark green
-  ctx.fillRect(0, 400, 800, 200);
-  
-  // 3. Moon
-  const moonGlow = ctx.createRadialGradient(650, 80, 0, 650, 80, 50);
-  moonGlow.addColorStop(0, '#fef3c7');
-  moonGlow.addColorStop(0.8, '#fcd34d');
-  moonGlow.addColorStop(1, 'transparent');
-  ctx.fillStyle = moonGlow;
-  ctx.beginPath();
-  ctx.arc(650, 80, 50, 0, Math.PI * 2);
-  ctx.fill();
-  
-  // 4. Stars
-  ctx.fillStyle = '#fff';
-  for (let i = 0; i < 50; i++) {
-    const x = Math.random() * 800;
-    const y = Math.random() * 350;
-    const size = Math.random() * 2 + 1;
-    ctx.beginPath();
-    ctx.arc(x, y, size, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  
-  // 5. Player
-  ctx.fillStyle = '#3b82f6';
-  ctx.fillRect(100, 360, 32, 48);
-  
-  // 6. Enemy
-  ctx.fillStyle = '#ef4444';
-  ctx.fillRect(300, 370, 32, 32);
-}
-
-drawScene();
-          `}
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "ต้องใช้คำสั่งอะไรก่อนวาดวงกลม?",
+              options: ["fillRect()", "beginPath()", "moveTo()", "arc()"],
+              correctIndex: 1,
+              explanation: "beginPath() ใช้เพื่อเริ่ม path ใหม่ก่อนวาดรูปทรง"
+            },
+            {
+              question: "คำสั่ง arc() ต้องการ parameter กี่ตัว?",
+              options: ["3", "4", "5", "6"],
+              correctIndex: 2,
+              explanation: "arc(centerX, centerY, radius, startAngle, endAngle) = 5 ตัว"
+            },
+            {
+              question: "Math.PI * 2 ใน arc() หมายถึงอะไร?",
+              options: ["ครึ่งวงกลม", "วงกลมเต็ม", "หนึ่งในสี่วงกลม", "สามในสี่วงกลม"],
+              correctIndex: 1,
+              explanation: "2π radians = 360 องศา = วงกลมเต็ม"
+            },
+            {
+              question: "ใช้อะไรทำให้สี่เหลี่ยมโปร่งใส?",
+              options: ["fillRect()", "strokeRect()", "clearRect()", "deleteRect()"],
+              correctIndex: 2,
+              explanation: "clearRect() ใช้ลบ pixels ให้กลายเป็นโปร่งใส"
+            }
+          ]}
         />
       </Section>
 
@@ -294,7 +298,16 @@ drawScene();
             ["moveTo(), lineTo()", "วาดเส้น"],
             ["fill(), stroke()", "เติม/วาดขอบ"],
             ["createLinearGradient()", "สร้าง gradient แนวเส้น"],
-            ["createRadialGradient()", "สร้าง gradient แนววงกลม"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ตั้งค่า Canvas และ Context ได้",
+            "วาดสี่เหลี่ยมและวงกลมได้",
+            "ใช้สีและ gradient ได้",
+            "เข้าใจ coordinate system",
+            "พร้อมเรียน Animation Loop!"
           ]}
         />
 
@@ -305,3 +318,4 @@ drawScene();
     </div>
   );
 }
+

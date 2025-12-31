@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_3_2() {
   return (
@@ -373,6 +373,37 @@ function updateMinimap() {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "BLEND_MODES.ADD ใช้สร้าง effect แบบไหน?",
+              options: ["Shadow", "Glow / สว่าง", "Blur", "Grayscale"],
+              correctIndex: 1,
+              explanation: "ADD blend mode ทำให้สีสว่างขึ้น เหมาะกับ glow effect"
+            },
+            {
+              question: "ColorMatrixFilter ใช้ทำอะไร?",
+              options: ["สร้างรูปทรง", "ปรับสี (grayscale, sepia, brightness)", "สร้าง particles", "โหลด assets"],
+              correctIndex: 1,
+              explanation: "ColorMatrixFilter ใช้ปรับสีและ tone ของภาพ"
+            },
+            {
+              question: "Mask ใน PixiJS ใช้ทำอะไร?",
+              options: ["ใส่สี", "ตัดแสดงเฉพาะส่วน (spotlight, reveal)", "สร้าง animation", "โหลด textures"],
+              correctIndex: 1,
+              explanation: "Mask ซ่อนส่วนของภาพตามรูปร่างที่กำหนด"
+            },
+            {
+              question: "RenderTexture ใช้ทำอะไร?",
+              options: ["โหลดภาพ", "Render เป็น texture (สำหรับ trail, minimap)", "สร้าง sprites", "จัดการ physics"],
+              correctIndex: 1,
+              explanation: "RenderTexture ใช้ render objects เป็น texture สำหรับ effects ต่างๆ"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Feature", "Use Case"]}
@@ -383,6 +414,16 @@ function updateMinimap() {
             ["ColorMatrix", "Color grading, grayscale"],
             ["Masks", "Spotlight, reveal, UI clipping"],
             ["RenderTexture", "Trails, minimap, screenshots"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ Graphics API วาดรูปทรงได้",
+            "เข้าใจ Blend Modes แต่ละแบบ",
+            "ใช้ Filters สร้าง visual effects ได้",
+            "ใช้ Masks สร้าง spotlight/reveal ได้",
+            "พร้อมเรียน Particles!"
           ]}
         />
 

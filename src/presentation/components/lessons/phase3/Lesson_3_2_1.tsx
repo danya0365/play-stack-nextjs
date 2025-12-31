@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_2_1() {
   return (
@@ -398,6 +398,37 @@ animate();
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "mass: 0 หมายความว่าอะไรใน Cannon.js?",
+              options: ["ไม่มีมวล", "Static object (ไม่เคลื่อนที่)", "ลอยได้", "โปร่งใส"],
+              correctIndex: 1,
+              explanation: "mass: 0 ทำให้ body เป็น static (เช่น ground, กำแพง)"
+            },
+            {
+              question: "world.step() ทำอะไร?",
+              options: ["สร้าง body", "คำนวณ physics simulation 1 step", "เพิ่มแรงโน้มถ่วง", "ลบ body"],
+              correctIndex: 1,
+              explanation: "world.step(dt) เดิน physics simulation ไปข้างหน้า"
+            },
+            {
+              question: "restitution คืออะไร?",
+              options: ["แรงเสียดทาน", "ความเด้ง (bounciness)", "แรงโน้มถ่วง", "ความเร็ว"],
+              correctIndex: 1,
+              explanation: "restitution กำหนดว่าเด้งแค่ไหน (0 = ไม่เด้ง, 1 = เด้งเต็มที่)"
+            },
+            {
+              question: "ทำไมต้อง sync position ระหว่าง Cannon.js และ Three.js?",
+              options: ["อัตโนมัติ", "Three.js ไม่เข้าใจ physics", "Cannon.js คำนวณแล้วต้อง copy position มาเอง", "ใช้ library เสริม"],
+              correctIndex: 2,
+              explanation: "ต้อง copy body.position มาใส่ mesh.position ทุก frame"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Concept", "คำอธิบาย"]}
@@ -408,6 +439,16 @@ animate();
             ["CANNON.Material", "Friction & bounce properties"],
             ["world.step()", "Advance simulation"],
             ["mass: 0", "Static object"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ตั้งค่า Cannon.js world ได้",
+            "สร้าง physics bodies ได้",
+            "Sync กับ Three.js meshes ได้",
+            "ใช้ ContactMaterial กำหนด friction/bounce ได้",
+            "พร้อมเรียน Collision Events!"
           ]}
         />
 

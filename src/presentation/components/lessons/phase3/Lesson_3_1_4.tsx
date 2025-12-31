@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_1_4() {
   return (
@@ -374,6 +374,37 @@ function animate() {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "OrbitControls เหมาะกับเกมแบบไหน?",
+              options: ["FPS shooter", "3rd person / 3D viewer", "Racing game", "2D platformer"],
+              correctIndex: 1,
+              explanation: "OrbitControls ช่วยหมุนกล้องรอบ target เหมาะกับ 3D viewer"
+            },
+            {
+              question: "PointerLockControls ใช้ทำอะไร?",
+              options: ["หมุนกล้องรอบ object", "ควบคุมกล้องแบบ FPS (ล็อคเมาส์)", "Zoom in/out", "เลื่อนกล้อง"],
+              correctIndex: 1,
+              explanation: "PointerLockControls ล็อคเมาส์และควบคุมด้วย mouse movement"
+            },
+            {
+              question: "Raycaster ใช้ทำอะไร?",
+              options: ["สร้างแสง", "ตรวจจับ object ที่เมาส์ชี้/คลิก", "เคลื่อนย้าย object", "หมุน camera"],
+              correctIndex: 1,
+              explanation: "Raycaster ยิงลำแสงเพื่อหา objects ที่ถูกชี้ (mouse picking)"
+            },
+            {
+              question: "controls.update() ต้องเรียกเมื่อไหร่?",
+              options: ["เมื่อเปิดเกม", "ทุก frame (ถ้าใช้ damping)", "เมื่อคลิก", "เมื่อ resize"],
+              correctIndex: 1,
+              explanation: "ถ้าใช้ enableDamping ต้องเรียก controls.update() ทุก frame"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Control Type", "Use Case"]}
@@ -382,6 +413,16 @@ function animate() {
             ["PointerLockControls", "First person shooter"],
             ["Custom Follow", "3rd person action game"],
             ["Raycaster", "Mouse picking, shooting"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "ใช้ OrbitControls ได้",
+            "ใช้ PointerLockControls สำหรับ FPS ได้",
+            "สร้าง third-person camera follow ได้",
+            "ใช้ Raycaster ตรวจจับ object ได้",
+            "พร้อมเรียน Physics!"
           ]}
         />
 

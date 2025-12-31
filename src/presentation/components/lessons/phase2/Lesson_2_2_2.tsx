@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_2_2_2() {
   return (
@@ -357,6 +357,37 @@ player.on('animationcomplete-hurt', () => {
         />
       </Section>
 
+      <Section title="📝 ทดสอบความเข้าใจ" icon="🧠">
+        <Quiz
+          questions={[
+            {
+              question: "repeat: -1 ใน animation config หมายความว่าอะไร?",
+              options: ["ไม่เล่นเลย", "เล่น 1 ครั้ง", "loop ไม่สิ้นสุด", "เล่นถอยหลัง"],
+              correctIndex: 2,
+              explanation: "repeat: -1 ทำให้ animation เล่นวนไม่สิ้นสุด"
+            },
+            {
+              question: "animationcomplete event ใช้ทำอะไร?",
+              options: ["ตรวจสอบ frame ปัจจุบัน", "เรียก callback เมื่อ animation จบ", "หยุด animation", "เปลี่ยน animation"],
+              correctIndex: 1,
+              explanation: "animationcomplete ถูกเรียกเมื่อ animation เล่นจบ"
+            },
+            {
+              question: "player.setFlipX(true) ทำอะไร?",
+              options: ["หมุน player", "กลับภาพซ้าย-ขวา", "กลับภาพบน-ล่าง", "ลบ sprite"],
+              correctIndex: 1,
+              explanation: "setFlipX(true) กลับภาพตามแกน X (horizontal mirror)"
+            },
+            {
+              question: "State Machine ในเกมใช้ทำอะไร?",
+              options: ["คำนวณ physics", "จัดการสถานะและ animations ตัวละคร", "โหลด assets", "AI ศัตรู"],
+              correctIndex: 1,
+              explanation: "State Machine ช่วยจัดการสถานะตัวละคร (idle, walk, jump) และเล่น animation ตามสถานะ"
+            }
+          ]}
+        />
+      </Section>
+
       <Section title="สรุป" icon="✅">
         <Table
           headers={["Method", "คำอธิบาย"]}
@@ -367,6 +398,16 @@ player.on('animationcomplete-hurt', () => {
             ["animationcomplete", "event เมื่อ animation จบ"],
             ["animationupdate", "event ทุก frame"],
             ["State Machine", "จัดการ animation states"],
+          ]}
+        />
+
+        <ProgressCheck
+          items={[
+            "โหลดและแสดง sprites ได้",
+            "สร้าง spritesheet animations ได้",
+            "ใช้ animation events ได้",
+            "เข้าใจ State Machine pattern",
+            "พร้อมเรียน Physics System!"
           ]}
         />
 
