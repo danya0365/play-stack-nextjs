@@ -56,7 +56,34 @@ const lessonComponents: Record<string, ComponentType> = {
   "lesson-3-2-2": dynamic(() => import("./phase3/Lesson_3_2_2")),
   "lesson-3-2-3": dynamic(() => import("./phase3/Lesson_3_2_3")),
   
-  // Module 3.3: React Three Fiber (Coming Soon)
+  // Module 3.3: React Three Fiber
+  "lesson-3-3-1": dynamic(() => import("./phase3/Lesson_3_3_1")),
+  "lesson-3-3-2": dynamic(() => import("./phase3/Lesson_3_3_2")),
+  "lesson-3-3-3": dynamic(() => import("./phase3/Lesson_3_3_3")),
+  
+  // ==========================================
+  // Phase 4: Advanced Concepts
+  // ==========================================
+  
+  // Module 4.1: Game Systems
+  "lesson-4-1-1": dynamic(() => import("./phase4/Lesson_4_1_1")),
+  "lesson-4-1-2": dynamic(() => import("./phase4/Lesson_4_1_2")),
+  "lesson-4-1-3": dynamic(() => import("./phase4/Lesson_4_1_3")),
+  "lesson-4-1-4": dynamic(() => import("./phase4/Lesson_4_1_4")),
+  
+  // Module 4.2: Production
+  "lesson-4-2-1": dynamic(() => import("./phase4/Lesson_4_2_1")),
+  "lesson-4-2-2": dynamic(() => import("./phase4/Lesson_4_2_2")),
+  "lesson-4-2-3": dynamic(() => import("./phase4/Lesson_4_2_3")),
+  
+  // ==========================================
+  // Phase 5: Career Prep
+  // ==========================================
+  
+  // Module 5.1: Career Development
+  "lesson-5-1-1": dynamic(() => import("./phase5/Lesson_5_1_1")),
+  "lesson-5-1-2": dynamic(() => import("./phase5/Lesson_5_1_2")),
+  "lesson-5-1-3": dynamic(() => import("./phase5/Lesson_5_1_3")),
 };
 
 export function getLessonComponent(lessonId: string): ComponentType | null {
