@@ -1,6 +1,7 @@
 "use client";
 
 import { LessonContent } from "@/src/data/master/lessonContents";
+import { getLessonComponent, hasLessonComponent } from "@/src/presentation/components/lessons";
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import Link from "next/link";
@@ -128,7 +129,16 @@ export function LessonView({
         {/* Content */}
         <div className="retro-groupbox flex-1 overflow-auto">
           {activeTab === "content" && (
-            <div className="text-xs p-2" dangerouslySetInnerHTML={{ __html: renderMarkdown(lesson.content) }} />
+            <div className="text-xs p-2">
+              {hasLessonComponent(lesson.id) ? (
+                (() => {
+                  const LessonComponent = getLessonComponent(lesson.id);
+                  return LessonComponent ? <LessonComponent /> : null;
+                })()
+              ) : (
+                <div dangerouslySetInnerHTML={{ __html: renderMarkdown(lesson.content) }} />
+              )}
+            </div>
           )}
           {activeTab === "code" && (
             <div className="space-y-4 p-2">
@@ -264,7 +274,16 @@ export function LessonView({
         {/* Content */}
         <div className="main-card mb-6">
           {activeTab === "content" && (
-            <div className="lesson-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(lesson.content) }} />
+            <>
+              {hasLessonComponent(lesson.id) ? (
+                (() => {
+                  const LessonComponent = getLessonComponent(lesson.id);
+                  return LessonComponent ? <LessonComponent /> : null;
+                })()
+              ) : (
+                <div className="lesson-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(lesson.content) }} />
+              )}
+            </>
           )}
           {activeTab === "code" && (
             <div className="space-y-6">
