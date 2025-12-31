@@ -6,7 +6,7 @@ import { Phase } from "@/src/data/master/phases";
 import { getLessonComponent, hasLessonComponent } from "@/src/presentation/components/lessons";
 import { CoursesViewModel } from "@/src/presentation/presenters/courses/CoursesPresenter";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface FullScreenTreeViewProps {
   viewModel: CoursesViewModel;
@@ -17,14 +17,41 @@ interface TreeState {
   [key: string]: boolean;
 }
 
+interface LessonWithContext {
+  lesson: Lesson;
+  phase: Phase;
+  module: Module;
+}
+
 export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProps) {
   const { phases } = viewModel;
   const { isLessonComplete, markLessonComplete } = useProgressStore();
+  
+  // Build flat list of all lessons with their context
+  const allLessons = useMemo<LessonWithContext[]>(() => {
+    const list: LessonWithContext[] = [];
+    phases.forEach(phase => {
+      const modules = getModulesByPhaseId(phase.id);
+      modules.forEach(mod => {
+        const lessons = getLessonsByModuleId(mod.id);
+        lessons.forEach(lesson => {
+          list.push({ lesson, phase, module: mod });
+        });
+      });
+    });
+    return list;
+  }, [phases]);
   
   // Selected lesson
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [selectedPhase, setSelectedPhase] = useState<Phase | null>(null);
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
+  
+  // Current index in flat list
+  const currentIndex = useMemo(() => {
+    if (!selectedLesson) return -1;
+    return allLessons.findIndex(l => l.lesson.id === selectedLesson.id);
+  }, [selectedLesson, allLessons]);
   
   // Sidebar collapsed state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -42,20 +69,14 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
 
   // Select first available lesson on mount
   useEffect(() => {
-    if (!selectedLesson && phases.length > 0) {
-      const firstPhase = phases[0];
-      const modules = getModulesByPhaseId(firstPhase.id);
-      if (modules.length > 0) {
-        const lessons = getLessonsByModuleId(modules[0].id);
-        if (lessons.length > 0) {
-          setSelectedLesson(lessons[0]);
-          setSelectedPhase(firstPhase);
-          setSelectedModule(modules[0]);
-          setExpandedModules({ [modules[0].id]: true });
-        }
-      }
+    if (!selectedLesson && allLessons.length > 0) {
+      const first = allLessons[0];
+      setSelectedLesson(first.lesson);
+      setSelectedPhase(first.phase);
+      setSelectedModule(first.module);
+      setExpandedModules({ [first.module.id]: true });
     }
-  }, [phases, selectedLesson]);
+  }, [allLessons, selectedLesson]);
 
   const togglePhase = (phaseId: string) => {
     setExpandedPhases(prev => ({ ...prev, [phaseId]: !prev[phaseId] }));
@@ -69,10 +90,40 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
     setSelectedLesson(lesson);
     setSelectedPhase(phase);
     setSelectedModule(module);
+    // Auto-expand the phase and module
+    setExpandedPhases(prev => ({ ...prev, [phase.id]: true }));
+    setExpandedModules(prev => ({ ...prev, [module.id]: true }));
+  };
+
+  // Navigation functions
+  const goToPrevious = () => {
+    if (currentIndex > 0) {
+      const prev = allLessons[currentIndex - 1];
+      handleSelectLesson(prev.lesson, prev.phase, prev.module);
+    }
+  };
+
+  const goToNext = () => {
+    if (currentIndex < allLessons.length - 1) {
+      const next = allLessons[currentIndex + 1];
+      handleSelectLesson(next.lesson, next.phase, next.module);
+    }
+  };
+
+  // Mark complete and go next
+  const handleCompleteAndNext = () => {
+    if (selectedLesson) {
+      markLessonComplete(selectedLesson.id);
+      goToNext();
+    }
   };
 
   // Get lesson component
   const LessonComponent = selectedLesson ? getLessonComponent(selectedLesson.id) : null;
+
+  // Check if at first or last lesson
+  const isFirstLesson = currentIndex === 0;
+  const isLastLesson = currentIndex === allLessons.length - 1;
 
   return (
     <div className="fixed inset-0 z-50 flex bg-slate-100 dark:bg-slate-900">
@@ -92,6 +143,20 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
           >
             ✕
           </button>
+        </div>
+        
+        {/* Progress bar */}
+        <div className="px-4 py-2 border-b dark:border-slate-700 bg-slate-50 dark:bg-slate-900/30">
+          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+            <span>ความคืบหน้า</span>
+            <span>{currentIndex + 1} / {allLessons.length}</span>
+          </div>
+          <div className="h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
+              style={{ width: `${((currentIndex + 1) / allLessons.length) * 100}%` }}
+            />
+          </div>
         </div>
         
         {/* Tree Navigation */}
@@ -226,22 +291,12 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
               </>
             )}
           </div>
-          <div className="flex items-center gap-3">
-            {selectedLesson && !isLessonComplete(selectedLesson.id) && (
-              <button
-                onClick={() => selectedLesson && markLessonComplete(selectedLesson.id)}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
-              >
-                ✓ เรียนจบแล้ว
-              </button>
-            )}
-            <button
-              onClick={onExit}
-              className="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg text-sm transition-colors"
-            >
-              ออก
-            </button>
-          </div>
+          <button
+            onClick={onExit}
+            className="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg text-sm transition-colors"
+          >
+            ออก
+          </button>
         </header>
 
         {/* Lesson Content */}
@@ -272,7 +327,64 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
             </div>
           )}
         </div>
+
+        {/* Navigation Footer */}
+        <footer className="flex-shrink-0 px-6 py-4 bg-white dark:bg-slate-800 border-t dark:border-slate-700">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            {/* Previous Button */}
+            <button
+              onClick={goToPrevious}
+              disabled={isFirstLesson}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                isFirstLesson
+                  ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+              }`}
+            >
+              <span>←</span>
+              <span>ก่อนหน้า</span>
+            </button>
+
+            {/* Center - Complete & Next / or just Next if completed */}
+            <div className="flex items-center gap-3">
+              {selectedLesson && !isLessonComplete(selectedLesson.id) && !isLastLesson && (
+                <button
+                  onClick={handleCompleteAndNext}
+                  className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-medium transition-all shadow-lg shadow-green-500/25"
+                >
+                  ✓ เรียนจบ → ถัดไป
+                </button>
+              )}
+              {selectedLesson && !isLessonComplete(selectedLesson.id) && isLastLesson && (
+                <button
+                  onClick={() => markLessonComplete(selectedLesson.id)}
+                  className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-medium transition-all shadow-lg shadow-green-500/25"
+                >
+                  ✓ เรียนจบหลักสูตร! 🎉
+                </button>
+              )}
+              {selectedLesson && isLessonComplete(selectedLesson.id) && (
+                <span className="text-green-500 font-medium">✓ เรียนจบแล้ว</span>
+              )}
+            </div>
+
+            {/* Next Button */}
+            <button
+              onClick={goToNext}
+              disabled={isLastLesson}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                isLastLesson
+                  ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+              }`}
+            >
+              <span>ถัดไป</span>
+              <span>→</span>
+            </button>
+          </div>
+        </footer>
       </main>
     </div>
   );
 }
+
