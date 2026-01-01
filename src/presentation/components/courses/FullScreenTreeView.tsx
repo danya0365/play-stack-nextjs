@@ -8,6 +8,7 @@ import { CoursesViewModel } from "@/src/presentation/presenters/courses/CoursesP
 import { usePresentationStore } from "@/src/presentation/stores/presentationStore";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface FullScreenTreeViewProps {
@@ -29,6 +30,10 @@ export function FullScreenTreeView({ viewModel }: FullScreenTreeViewProps) {
   const { isLessonComplete, markLessonComplete } = useProgressStore();
   const { enterPresentation } = usePresentationStore();
   
+  // URL-based state management
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   // Ref for extracting slides from content
   const contentRef = useRef<HTMLDivElement>(null);
   
@@ -47,10 +52,18 @@ export function FullScreenTreeView({ viewModel }: FullScreenTreeViewProps) {
     return list;
   }, [phases]);
   
-  // Selected lesson
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [selectedPhase, setSelectedPhase] = useState<Phase | null>(null);
-  const [selectedModule, setSelectedModule] = useState<Module | null>(null);
+  // Get lesson ID from URL query param
+  const lessonIdFromUrl = searchParams.get('lesson');
+  
+  // Derive selected lesson from URL
+  const selectedLessonContext = useMemo(() => {
+    if (!lessonIdFromUrl) return null;
+    return allLessons.find(l => l.lesson.id === lessonIdFromUrl) ?? null;
+  }, [lessonIdFromUrl, allLessons]);
+  
+  const selectedLesson = selectedLessonContext?.lesson ?? null;
+  const selectedPhase = selectedLessonContext?.phase ?? null;
+  const selectedModule = selectedLessonContext?.module ?? null;
   
   // Current index in flat list
   const currentIndex = useMemo(() => {
@@ -84,16 +97,21 @@ export function FullScreenTreeView({ viewModel }: FullScreenTreeViewProps) {
   
   const [expandedModules, setExpandedModules] = useState<TreeState>({});
 
-  // Select first available lesson on mount
+  // Set initial lesson via URL if no lesson query param
   useEffect(() => {
-    if (!selectedLesson && allLessons.length > 0) {
+    if (!lessonIdFromUrl && allLessons.length > 0) {
       const first = allLessons[0];
-      setSelectedLesson(first.lesson);
-      setSelectedPhase(first.phase);
-      setSelectedModule(first.module);
-      setExpandedModules({ [first.module.id]: true });
+      router.replace(`/courses/tree?lesson=${first.lesson.id}`, { scroll: false });
     }
-  }, [allLessons, selectedLesson]);
+  }, [allLessons, lessonIdFromUrl, router]);
+  
+  // Auto-expand phase and module when lesson changes
+  useEffect(() => {
+    if (selectedPhase && selectedModule) {
+      setExpandedPhases(prev => ({ ...prev, [selectedPhase.id]: true }));
+      setExpandedModules(prev => ({ ...prev, [selectedModule.id]: true }));
+    }
+  }, [selectedPhase, selectedModule]);
 
   // Auto-scroll to selected lesson
   useEffect(() => {
@@ -117,29 +135,25 @@ export function FullScreenTreeView({ viewModel }: FullScreenTreeViewProps) {
     setExpandedModules(prev => ({ ...prev, [moduleId]: !prev[moduleId] }));
   };
 
-  const handleSelectLesson = (lesson: Lesson, phase: Phase, module: Module) => {
-    setSelectedLesson(lesson);
-    setSelectedPhase(phase);
-    setSelectedModule(module);
-    // Auto-expand the phase and module
-    setExpandedPhases(prev => ({ ...prev, [phase.id]: true }));
-    setExpandedModules(prev => ({ ...prev, [module.id]: true }));
-  };
+  // Update URL to select a lesson
+  const handleSelectLesson = useCallback((lesson: Lesson) => {
+    router.push(`/courses/tree?lesson=${lesson.id}`, { scroll: false });
+  }, [router]);
 
   // Navigation functions
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     if (currentIndex > 0) {
       const prev = allLessons[currentIndex - 1];
-      handleSelectLesson(prev.lesson, prev.phase, prev.module);
+      handleSelectLesson(prev.lesson);
     }
-  };
+  }, [currentIndex, allLessons, handleSelectLesson]);
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     if (currentIndex < allLessons.length - 1) {
       const next = allLessons[currentIndex + 1];
-      handleSelectLesson(next.lesson, next.phase, next.module);
+      handleSelectLesson(next.lesson);
     }
-  };
+  }, [currentIndex, allLessons, handleSelectLesson]);
 
   // Mark complete and go next
   const handleCompleteAndNext = () => {
@@ -272,7 +286,7 @@ export function FullScreenTreeView({ viewModel }: FullScreenTreeViewProps) {
                                   <button
                                     key={lesson.id}
                                     ref={(el) => setLessonRef(lesson.id, el)}
-                                    onClick={() => handleSelectLesson(lesson, phase, mod)}
+                                    onClick={() => handleSelectLesson(lesson)}
                                     className={`w-full pl-14 pr-4 py-2 flex items-center gap-2 transition-colors text-left ${
                                       isSelected 
                                         ? 'bg-indigo-100 dark:bg-indigo-900/30 border-l-2 border-indigo-500' 
