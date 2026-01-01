@@ -5,335 +5,225 @@ import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } fr
 export default function Lesson_4_2_3() {
   return (
     <div className="lesson-content">
-      <h1 className="text-3xl font-bold mb-6">Deployment และ Publishing</h1>
+      <h1 className="text-3xl font-bold mb-6">Physics Engine ใน Babylon.js</h1>
 
       <Objectives
         items={[
-          "Build และ optimize สำหรับ production",
-          "Hosting options (Vercel, itch.io, etc.)",
-          "PWA สำหรับ installable games",
-          "SEO และ social sharing",
+          "ตั้งค่า physics engine ใน Babylon.js",
+          "สร้าง physics impostors",
+          "ใช้ forces, impulses, และ constraints",
+          "จัดการ collision events",
         ]}
       />
 
-      <Section title="Production Build" icon="📦">
-        <CodeBlock
-          title="Build Configuration"
-          language="javascript"
-          code={`
-// vite.config.js
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  base: './',  // relative paths for hosting anywhere
-  
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    
-    // Minify
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,  // remove console.log
-        drop_debugger: true
-      }
-    },
-    
-    // Code splitting
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['phaser', 'three'],
-          utils: ['./src/utils/index.js']
-        }
-      }
-    },
-    
-    // Source maps (disabled for production)
-    sourcemap: false,
-    
-    // Assets
-    assetsInlineLimit: 4096  // inline small assets
-  },
-  
-  // Optimize deps
-  optimizeDeps: {
-    include: ['phaser', 'three']
-  }
-});
-          `}
-        />
-
-        <CodeBlock
-          title="Build Commands"
-          language="bash"
-          code={`
-# Development
-npm run dev
-
-# Production build
-npm run build
-
-# Preview production build
-npm run preview
-
-# Analyze bundle
-npm run build -- --report
-          `}
-        />
-      </Section>
-
-      <Section title="Asset Optimization" icon="🖼️">
-        <CodeBlock
-          title="Image & Audio Optimization"
-          language="bash"
-          code={`
-# Install tools
-npm install -D imagemin imagemin-webp sharp
-
-# Convert images to WebP
-# Create script: scripts/optimize-assets.js
-          `}
-        />
-
-        <CodeBlock
-          title="Asset Optimization Script"
-          language="javascript"
-          code={`
-// scripts/optimize-assets.js
-import sharp from 'sharp';
-import { readdirSync, mkdirSync } from 'fs';
-import { join, extname, basename } from 'path';
-
-const inputDir = './assets/images';
-const outputDir = './public/assets/images';
-
-// Ensure output directory exists
-mkdirSync(outputDir, { recursive: true });
-
-// Process images
-const files = readdirSync(inputDir);
-
-for (const file of files) {
-  const ext = extname(file).toLowerCase();
-  const name = basename(file, ext);
-  
-  if (['.png', '.jpg', '.jpeg'].includes(ext)) {
-    // Convert to WebP
-    await sharp(join(inputDir, file))
-      .webp({ quality: 80 })
-      .toFile(join(outputDir, \`\${name}.webp\`));
-    
-    // Create thumbnail
-    await sharp(join(inputDir, file))
-      .resize(128, 128)
-      .webp({ quality: 60 })
-      .toFile(join(outputDir, \`\${name}_thumb.webp\`));
-    
-    console.log(\`Optimized: \${file}\`);
-  }
-}
-
-// Audio: Use FFmpeg to convert to OGG/MP3
-// ffmpeg -i input.wav -c:a libvorbis -q:a 5 output.ogg
-          `}
-        />
-
-        <TipBox type="tip">
-          <strong>Asset Tips:</strong>
-          <ul className="mt-2 space-y-1">
-            <li>• ใช้ WebP แทน PNG/JPG (30-50% smaller)</li>
-            <li>• Audio: OGG สำหรับ web, MP3 fallback</li>
-            <li>• Spritesheet รวม sprites ลด HTTP requests</li>
-            <li>• Lazy load assets ที่ยังไม่ใช้</li>
-          </ul>
-        </TipBox>
-      </Section>
-
-      <Section title="Hosting Options" icon="🌐">
+      <Section title="Physics Engines" icon="⚡">
         <Table
-          headers={["Platform", "Best For", "Free Tier"]}
+          headers={["Engine", "Description"]}
           rows={[
-            ["itch.io", "Indie games, game jams", "✅ Yes"],
-            ["Vercel", "Next.js, React games", "✅ Yes"],
-            ["Netlify", "Static sites", "✅ Yes"],
-            ["GitHub Pages", "Simple hosting", "✅ Yes"],
-            ["Cloudflare Pages", "Global CDN", "✅ Yes"],
-            ["Newgrounds", "Flash-style games", "✅ Yes"],
+            ["Havok", "Official, high performance (recommended)"],
+            ["Cannon.js", "Pure JS, easy, legacy"],
+            ["Oimo.js", "Lightweight, fast"],
+            ["Ammo.js", "Bullet physics port, full-featured"],
           ]}
         />
 
         <CodeBlock
-          title="Deploy to itch.io"
-          language="bash"
+          title="Havok Physics Setup"
+          language="typescript"
           code={`
-# 1. Build your game
-npm run build
+import { HavokPlugin, PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core";
+import HavokPhysics from "@babylonjs/havok";
 
-# 2. Zip the dist folder
-cd dist
-zip -r ../my-game.zip .
+// ─────────────────────────────────
+// Initialize Havok
+// ─────────────────────────────────
+async function initPhysics() {
+  const havokInstance = await HavokPhysics();
+  const havokPlugin = new HavokPlugin(true, havokInstance);
+  
+  scene.enablePhysics(
+    new Vector3(0, -9.81, 0),  // gravity
+    havokPlugin
+  );
+}
 
-# 3. Upload to itch.io
-# - Go to itch.io/game/new
-# - Upload my-game.zip
-# - Set "Kind of project" to "HTML"
-# - Set viewport dimensions
-# - Enable "Embed in page"
-          `}
-        />
-
-        <CodeBlock
-          title="Deploy to Vercel"
-          language="bash"
-          code={`
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-
-# Or connect GitHub repo
-# - Go to vercel.com
-# - Import project from GitHub
-# - Auto-deploy on push
+await initPhysics();
           `}
         />
       </Section>
 
-      <Section title="PWA (Installable Game)" icon="📱">
+      <Section title="Physics Aggregates" icon="📦">
         <CodeBlock
-          title="PWA Setup"
-          language="json"
+          title="Creating Physics Bodies"
+          language="typescript"
           code={`
-// public/manifest.json
-{
-  "name": "My Awesome Game",
-  "short_name": "MyGame",
-  "description": "An awesome web game",
-  "start_url": "/",
-  "display": "fullscreen",
-  "orientation": "landscape",
-  "background_color": "#1a1a2e",
-  "theme_color": "#4ade80",
-  "icons": [
-    {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
-          `}
-        />
+import { 
+  PhysicsAggregate, 
+  PhysicsShapeType,
+  MeshBuilder,
+  Vector3
+} from "@babylonjs/core";
 
-        <CodeBlock
-          title="Service Worker"
-          language="javascript"
-          code={`
-// public/sw.js
-const CACHE_NAME = 'my-game-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/assets/game.js',
-  '/assets/style.css',
-  '/assets/sprites/player.png',
-  '/assets/audio/music.mp3'
-];
+// ─────────────────────────────────
+// Ground (static)
+// ─────────────────────────────────
+const ground = MeshBuilder.CreateGround("ground", {
+  width: 20,
+  height: 20
+}, scene);
 
-// Install
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-  );
-});
+new PhysicsAggregate(
+  ground,
+  PhysicsShapeType.BOX,
+  { mass: 0 },  // mass 0 = static
+  scene
+);
 
-// Fetch (cache-first)
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
-  );
-});
+// ─────────────────────────────────
+// Box (dynamic)
+// ─────────────────────────────────
+const box = MeshBuilder.CreateBox("box", { size: 1 }, scene);
+box.position.y = 5;
 
-// Activate (cleanup old caches)
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
-          `}
-        />
+const boxAggregate = new PhysicsAggregate(
+  box,
+  PhysicsShapeType.BOX,
+  { 
+    mass: 1,
+    friction: 0.5,
+    restitution: 0.5  // bounciness
+  },
+  scene
+);
 
-        <CodeBlock
-          title="Register Service Worker"
-          language="html"
-          code={`
-<!-- index.html -->
-<link rel="manifest" href="/manifest.json">
+// ─────────────────────────────────
+// Sphere (dynamic)
+// ─────────────────────────────────
+const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
+sphere.position = new Vector3(2, 5, 0);
 
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-    .then(() => console.log('SW registered'));
-}
-</script>
+const sphereAggregate = new PhysicsAggregate(
+  sphere,
+  PhysicsShapeType.SPHERE,
+  { mass: 2, restitution: 0.8 },
+  scene
+);
+
+// ─────────────────────────────────
+// Shape Types
+// ─────────────────────────────────
+// PhysicsShapeType.BOX
+// PhysicsShapeType.SPHERE
+// PhysicsShapeType.CAPSULE
+// PhysicsShapeType.CYLINDER
+// PhysicsShapeType.CONVEX_HULL
+// PhysicsShapeType.MESH (accurate but slow)
           `}
         />
       </Section>
 
-      <Section title="SEO & Social Sharing" icon="🔗">
+      <Section title="Forces & Impulses" icon="🚀">
         <CodeBlock
-          title="Meta Tags"
-          language="html"
+          title="Applying Forces"
+          language="typescript"
           code={`
-<!-- index.html -->
-<head>
-  <title>My Awesome Game - Play Free Online</title>
-  <meta name="description" content="Play My Awesome Game for free! 
-    An exciting adventure with stunning graphics.">
+// Access the physics body
+const body = boxAggregate.body;
+
+// ─────────────────────────────────
+// Apply Force (continuous)
+// ─────────────────────────────────
+body.applyForce(
+  new Vector3(0, 100, 0),    // force vector
+  box.position               // point of application
+);
+
+// ─────────────────────────────────
+// Apply Impulse (instant)
+// ─────────────────────────────────
+body.applyImpulse(
+  new Vector3(0, 10, 0),     // impulse vector
+  box.position               // point of application
+);
+
+// ─────────────────────────────────
+// Set Velocity
+// ─────────────────────────────────
+body.setLinearVelocity(new Vector3(5, 0, 0));
+body.setAngularVelocity(new Vector3(0, 3, 0));
+
+// Get Velocity
+const vel = body.getLinearVelocity();
+console.log("Speed:", vel.length());
+
+// ─────────────────────────────────
+// Player Movement Example
+// ─────────────────────────────────
+document.addEventListener("keydown", (e) => {
+  const force = 50;
+  const body = playerAggregate.body;
   
-  <!-- Open Graph (Facebook, Discord) -->
-  <meta property="og:title" content="My Awesome Game">
-  <meta property="og:description" content="Play for free!">
-  <meta property="og:image" content="https://mygame.com/preview.jpg">
-  <meta property="og:url" content="https://mygame.com">
-  <meta property="og:type" content="website">
+  switch(e.key) {
+    case "w":
+      body.applyForce(new Vector3(0, 0, force), player.position);
+      break;
+    case "s":
+      body.applyForce(new Vector3(0, 0, -force), player.position);
+      break;
+    case " ":
+      body.applyImpulse(new Vector3(0, 5, 0), player.position);
+      break;
+  }
+});
+          `}
+        />
+      </Section>
+
+      <Section title="Collision Events" icon="💥">
+        <CodeBlock
+          title="Detect Collisions"
+          language="typescript"
+          code={`
+// ─────────────────────────────────
+// Collision Observable
+// ─────────────────────────────────
+boxAggregate.body.setCollisionCallbackEnabled(true);
+
+const observable = boxAggregate.body.getCollisionObservable();
+
+observable.add((event) => {
+  const { collidedAgainst, point, normal } = event;
   
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="My Awesome Game">
-  <meta name="twitter:description" content="Play for free!">
-  <meta name="twitter:image" content="https://mygame.com/preview.jpg">
+  console.log("Collision at:", point);
+  console.log("With:", collidedAgainst.transformNode.name);
   
-  <!-- Viewport for mobile -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, 
-    maximum-scale=1.0, user-scalable=no">
+  // Calculate impact force
+  const velocity = boxAggregate.body.getLinearVelocity();
+  const impact = velocity.length();
   
-  <!-- Prevent zoom on double-tap -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-</head>
+  if (impact > 5) {
+    playImpactSound();
+    spawnParticles(point);
+  }
+});
+
+// ─────────────────────────────────
+// Trigger Volume (no physics response)
+// ─────────────────────────────────
+const trigger = MeshBuilder.CreateBox("trigger", { size: 2 }, scene);
+trigger.visibility = 0.3;
+
+const triggerAggregate = new PhysicsAggregate(
+  trigger,
+  PhysicsShapeType.BOX,
+  { mass: 0, isTrigger: true },
+  scene
+);
+
+triggerAggregate.body.getCollisionObservable().add((event) => {
+  console.log("Entered trigger zone!");
+  // Collect item, damage player, etc.
+});
           `}
         />
       </Section>
@@ -342,28 +232,22 @@ if ('serviceWorker' in navigator) {
         <Quiz
           questions={[
             {
-              question: "WebP ดีกว่า PNG/JPG อย่างไร?",
-              options: ["สวยกว่า", "ขนาดเล็กกว่า 30-50%", "รองรับหลาย browsers กว่า", "เร็วกว่า"],
+              question: "mass: 0 หมายความว่าอะไร?",
+              options: ["เคลื่อนที่เร็วมาก", "เป็น static body", "ไม่มี collision", "โปร่งใส"],
               correctIndex: 1,
-              explanation: "WebP มีขนาดเล็กกว่า แต่คุณภาพใกล้เคียง"
+              explanation: "mass = 0 ทำให้ body ไม่เคลื่อนที่ (static)"
             },
             {
-              question: "PWA คืออะไร?",
-              options: ["PHP Web App", "Progressive Web App (ติดตั้งได้เหมือน app)", "Portable Web Archive", "Public Web Access"],
+              question: "restitution คืออะไร?",
+              options: ["แรงเสียดทาน", "ความสามารถในการกระดอน", "มวล", "แรงโน้มถ่วง"],
               correctIndex: 1,
-              explanation: "PWA ทำให้ website ติดตั้งลงเครื่องและทำงาน offline ได้"
+              explanation: "restitution 0 = ไม่กระดอน, 1 = กระดอนเต็มที่"
             },
             {
-              question: "Service Worker ใช้ทำอะไร?",
-              options: ["เล่นเกม", "Cache files สำหรับใช้งาน offline", "ส่ง notifications", "วิเคราะห์ข้อมูล"],
+              question: "ความแตกต่างระหว่าง applyForce และ applyImpulse?",
+              options: ["ไม่ต่าง", "Force ต่อเนื่อง, Impulse ทันที", "Impulse ต่อเนื่อง", "Force ใช้กับ trigger"],
               correctIndex: 1,
-              explanation: "Service Worker cache files ทำให้เกมทำงาน offline ได้"
-            },
-            {
-              question: "OG tags ใช้ทำอะไร?",
-              options: ["เล่นเกม", "แสดง preview เมื่อ share link บน social media", "ติดตั้ง analytics", "เพิ่มความเร็ว"],
-              correctIndex: 1,
-              explanation: "Open Graph tags กำหนดรูปและข้อความเมื่อ share"
+              explanation: "Force ใช้ต่อเนื่อง (engines), Impulse ใช้ทันที (jumps)"
             }
           ]}
         />
@@ -371,31 +255,29 @@ if ('serviceWorker' in navigator) {
 
       <Section title="สรุป" icon="✅">
         <Table
-          headers={["Step", "Action"]}
+          headers={["Concept", "คำอธิบาย"]}
           rows={[
-            ["1. Build", "npm run build, minify, optimize"],
-            ["2. Assets", "WebP images, compressed audio"],
-            ["3. Test", "Preview build locally"],
-            ["4. Deploy", "itch.io, Vercel, etc."],
-            ["5. PWA", "Manifest + Service Worker"],
-            ["6. Share", "OG tags, screenshots"],
+            ["PhysicsAggregate", "Mesh + Physics body"],
+            ["PhysicsShapeType", "Collision shape"],
+            ["mass", "0 = static, >0 = dynamic"],
+            ["applyForce", "Continuous force"],
+            ["applyImpulse", "Instant push"],
+            ["CollisionObservable", "Detect collisions"],
           ]}
         />
 
         <ProgressCheck
           items={[
-            "Build production ได้",
-            "Optimize assets ได้",
-            "Deploy ลง hosting ได้",
-            "ตั้งค่า PWA ได้",
-            "พร้อมสำหรับ Phase 5: Career!"
+            "ตั้งค่า Havok physics ได้",
+            "สร้าง physics bodies ได้",
+            "ใช้ forces และ impulses ได้",
+            "จัดการ collision events ได้",
+            "พร้อมเรียน XR Development!"
           ]}
         />
 
         <TipBox type="success">
-          <strong>🎉 จบ Phase 4: Advanced Concepts!</strong>
-          <br />
-          Phase 5: Career Preparation!
+          <strong>บทต่อไป: XR Development! 🥽</strong>
         </TipBox>
       </Section>
     </div>

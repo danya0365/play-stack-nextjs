@@ -5,413 +5,271 @@ import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, Ti
 export default function Lesson_4_1_1() {
   return (
     <div className="lesson-content">
-      <h1 className="text-3xl font-bold mb-6">Game Architecture Patterns</h1>
+      <h1 className="text-3xl font-bold mb-6">พื้นฐาน 3D และ Three.js</h1>
 
       <Objectives
         items={[
-          "ทำความเข้าใจ Game Architecture",
-          "Entity Component System (ECS)",
-          "State Machines",
-          "Event-Driven Architecture",
+          "ทำความเข้าใจ 3D graphics concepts",
+          "ตั้งค่า Three.js project",
+          "เข้าใจ Scene, Camera, Renderer",
+          "สร้าง 3D objects แรก",
         ]}
       />
 
-      <Section title="ทำไมต้องมี Architecture?" icon="🏗️">
+      <Section title="Three.js คืออะไร?" icon="🧊">
         <p className="mb-4">
-          เกมเล็กๆ อาจเขียนแบบ spaghetti code ได้ แต่เมื่อเกมใหญ่ขึ้น:
+          <strong>Three.js</strong> เป็น JavaScript library สำหรับ 3D graphics บน web:
         </p>
         <ul className="list-disc list-inside space-y-2 ml-4">
-          <li>❌ Code ซ้ำซ้อน</li>
-          <li>❌ Bug หายาก</li>
-          <li>❌ เพิ่ม feature ยาก</li>
-          <li>❌ ทำงานเป็นทีมยาก</li>
+          <li>🌐 Render 3D graphics บน browser</li>
+          <li>⚡ ใช้ WebGL (Hardware accelerated)</li>
+          <li>🎨 Materials, Lighting, Shadows</li>
+          <li>📦 Geometries, Loaders, Controls</li>
+          <li>🎬 Animation System</li>
         </ul>
 
         <TipBox type="info">
-          <strong>Good Architecture = Maintainable Game</strong>
+          <strong>Why Three.js?</strong> เป็น 3D library ที่ popular ที่สุดสำหรับ web
+          มี community ใหญ่และ documentation ดี
         </TipBox>
       </Section>
 
-      <Section title="Entity Component System (ECS)" icon="📦">
-        <Diagram caption="ECS Structure">
+      <Section title="3D Coordinate System" icon="📐">
+        <Diagram caption="3D Coordinate System">
 {`
-┌──────────────────────────────────────────────┐
-│                   WORLD                       │
-│  ┌──────────────────────────────────────┐    │
-│  │              ENTITIES                 │    │
-│  │  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐    │    │
-│  │  │ E1  │ │ E2  │ │ E3  │ │ E4  │    │    │
-│  │  └──┬──┘ └──┬──┘ └──┬──┘ └──┬──┘    │    │
-│  │     │       │       │       │        │    │
-│  │  ┌──┴──┬────┴──┬────┴──┬────┴──┐    │    │
-│  │  │Pos │Vel  │Render│Health│AI  │    │    │
-│  │  └────┴─────┴──────┴──────┴────┘    │    │
-│  │            COMPONENTS               │    │
-│  └──────────────────────────────────────┘    │
-│  ┌──────────────────────────────────────┐    │
-│  │              SYSTEMS                  │    │
-│  │  Movement │ Render │ Combat │ AI     │    │
-│  └──────────────────────────────────────┘    │
-└──────────────────────────────────────────────┘
+        Y (up)
+        │
+        │
+        │
+        └──────── X (right)
+       ╱
+      ╱
+     Z (towards you)
+
+  • Position: (x, y, z)
+  • Rotation: (pitch, yaw, roll)
+  • Scale: (sx, sy, sz)
 `}
         </Diagram>
 
+        <TipBox type="tip">
+          <strong>Right-hand rule:</strong> นิ้วชี้ไป +X, นิ้วกลางไป +Y, นิ้วโป้งชี้มาหา +Z
+        </TipBox>
+      </Section>
+
+      <Section title="Installation" icon="📦">
         <CodeBlock
-          title="ECS Implementation"
-          language="javascript"
+          title="Setup Three.js Project"
+          language="bash"
           code={`
-// ─────────────────────────────────
-// Components (data only)
-// ─────────────────────────────────
-class Position {
-  constructor(x = 0, y = 0) {
-    this.x = x;
-    this.y = y;
-  }
-}
+# Create project with Vite
+npm create vite@latest my-3d-game -- --template vanilla
+cd my-3d-game
 
-class Velocity {
-  constructor(vx = 0, vy = 0) {
-    this.vx = vx;
-    this.vy = vy;
-  }
-}
+# Install Three.js
+npm install three
 
-class Renderable {
-  constructor(sprite, width, height) {
-    this.sprite = sprite;
-    this.width = width;
-    this.height = height;
-  }
-}
+# Optional: TypeScript types
+npm install -D @types/three
 
-class Health {
-  constructor(max = 100) {
-    this.current = max;
-    this.max = max;
-  }
-}
-
-// ─────────────────────────────────
-// Entity (just an ID + components)
-// ─────────────────────────────────
-class Entity {
-  static nextId = 0;
-  
-  constructor() {
-    this.id = Entity.nextId++;
-    this.components = new Map();
-  }
-  
-  addComponent(component) {
-    this.components.set(component.constructor.name, component);
-    return this;
-  }
-  
-  getComponent(componentClass) {
-    return this.components.get(componentClass.name);
-  }
-  
-  hasComponent(componentClass) {
-    return this.components.has(componentClass.name);
-  }
-}
-
-// ─────────────────────────────────
-// Systems (logic only)
-// ─────────────────────────────────
-class MovementSystem {
-  update(entities, deltaTime) {
-    for (const entity of entities) {
-      if (entity.hasComponent(Position) && entity.hasComponent(Velocity)) {
-        const pos = entity.getComponent(Position);
-        const vel = entity.getComponent(Velocity);
-        
-        pos.x += vel.vx * deltaTime;
-        pos.y += vel.vy * deltaTime;
-      }
-    }
-  }
-}
-
-class RenderSystem {
-  constructor(ctx) {
-    this.ctx = ctx;
-  }
-  
-  update(entities) {
-    for (const entity of entities) {
-      if (entity.hasComponent(Position) && entity.hasComponent(Renderable)) {
-        const pos = entity.getComponent(Position);
-        const render = entity.getComponent(Renderable);
-        
-        this.ctx.drawImage(
-          render.sprite,
-          pos.x, pos.y,
-          render.width, render.height
-        );
-      }
-    }
-  }
-}
-
-// ─────────────────────────────────
-// World
-// ─────────────────────────────────
-class World {
-  constructor() {
-    this.entities = [];
-    this.systems = [];
-  }
-  
-  createEntity() {
-    const entity = new Entity();
-    this.entities.push(entity);
-    return entity;
-  }
-  
-  addSystem(system) {
-    this.systems.push(system);
-  }
-  
-  update(deltaTime) {
-    for (const system of this.systems) {
-      system.update(this.entities, deltaTime);
-    }
-  }
-}
-
-// ─────────────────────────────────
-// Usage
-// ─────────────────────────────────
-const world = new World();
-
-// Create player
-const player = world.createEntity()
-  .addComponent(new Position(100, 100))
-  .addComponent(new Velocity(0, 0))
-  .addComponent(new Renderable(playerSprite, 32, 32))
-  .addComponent(new Health(100));
-
-// Create enemy
-const enemy = world.createEntity()
-  .addComponent(new Position(300, 200))
-  .addComponent(new Velocity(-50, 0))
-  .addComponent(new Renderable(enemySprite, 32, 32))
-  .addComponent(new Health(50));
-
-// Add systems
-world.addSystem(new MovementSystem());
-world.addSystem(new RenderSystem(ctx));
-
-// Game loop
-function gameLoop(deltaTime) {
-  world.update(deltaTime);
-}
+# Start development
+npm run dev
           `}
         />
       </Section>
 
-      <Section title="State Machines" icon="🔄">
+      <Section title="Three.js Components" icon="🧱">
+        <Diagram caption="Three.js Core Components">
+{`
+┌─────────────────────────────────────────┐
+│              RENDERER                    │
+│  ┌─────────────────────────────────┐    │
+│  │           SCENE                  │    │
+│  │  ┌─────────┐ ┌─────────┐        │    │
+│  │  │  MESH   │ │  LIGHT  │        │    │
+│  │  │ (geo +  │ │         │        │    │
+│  │  │  mat)   │ │         │        │    │
+│  │  └─────────┘ └─────────┘        │    │
+│  │                                  │    │
+│  │  ┌─────────┐                    │    │
+│  │  │ CAMERA  │  ← Looking at scene│    │
+│  │  └─────────┘                    │    │
+│  └─────────────────────────────────┘    │
+│                  ↓ render               │
+│  ┌─────────────────────────────────┐    │
+│  │         CANVAS (DOM)             │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+`}
+        </Diagram>
+
+        <Table
+          headers={["Component", "คำอธิบาย"]}
+          rows={[
+            ["Scene", "Container สำหรับ objects ทั้งหมด"],
+            ["Camera", "กำหนดมุมมอง (Perspective/Orthographic)"],
+            ["Renderer", "วาด scene ลงบน canvas"],
+            ["Mesh", "Object 3D = Geometry + Material"],
+            ["Light", "แสงสว่าง เช่น Ambient, Directional, Point"],
+          ]}
+        />
+      </Section>
+
+      <Section title="Basic Setup" icon="🎬">
         <CodeBlock
-          title="Finite State Machine"
+          title="Complete Three.js Setup"
           language="javascript"
           code={`
-// ─────────────────────────────────
-// State Machine Class
-// ─────────────────────────────────
-class StateMachine {
-  constructor(owner) {
-    this.owner = owner;
-    this.states = {};
-    this.currentState = null;
-  }
-  
-  addState(name, state) {
-    this.states[name] = state;
-    state.owner = this.owner;
-    state.machine = this;
-  }
-  
-  setState(name) {
-    if (this.currentState) {
-      this.currentState.exit();
-    }
-    
-    this.currentState = this.states[name];
-    
-    if (this.currentState) {
-      this.currentState.enter();
-    }
-  }
-  
-  update(deltaTime) {
-    if (this.currentState) {
-      this.currentState.update(deltaTime);
-    }
-  }
-}
+import * as THREE from 'three';
 
 // ─────────────────────────────────
-// States
+// 1. Scene - container for everything
 // ─────────────────────────────────
-class IdleState {
-  enter() {
-    this.owner.playAnimation('idle');
-  }
-  
-  update(dt) {
-    if (this.owner.isMoving()) {
-      this.machine.setState('walking');
-    }
-    if (this.owner.input.attack) {
-      this.machine.setState('attacking');
-    }
-  }
-  
-  exit() {}
-}
-
-class WalkingState {
-  enter() {
-    this.owner.playAnimation('walk');
-  }
-  
-  update(dt) {
-    this.owner.move(dt);
-    
-    if (!this.owner.isMoving()) {
-      this.machine.setState('idle');
-    }
-    if (this.owner.input.jump) {
-      this.machine.setState('jumping');
-    }
-  }
-  
-  exit() {}
-}
-
-class AttackingState {
-  enter() {
-    this.owner.playAnimation('attack');
-    this.timer = 0.5;  // attack duration
-  }
-  
-  update(dt) {
-    this.timer -= dt;
-    if (this.timer <= 0) {
-      this.machine.setState('idle');
-    }
-  }
-  
-  exit() {}
-}
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
 
 // ─────────────────────────────────
-// Usage
+// 2. Camera - what we see
 // ─────────────────────────────────
-class Player {
-  constructor() {
-    this.stateMachine = new StateMachine(this);
-    this.stateMachine.addState('idle', new IdleState());
-    this.stateMachine.addState('walking', new WalkingState());
-    this.stateMachine.addState('attacking', new AttackingState());
-    this.stateMachine.setState('idle');
-  }
+const camera = new THREE.PerspectiveCamera(
+  75,                                    // FOV (degrees)
+  window.innerWidth / window.innerHeight, // Aspect ratio
+  0.1,                                   // Near clipping plane
+  1000                                   // Far clipping plane
+);
+camera.position.z = 5;  // Move camera back
+
+// ─────────────────────────────────
+// 3. Renderer - draws to canvas
+// ─────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+
+// ─────────────────────────────────
+// 4. Create a cube
+// ─────────────────────────────────
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshStandardMaterial({ color: 0x4ade80 });
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+// ─────────────────────────────────
+// 5. Add light
+// ─────────────────────────────────
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 10, 5);
+scene.add(directionalLight);
+
+// ─────────────────────────────────
+// 6. Animation loop
+// ─────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
   
-  update(dt) {
-    this.stateMachine.update(dt);
-  }
+  // Rotate cube
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.01;
+  
+  renderer.render(scene, camera);
 }
+
+animate();
+
+// ─────────────────────────────────
+// 7. Handle resize
+// ─────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
           `}
         />
       </Section>
 
-      <Section title="Event System" icon="📡">
+      <Section title="Camera Types" icon="📷">
         <CodeBlock
-          title="Event-Driven Architecture"
+          title="Perspective vs Orthographic"
           language="javascript"
           code={`
 // ─────────────────────────────────
-// Event Bus
+// Perspective Camera (most games)
 // ─────────────────────────────────
-class EventBus {
-  constructor() {
-    this.listeners = new Map();
-  }
-  
-  on(event, callback) {
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, []);
-    }
-    this.listeners.get(event).push(callback);
-  }
-  
-  off(event, callback) {
-    const callbacks = this.listeners.get(event);
-    if (callbacks) {
-      const index = callbacks.indexOf(callback);
-      if (index > -1) {
-        callbacks.splice(index, 1);
-      }
-    }
-  }
-  
-  emit(event, data) {
-    const callbacks = this.listeners.get(event);
-    if (callbacks) {
-      callbacks.forEach(cb => cb(data));
-    }
-  }
-}
-
-// Global event bus
-const events = new EventBus();
+// Objects far away appear smaller
+const perspCamera = new THREE.PerspectiveCamera(
+  75,      // FOV: field of view (degrees)
+  16/9,    // Aspect ratio
+  0.1,     // Near: objects closer than this are invisible
+  1000     // Far: objects further than this are invisible
+);
 
 // ─────────────────────────────────
-// Usage
+// Orthographic Camera (2D-like, isometric)
 // ─────────────────────────────────
+// No perspective, objects stay same size
+const frustumSize = 10;
+const aspect = window.innerWidth / window.innerHeight;
+const orthoCamera = new THREE.OrthographicCamera(
+  frustumSize * aspect / -2,  // Left
+  frustumSize * aspect / 2,   // Right
+  frustumSize / 2,            // Top
+  frustumSize / -2,           // Bottom
+  0.1,                        // Near
+  1000                        // Far
+);
+          `}
+        />
+      </Section>
 
-// UI listens for events
-events.on('player:damaged', ({ damage, currentHealth }) => {
-  updateHealthBar(currentHealth);
-  showDamageNumber(damage);
-});
+      <Section title="Basic Objects" icon="📦">
+        <CodeBlock
+          title="Creating 3D Objects"
+          language="javascript"
+          code={`
+// ─────────────────────────────────
+// Cube
+// ─────────────────────────────────
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),  // width, height, depth
+  new THREE.MeshStandardMaterial({ color: 0x4ade80 })
+);
+scene.add(cube);
 
-events.on('enemy:killed', ({ enemy, points }) => {
-  updateScore(points);
-  spawnLoot(enemy.position);
-});
+// ─────────────────────────────────
+// Sphere
+// ─────────────────────────────────
+const sphere = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 32, 32),  // radius, widthSegments, heightSegments
+  new THREE.MeshStandardMaterial({ color: 0x60a5fa })
+);
+sphere.position.x = 2;
+scene.add(sphere);
 
-events.on('level:complete', ({ levelId, time }) => {
-  showLevelComplete(time);
-  unlockNextLevel(levelId + 1);
-});
+// ─────────────────────────────────
+// Plane (ground)
+// ─────────────────────────────────
+const plane = new THREE.Mesh(
+  new THREE.PlaneGeometry(10, 10),
+  new THREE.MeshStandardMaterial({ 
+    color: 0x333333,
+    side: THREE.DoubleSide 
+  })
+);
+plane.rotation.x = -Math.PI / 2;  // Rotate to be horizontal
+plane.position.y = -1;
+scene.add(plane);
 
-// Game logic emits events
-class Player {
-  takeDamage(amount) {
-    this.health -= amount;
-    events.emit('player:damaged', {
-      damage: amount,
-      currentHealth: this.health
-    });
-    
-    if (this.health <= 0) {
-      events.emit('player:died');
-    }
-  }
-}
-
-class Enemy {
-  die() {
-    events.emit('enemy:killed', {
-      enemy: this,
-      points: this.pointValue
-    });
-    this.destroy();
-  }
-}
+// ─────────────────────────────────
+// Object Transform
+// ─────────────────────────────────
+cube.position.set(0, 0, 0);     // x, y, z
+cube.rotation.set(0, Math.PI/4, 0); // radians
+cube.scale.set(1, 1, 1);        // scale multiplier
           `}
         />
       </Section>
@@ -420,28 +278,28 @@ class Enemy {
         <Quiz
           questions={[
             {
-              question: "ECS ย่อมาจากอะไร?",
-              options: ["Extra Code System", "Entity Component System", "Event Control State", "Element CSS Style"],
+              question: "Three.js Scene คืออะไร?",
+              options: ["หน้าจอ", "Container สำหรับ objects ทั้งหมด", "กล้อง", "แสง"],
               correctIndex: 1,
-              explanation: "ECS = Entity Component System แยก data (Components) ออกจาก logic (Systems)"
+              explanation: "Scene เป็น container ที่เก็บ objects, lights, cameras ทั้งหมด"
             },
             {
-              question: "State Machine เหมาะกับอะไร?",
-              options: ["การรับ input", "การจัดการ character states (idle, walk, attack)", "การวาดภาพ", "การโหลด assets"],
+              question: "PerspectiveCamera FOV คืออะไร?",
+              options: ["Frame Per Second", "Field of View (มุมมอง)", "Forward Vector", "Focus Distance"],
               correctIndex: 1,
-              explanation: "State Machine จัดการ transitions ระหว่าง states"
+              explanation: "FOV = Field of View กำหนดว่ากล้องจะเห็นกว้างแค่ไหน (หน่วย degrees)"
             },
             {
-              question: "Event Bus ใช้ทำอะไร?",
-              options: ["เคลื่อนย้าย objects", "Decouple systems (ส่ง events แทนการเรียกตรง)", "โหลดไฟล์", "วาดรูป"],
+              question: "Mesh ประกอบด้วยอะไรบ้าง?",
+              options: ["Scene + Camera", "Geometry + Material", "Light + Shadow", "Renderer + Canvas"],
               correctIndex: 1,
-              explanation: "Event Bus ช่วยให้ systems สื่อสารโดยไม่ต้องรู้จักกัน"
+              explanation: "Mesh = Geometry (รูปร่าง) + Material (พื้นผิว/สี)"
             },
             {
-              question: "Component ใน ECS ควรมีอะไร?",
-              options: ["เฉพาะ data", "เฉพาะ logic", "ทั้ง data และ logic", "ไม่มีอะไร"],
-              correctIndex: 0,
-              explanation: "Components เก็บเฉพาะ data, Systems ทำ logic"
+              question: "requestAnimationFrame ใช้ทำอะไร?",
+              options: ["โหลดรูป", "สร้าง animation loop ที่ sync กับ display refresh rate", "สร้าง geometry", "เปลี่ยน material"],
+              correctIndex: 1,
+              explanation: "requestAnimationFrame เรียก callback ก่อน browser repaint (~60fps)"
             }
           ]}
         />
@@ -449,27 +307,29 @@ class Enemy {
 
       <Section title="สรุป" icon="✅">
         <Table
-          headers={["Pattern", "Use Case"]}
+          headers={["Concept", "คำอธิบาย"]}
           rows={[
-            ["ECS", "Large games, many entities"],
-            ["State Machine", "Character AI, game states"],
-            ["Event Bus", "Decouple systems, UI updates"],
-            ["Component", "Reusable behaviors"],
+            ["Scene", "Container สำหรับ objects ทั้งหมด"],
+            ["Camera", "กำหนดมุมมอง (Perspective/Orthographic)"],
+            ["Renderer", "Render scene ลง canvas"],
+            ["Mesh", "Geometry + Material"],
+            ["Geometry", "รูปร่าง (Box, Sphere, Plane...)"],
+            ["Material", "พื้นผิว (สี, texture, การสะท้อนแสง)"],
           ]}
         />
 
         <ProgressCheck
           items={[
-            "เข้าใจ ECS pattern ได้",
-            "สร้าง State Machine ได้",
-            "ใช้ Event Bus decouple systems ได้",
-            "ออกแบบ game architecture ได้",
-            "พร้อมเรียน AI และ Pathfinding!"
+            "ตั้งค่า Three.js project ได้",
+            "เข้าใจ Scene, Camera, Renderer",
+            "สร้าง basic 3D objects ได้",
+            "ใช้ animation loop ได้",
+            "พร้อมเรียน Geometry & Materials!"
           ]}
         />
 
         <TipBox type="success">
-          <strong>บทต่อไป: AI และ Pathfinding! 🤖</strong>
+          <strong>บทต่อไป: Geometry & Materials! 🎨</strong>
         </TipBox>
       </Section>
     </div>

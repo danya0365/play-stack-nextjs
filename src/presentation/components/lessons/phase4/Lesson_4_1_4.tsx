@@ -5,374 +5,296 @@ import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } fr
 export default function Lesson_4_1_4() {
   return (
     <div className="lesson-content">
-      <h1 className="text-3xl font-bold mb-6">Audio และ Sound Effects</h1>
+      <h1 className="text-3xl font-bold mb-6">3D Physics ด้วย Cannon.js</h1>
 
       <Objectives
         items={[
-          "Web Audio API พื้นฐาน",
-          "Sound Manager Class",
-          "Positional Audio (3D Sound)",
-          "Music และ Dynamic Audio",
+          "ตั้งค่า Cannon.js physics world",
+          "สร้าง rigid bodies",
+          "ใช้ constraints และ joints",
+          "Sync physics กับ Three.js",
         ]}
       />
 
-      <Section title="Web Audio API" icon="🔊">
-        <CodeBlock
-          title="Audio Context Basics"
-          language="javascript"
-          code={`
-// Create audio context
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-// ─────────────────────────────────
-// Load audio file
-// ─────────────────────────────────
-async function loadSound(url) {
-  const response = await fetch(url);
-  const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-  return audioBuffer;
-}
-
-// ─────────────────────────────────
-// Play sound
-// ─────────────────────────────────
-function playSound(buffer, volume = 1, loop = false) {
-  const source = audioCtx.createBufferSource();
-  const gainNode = audioCtx.createGain();
-  
-  source.buffer = buffer;
-  source.loop = loop;
-  
-  gainNode.gain.value = volume;
-  
-  source.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-  
-  source.start(0);
-  
-  return { source, gainNode };
-}
-
-// Usage
-let jumpSound;
-loadSound('sounds/jump.wav').then(buffer => {
-  jumpSound = buffer;
-});
-
-function onJump() {
-  if (jumpSound) {
-    playSound(jumpSound, 0.5);
-  }
-}
-          `}
+      <Section title="Physics Engine Overview" icon="⚡">
+        <Table
+          headers={["Engine", "Description"]}
+          rows={[
+            ["Cannon.js", "Lightweight, pure JS, easy to use"],
+            ["Cannon-es", "Modern fork of Cannon.js (recommended)"],
+            ["Rapier", "Rust-based, very fast, WASM"],
+            ["Ammo.js", "Bullet physics port, full-featured"],
+          ]}
         />
 
-        <TipBox type="warning">
-          <strong>Browser Policy:</strong> Audio context ต้อง resume หลัง user interaction!
-        </TipBox>
-
         <CodeBlock
-          title="Resume on Click"
-          language="javascript"
+          title="Installation"
+          language="bash"
           code={`
-document.addEventListener('click', () => {
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-}, { once: true });
+# Cannon-es (recommended)
+npm install cannon-es
+
+# Types for TypeScript
+npm install -D @types/cannon
           `}
         />
       </Section>
 
-      <Section title="Sound Manager" icon="🎵">
+      <Section title="Basic Setup" icon="🎬">
         <CodeBlock
-          title="Complete Sound Manager"
+          title="Physics World Setup"
           language="javascript"
           code={`
-class SoundManager {
-  constructor() {
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    this.sounds = new Map();
-    this.music = null;
-    this.musicGain = null;
-    
-    this.masterVolume = 1;
-    this.sfxVolume = 1;
-    this.musicVolume = 0.5;
-    
-    // Master gain
-    this.masterGain = this.ctx.createGain();
-    this.masterGain.connect(this.ctx.destination);
-    
-    // Resume on interaction
-    document.addEventListener('click', () => {
-      if (this.ctx.state === 'suspended') {
-        this.ctx.resume();
-      }
-    }, { once: true });
-  }
-  
-  // ─────────────────────────────────
-  // Load sounds
-  // ─────────────────────────────────
-  async load(name, url) {
-    const response = await fetch(url);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
-    this.sounds.set(name, audioBuffer);
-    return audioBuffer;
-  }
-  
-  async loadAll(soundMap) {
-    const promises = Object.entries(soundMap).map(([name, url]) => 
-      this.load(name, url)
-    );
-    await Promise.all(promises);
-    console.log('All sounds loaded!');
-  }
-  
-  // ─────────────────────────────────
-  // Play SFX
-  // ─────────────────────────────────
-  play(name, options = {}) {
-    const buffer = this.sounds.get(name);
-    if (!buffer) {
-      console.warn(\`Sound '\${name}' not found\`);
-      return null;
-    }
-    
-    const {
-      volume = 1,
-      pitch = 1,
-      loop = false,
-      pan = 0
-    } = options;
-    
-    const source = this.ctx.createBufferSource();
-    const gainNode = this.ctx.createGain();
-    const panNode = this.ctx.createStereoPanner();
-    
-    source.buffer = buffer;
-    source.loop = loop;
-    source.playbackRate.value = pitch;
-    
-    gainNode.gain.value = volume * this.sfxVolume * this.masterVolume;
-    panNode.pan.value = pan;
-    
-    source.connect(gainNode);
-    gainNode.connect(panNode);
-    panNode.connect(this.masterGain);
-    
-    source.start(0);
-    
-    return {
-      source,
-      stop: () => source.stop(),
-      setVolume: (v) => gainNode.gain.value = v * this.sfxVolume * this.masterVolume
-    };
-  }
-  
-  // ─────────────────────────────────
-  // Play with random pitch (variety)
-  // ─────────────────────────────────
-  playVaried(name, options = {}) {
-    const pitch = 0.9 + Math.random() * 0.2;  // 0.9 - 1.1
-    return this.play(name, { ...options, pitch });
-  }
-  
-  // ─────────────────────────────────
-  // Music
-  // ─────────────────────────────────
-  playMusic(name, fadeIn = 1) {
-    // Stop current music
-    this.stopMusic(fadeIn);
-    
-    const buffer = this.sounds.get(name);
-    if (!buffer) return;
-    
-    const source = this.ctx.createBufferSource();
-    const gainNode = this.ctx.createGain();
-    
-    source.buffer = buffer;
-    source.loop = true;
-    
-    // Fade in
-    gainNode.gain.value = 0;
-    gainNode.gain.linearRampToValueAtTime(
-      this.musicVolume * this.masterVolume,
-      this.ctx.currentTime + fadeIn
-    );
-    
-    source.connect(gainNode);
-    gainNode.connect(this.masterGain);
-    
-    source.start(0);
-    
-    this.music = source;
-    this.musicGain = gainNode;
-  }
-  
-  stopMusic(fadeOut = 1) {
-    if (this.music && this.musicGain) {
-      const gain = this.musicGain;
-      const source = this.music;
-      
-      gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + fadeOut);
-      
-      setTimeout(() => {
-        source.stop();
-      }, fadeOut * 1000);
-    }
-    
-    this.music = null;
-    this.musicGain = null;
-  }
-  
-  // ─────────────────────────────────
-  // Volume controls
-  // ─────────────────────────────────
-  setMasterVolume(value) {
-    this.masterVolume = value;
-    this.masterGain.gain.value = value;
-  }
-  
-  setSFXVolume(value) {
-    this.sfxVolume = value;
-  }
-  
-  setMusicVolume(value) {
-    this.musicVolume = value;
-    if (this.musicGain) {
-      this.musicGain.gain.value = value * this.masterVolume;
-    }
-  }
-}
+import * as THREE from 'three';
+import * as CANNON from 'cannon-es';
 
 // ─────────────────────────────────
-// Usage
+// Three.js Setup
 // ─────────────────────────────────
-const audio = new SoundManager();
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.set(0, 5, 10);
 
-await audio.loadAll({
-  jump: 'sounds/jump.wav',
-  shoot: 'sounds/shoot.wav',
-  hit: 'sounds/hit.wav',
-  coin: 'sounds/coin.wav',
-  explosion: 'sounds/explosion.wav',
-  music_menu: 'music/menu.mp3',
-  music_game: 'music/game.mp3'
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+
+// ─────────────────────────────────
+// Cannon.js Physics World
+// ─────────────────────────────────
+const world = new CANNON.World({
+  gravity: new CANNON.Vec3(0, -9.82, 0)  // Earth gravity
 });
 
-// Play sounds
-audio.play('jump');
-audio.playVaried('shoot');
-audio.play('hit', { volume: 0.8, pan: -0.5 });
+world.broadphase = new CANNON.SAPBroadphase(world);
+world.allowSleep = true;  // Optimize static objects
 
-// Music
-audio.playMusic('music_game', 2);  // 2 second fade in
+// ─────────────────────────────────
+// Physics timestep
+// ─────────────────────────────────
+const fixedTimeStep = 1.0 / 60.0;
+const maxSubSteps = 3;
+let lastTime = 0;
+
+function animate(time) {
+  requestAnimationFrame(animate);
+  
+  const dt = (time - lastTime) / 1000;
+  lastTime = time;
+  
+  // Step physics world
+  world.step(fixedTimeStep, dt, maxSubSteps);
+  
+  // Sync Three.js with physics (see next section)
+  
+  renderer.render(scene, camera);
+}
+
+animate(0);
           `}
         />
       </Section>
 
-      <Section title="Positional Audio (3D)" icon="🎧">
+      <Section title="Creating Bodies" icon="📦">
         <CodeBlock
-          title="3D Sound"
+          title="Rigid Bodies"
           language="javascript"
           code={`
-class Positional3DAudio {
-  constructor(audioCtx) {
-    this.ctx = audioCtx;
-    
-    // Set listener (player position)
-    this.listener = this.ctx.listener;
-    
-    // Modern API
-    if (this.listener.positionX) {
-      this.listener.positionX.value = 0;
-      this.listener.positionY.value = 0;
-      this.listener.positionZ.value = 0;
-      this.listener.forwardX.value = 0;
-      this.listener.forwardY.value = 0;
-      this.listener.forwardZ.value = -1;
-    }
-  }
+// ─────────────────────────────────
+// Ground (static body)
+// ─────────────────────────────────
+const groundShape = new CANNON.Plane();
+const groundBody = new CANNON.Body({
+  mass: 0,  // mass = 0 means static
+  shape: groundShape,
+  material: new CANNON.Material('ground')
+});
+groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+world.addBody(groundBody);
+
+// Three.js ground mesh
+const groundMesh = new THREE.Mesh(
+  new THREE.PlaneGeometry(20, 20),
+  new THREE.MeshStandardMaterial({ color: 0x333333 })
+);
+groundMesh.rotation.x = -Math.PI / 2;
+groundMesh.receiveShadow = true;
+scene.add(groundMesh);
+
+// ─────────────────────────────────
+// Box (dynamic body)
+// ─────────────────────────────────
+const boxShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
+const boxBody = new CANNON.Body({
+  mass: 1,
+  shape: boxShape,
+  position: new CANNON.Vec3(0, 5, 0),
+  material: new CANNON.Material('box')
+});
+world.addBody(boxBody);
+
+// Three.js box mesh
+const boxMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshStandardMaterial({ color: 0x4ade80 })
+);
+boxMesh.castShadow = true;
+scene.add(boxMesh);
+
+// ─────────────────────────────────
+// Sphere (dynamic body)
+// ─────────────────────────────────
+const sphereShape = new CANNON.Sphere(0.5);
+const sphereBody = new CANNON.Body({
+  mass: 2,
+  shape: sphereShape,
+  position: new CANNON.Vec3(2, 5, 0)
+});
+world.addBody(sphereBody);
+
+// Three.js sphere mesh
+const sphereMesh = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 32, 32),
+  new THREE.MeshStandardMaterial({ color: 0x60a5fa })
+);
+sphereMesh.castShadow = true;
+scene.add(sphereMesh);
+          `}
+        />
+      </Section>
+
+      <Section title="Syncing Physics with Rendering" icon="🔄">
+        <CodeBlock
+          title="Sync Objects"
+          language="javascript"
+          code={`
+// Store pairs of body-mesh
+const objects = [
+  { body: boxBody, mesh: boxMesh },
+  { body: sphereBody, mesh: sphereMesh }
+];
+
+function animate(time) {
+  requestAnimationFrame(animate);
+  
+  const dt = (time - lastTime) / 1000;
+  lastTime = time;
+  
+  // Step physics
+  world.step(fixedTimeStep, dt, maxSubSteps);
   
   // ─────────────────────────────────
-  // Update listener position
+  // Sync meshes to physics bodies
   // ─────────────────────────────────
-  updateListener(position, forward) {
-    if (this.listener.positionX) {
-      this.listener.positionX.value = position.x;
-      this.listener.positionY.value = position.y;
-      this.listener.positionZ.value = position.z;
-      
-      this.listener.forwardX.value = forward.x;
-      this.listener.forwardY.value = forward.y;
-      this.listener.forwardZ.value = forward.z;
-    }
+  for (const obj of objects) {
+    obj.mesh.position.copy(obj.body.position);
+    obj.mesh.quaternion.copy(obj.body.quaternion);
   }
   
-  // ─────────────────────────────────
-  // Play 3D sound
-  // ─────────────────────────────────
-  play3D(buffer, position, options = {}) {
-    const {
-      volume = 1,
-      refDistance = 1,
-      maxDistance = 100,
-      rolloffFactor = 1
-    } = options;
-    
-    const source = this.ctx.createBufferSource();
-    const panner = this.ctx.createPanner();
-    const gainNode = this.ctx.createGain();
-    
-    source.buffer = buffer;
-    
-    // Panner settings
-    panner.panningModel = 'HRTF';
-    panner.distanceModel = 'inverse';
-    panner.refDistance = refDistance;
-    panner.maxDistance = maxDistance;
-    panner.rolloffFactor = rolloffFactor;
-    
-    // Set position
-    panner.positionX.value = position.x;
-    panner.positionY.value = position.y;
-    panner.positionZ.value = position.z;
-    
-    gainNode.gain.value = volume;
-    
-    source.connect(panner);
-    panner.connect(gainNode);
-    gainNode.connect(this.ctx.destination);
-    
-    source.start(0);
-    
-    return {
-      source,
-      panner,
-      setPosition: (x, y, z) => {
-        panner.positionX.value = x;
-        panner.positionY.value = y;
-        panner.positionZ.value = z;
+  renderer.render(scene, camera);
+}
+
+// Alternative: Use Cannon's postStep event
+world.addEventListener('postStep', () => {
+  objects.forEach(obj => {
+    obj.mesh.position.copy(obj.body.position);
+    obj.mesh.quaternion.copy(obj.body.quaternion);
+  });
+});
+          `}
+        />
+      </Section>
+
+      <Section title="Materials & Collisions" icon="💥">
+        <CodeBlock
+          title="Physics Materials"
+          language="javascript"
+          code={`
+// ─────────────────────────────────
+// Materials define friction & bounce
+// ─────────────────────────────────
+const groundMaterial = new CANNON.Material('ground');
+const boxMaterial = new CANNON.Material('box');
+
+// Contact material between ground and box
+const groundBoxContactMaterial = new CANNON.ContactMaterial(
+  groundMaterial,
+  boxMaterial,
+  {
+    friction: 0.3,        // 0 = icy, 1 = sticky
+    restitution: 0.5      // 0 = no bounce, 1 = super bouncy
+  }
+);
+world.addContactMaterial(groundBoxContactMaterial);
+
+// Default material for everything else
+world.defaultContactMaterial.friction = 0.3;
+world.defaultContactMaterial.restitution = 0.3;
+
+// ─────────────────────────────────
+// Collision Events
+// ─────────────────────────────────
+boxBody.addEventListener('collide', (event) => {
+  const contact = event.contact;
+  const impactVelocity = contact.getImpactVelocityAlongNormal();
+  
+  if (Math.abs(impactVelocity) > 1) {
+    console.log('Strong collision!', impactVelocity);
+    playImpactSound(impactVelocity);
+  }
+});
+          `}
+        />
+      </Section>
+
+      <Section title="Applying Forces" icon="🚀">
+        <CodeBlock
+          title="Forces & Impulses"
+          language="javascript"
+          code={`
+// ─────────────────────────────────
+// Apply force (continuous, like engines)
+// ─────────────────────────────────
+boxBody.applyForce(
+  new CANNON.Vec3(0, 100, 0),    // Force vector
+  boxBody.position               // Point of application
+);
+
+// ─────────────────────────────────
+// Apply impulse (instant, like explosions)
+// ─────────────────────────────────
+boxBody.applyImpulse(
+  new CANNON.Vec3(0, 10, 0),     // Impulse vector
+  boxBody.position               // Point of application
+);
+
+// ─────────────────────────────────
+// Player movement example
+// ─────────────────────────────────
+const moveSpeed = 10;
+
+document.addEventListener('keydown', (e) => {
+  switch(e.key) {
+    case 'w':
+      playerBody.applyForce(new CANNON.Vec3(0, 0, -moveSpeed), playerBody.position);
+      break;
+    case 's':
+      playerBody.applyForce(new CANNON.Vec3(0, 0, moveSpeed), playerBody.position);
+      break;
+    case ' ':
+      // Jump (only if grounded)
+      if (isGrounded(playerBody)) {
+        playerBody.applyImpulse(new CANNON.Vec3(0, 5, 0), playerBody.position);
       }
-    };
+      break;
   }
-}
+});
 
-// Usage (in game loop)
-function update() {
-  // Update listener to player position
-  audio3d.updateListener(
-    camera.position,
-    camera.getWorldDirection(new THREE.Vector3())
-  );
+function isGrounded(body) {
+  // Simple ground check
+  return body.position.y < 1;
 }
-
-// Play explosion at world position
-audio3d.play3D(explosionBuffer, { x: 10, y: 0, z: 5 });
           `}
         />
       </Section>
@@ -381,28 +303,22 @@ audio3d.play3D(explosionBuffer, { x: 10, y: 0, z: 5 });
         <Quiz
           questions={[
             {
-              question: "AudioContext คืออะไร?",
-              options: ["ไฟล์เสียง", "Core ของ Web Audio API", "HTML element", "Video player"],
+              question: "mass: 0 หมายความว่าอะไร?",
+              options: ["เคลื่อนที่เร็วมาก", "เป็น static body (ไม่เคลื่อนที่)", "โปร่งใส", "ไม่มี collision"],
               correctIndex: 1,
-              explanation: "AudioContext เป็น core ที่ใช้สร้างและเชื่อม audio nodes"
+              explanation: "mass = 0 ทำให้ body เป็น static ไม่ถูก forces กระทบ"
             },
             {
-              question: "GainNode ใช้ทำอะไร?",
-              options: ["เปลี่ยน pitch", "ควบคุมเสียง (volume)", "ทำ 3D", "เล่นวน"],
+              question: "restitution คืออะไร?",
+              options: ["แรงเสียดทาน", "ความสามารถในการกระดอน (bounce)", "มวล", "ความเร็ว"],
               correctIndex: 1,
-              explanation: "GainNode ควบคุมความดังของเสียง"
+              explanation: "restitution 0 = ไม่กระดอน, 1 = กระดอนเต็มที่"
             },
             {
-              question: "PannerNode ใช้ทำอะไร?",
-              options: ["เล่นวน", "3D positional audio", "ควบคุม volume", "บันทึก"],
+              question: "ความแตกต่างระหว่าง applyForce และ applyImpulse?",
+              options: ["ไม่ต่าง", "Force ต่อเนื่อง, Impulse ทันที", "Impulse ต่อเนื่อง, Force ทันที", "Force ใช้กับ static เท่านั้น"],
               correctIndex: 1,
-              explanation: "PannerNode ทำให้เสียงมาจากตำแหน่งใน 3D space"
-            },
-            {
-              question: "ทำไม AudioContext ต้อง resume หลัง user interaction?",
-              options: ["Bug ของ browser", "Browser policy ป้องกัน autoplay เสียงรบกวน", "ประหยัด memory", "ไม่จำเป็น"],
-              correctIndex: 1,
-              explanation: "Browser บล็อก autoplay audio เพื่อ user experience"
+              explanation: "Force ใช้ต่อเนื่อง (engine), Impulse ใช้ทันที (explosion, jump)"
             }
           ]}
         />
@@ -410,30 +326,29 @@ audio3d.play3D(explosionBuffer, { x: 10, y: 0, z: 5 });
 
       <Section title="สรุป" icon="✅">
         <Table
-          headers={["Concept", "Use Case"]}
+          headers={["Concept", "คำอธิบาย"]}
           rows={[
-            ["AudioContext", "Core audio processing"],
-            ["GainNode", "Volume control"],
-            ["StereoPanner", "Left/Right panning"],
-            ["PannerNode", "3D positional audio"],
-            ["playbackRate", "Pitch/speed control"],
+            ["World", "Physics simulation container"],
+            ["Body", "Physics object (mass, shape)"],
+            ["Shape", "Collision shape (Box, Sphere, Plane)"],
+            ["Material", "Physics properties (friction, bounce)"],
+            ["Force", "Continuous push (engines)"],
+            ["Impulse", "Instant push (jumps, explosions)"],
           ]}
         />
 
         <ProgressCheck
           items={[
-            "ใช้ Web Audio API ได้",
-            "สร้าง Sound Manager ได้",
-            "ใช้ 3D Positional Audio ได้",
-            "จัดการ music fade in/out ได้",
-            "พร้อมเรียน Performance Optimization!"
+            "ตั้งค่า physics world ได้",
+            "สร้าง rigid bodies ได้",
+            "Sync physics กับ Three.js ได้",
+            "ใช้ materials และ collisions ได้",
+            "พร้อมเรียน Babylon.js!"
           ]}
         />
 
         <TipBox type="success">
-          <strong>🎉 จบ Phase 4 Module 4.1!</strong>
-          <br />
-          บทต่อไป: Performance Optimization!
+          <strong>Module ต่อไป: Babylon.js! 🔮</strong>
         </TipBox>
       </Section>
     </div>

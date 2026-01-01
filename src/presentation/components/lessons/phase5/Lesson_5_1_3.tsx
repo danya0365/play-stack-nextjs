@@ -1,260 +1,337 @@
 "use client";
 
-import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_5_1_3() {
   return (
     <div className="lesson-content">
-      <h1 className="text-3xl font-bold mb-6">Interview Preparation</h1>
+      <h1 className="text-3xl font-bold mb-6">Design Patterns สำหรับเกม</h1>
 
       <Objectives
         items={[
-          "Technical interview สำหรับ game dev",
-          "คำถามที่พบบ่อยและวิธีตอบ",
-          "Whiteboard/coding challenges",
-          "Portfolio review preparation",
+          "เข้าใจ Game Design Patterns ที่สำคัญ",
+          "Implement Object Pool",
+          "ใช้ Command Pattern",
+          "ใช้ Observer Pattern",
         ]}
       />
 
-      <Section title="Interview Types" icon="🎤">
-        <Table
-          headers={["Type", "What to Expect"]}
-          rows={[
-            ["Phone Screen", "Basic questions, motivation, experience"],
-            ["Technical Phone", "Coding problem, system design"],
-            ["Take-Home", "Mini project or bug fix"],
-            ["On-Site Technical", "Whiteboard, pair programming"],
-            ["Portfolio Review", "Walk through your projects"],
-            ["Culture Fit", "Team dynamics, working style"],
-          ]}
-        />
-      </Section>
+      <Section title="Object Pool" icon="🔄">
+        <Diagram caption="Object Pooling">
+{`
+Without Pool:                 With Pool:
+┌──────────┐                 ┌──────────────────┐
+│ Create   │                 │    Pool          │
+│ Bullet   │─────┐           │ ┌────┐ ┌────┐    │
+└──────────┘     │           │ │Bul │ │Bul │    │
+      ↓          │           │ └────┘ └────┘    │
+┌──────────┐     │           │ ┌────┐ ┌────┐    │
+│  Use     │     │           │ │Bul │ │Bul │    │
+└──────────┘     │           │ └────┘ └────┘    │
+      ↓          │           └────────┬─────────┘
+┌──────────┐     │                    │
+│ Destroy  │─────┘           Get() ←──┴──→ Return()
+│ (GC)     │
+└──────────┘
 
-      <Section title="Common Questions" icon="❓">
-        <CodeBlock
-          title="Technical Questions"
-          language="text"
-          code={`
-📐 GAME PROGRAMMING
-Q: อธิบาย Game Loop
-A: Game loop คือ core loop ที่ทำงานซ้ำทุก frame ประกอบด้วย:
-   1. Process Input - รับ keyboard/mouse/touch
-   2. Update - update game logic, physics, AI
-   3. Render - วาดทุกอย่างบนหน้าจอ
-   ใช้ requestAnimationFrame เพื่อ sync กับ display refresh rate
-   และใช้ delta time เพื่อให้ movement ไม่ขึ้นกับ frame rate
-
-Q: Fixed timestep vs Variable timestep ต่างกันอย่างไร?
-A: Variable: dt ต่างกันทุก frame, ง่ายกว่าแต่ physics อาจ unstable
-   Fixed: dt คงที่ (เช่น 1/60), physics stable แต่ต้อง accumulate time
-   ส่วนใหญ่ use fixed timestep for physics, variable for rendering
-
-Q: Object Pooling คืออะไร?
-A: Technique สำหรับ reuse objects แทน create/destroy
-   - สร้าง pool ของ objects ล่วงหน้า
-   - acquire() เมื่อต้องใช้
-   - release() เมื่อเสร็จ
-   ลด garbage collection spike และ allocation overhead
-
-📦 DATA STRUCTURES
-Q: ใช้ data structure อะไรสำหรับ collision detection ที่มี objects เยอะ?
-A: Spatial partitioning:
-   - Grid/Spatial Hash - O(1) lookup, ง่าย
-   - Quadtree - ดีสำหรับ non-uniform distribution
-   - BVH - ดีสำหรับ 3D และ complex shapes
-
-Q: A* ทำงานอย่างไร?
-A: Pathfinding algorithm ที่ใช้:
-   - Open list: nodes ที่จะ explore
-   - Closed list: nodes ที่ explore แล้ว
-   - f(n) = g(n) + h(n)
-     g = cost from start, h = heuristic to goal
-   - เลือก node ที่มี f ต่ำสุด, expand neighbors, repeat
-          `}
-        />
+❌ Creates garbage         ✅ Reuses objects
+❌ GC pauses               ✅ No allocations
+`}
+        </Diagram>
 
         <CodeBlock
-          title="Behavioral Questions"
-          language="text"
+          title="Object Pool Implementation"
+          language="typescript"
           code={`
-🤝 TEAMWORK
-Q: Tell me about a challenging project
-A: Use STAR method:
-   Situation: "Working on multiplayer game, latency issues"
-   Task: "Had to implement lag compensation"
-   Action: "Researched techniques, implemented client-side prediction"
-   Result: "Reduced perceived latency by 70%, players satisfied"
-
-Q: How do you handle disagreements with teammates?
-A: "I focus on the problem, not the person.
-   Listen to understand their perspective.
-   Present data/evidence for my view.
-   Find compromise or escalate to lead if needed.
-   Once decision is made, commit fully."
-
-🎮 GAME DESIGN
-Q: What makes a game fun?
-A: Elements like:
-   - Clear goals with meaningful choices
-   - Appropriate challenge (flow state)
-   - Satisfying feedback (juice)
-   - Sense of progression
-   - Depends on genre และ target audience
-
-Q: Favorite game? Why?
-A: Be specific และ analytical:
-   "[Game] because [specific mechanic] creates [emotional response].
-   The [system] is elegant because [technical/design reason].
-   I learned [specific thing] that influences my work."
-          `}
-        />
-      </Section>
-
-      <Section title="Coding Challenges" icon="💻">
-        <CodeBlock
-          title="Common Game Dev Problems"
-          language="javascript"
-          code={`
-// ─────────────────────────────────
-// Problem 1: 2D Collision Detection
-// ─────────────────────────────────
-function isColliding(rect1, rect2) {
-  return (
-    rect1.x < rect2.x + rect2.width &&
-    rect1.x + rect1.width > rect2.x &&
-    rect1.y < rect2.y + rect2.height &&
-    rect1.y + rect1.height > rect2.y
-  );
-}
-
-// Circle collision
-function circleCollision(c1, c2) {
-  const dx = c1.x - c2.x;
-  const dy = c1.y - c2.y;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-  return distance < c1.radius + c2.radius;
-}
-
-// ─────────────────────────────────
-// Problem 2: Find closest enemy
-// ─────────────────────────────────
-function findClosestEnemy(player, enemies) {
-  let closest = null;
-  let minDist = Infinity;
+class ObjectPool<T> {
+  private pool: T[] = [];
+  private createFn: () => T;
+  private resetFn: (obj: T) => void;
   
-  for (const enemy of enemies) {
-    const dist = distance(player, enemy);
-    if (dist < minDist) {
-      minDist = dist;
-      closest = enemy;
+  constructor(
+    createFn: () => T,
+    resetFn: (obj: T) => void,
+    initialSize: number = 10
+  ) {
+    this.createFn = createFn;
+    this.resetFn = resetFn;
+    
+    // Pre-populate pool
+    for (let i = 0; i < initialSize; i++) {
+      this.pool.push(createFn());
     }
   }
   
-  return closest;
+  get(): T {
+    if (this.pool.length > 0) {
+      return this.pool.pop()!;
+    }
+    // Pool empty, create new
+    return this.createFn();
+  }
+  
+  release(obj: T): void {
+    this.resetFn(obj);
+    this.pool.push(obj);
+  }
 }
 
 // ─────────────────────────────────
-// Problem 3: Implement simple state machine
+// Usage: Bullet Pool
 // ─────────────────────────────────
-class StateMachine {
+interface Bullet {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  active: boolean;
+}
+
+const bulletPool = new ObjectPool<Bullet>(
+  // Create function
+  () => ({ x: 0, y: 0, vx: 0, vy: 0, active: false }),
+  // Reset function
+  (bullet) => {
+    bullet.x = 0;
+    bullet.y = 0;
+    bullet.vx = 0;
+    bullet.vy = 0;
+    bullet.active = false;
+  },
+  100  // initial size
+);
+
+// Shoot
+function shoot(x: number, y: number, dir: number) {
+  const bullet = bulletPool.get();
+  bullet.x = x;
+  bullet.y = y;
+  bullet.vx = Math.cos(dir) * 500;
+  bullet.vy = Math.sin(dir) * 500;
+  bullet.active = true;
+  activeBullets.push(bullet);
+}
+
+// Destroy
+function destroyBullet(bullet: Bullet) {
+  bullet.active = false;
+  const idx = activeBullets.indexOf(bullet);
+  activeBullets.splice(idx, 1);
+  bulletPool.release(bullet);
+}
+          `}
+        />
+      </Section>
+
+      <Section title="Command Pattern" icon="📝">
+        <CodeBlock
+          title="Command Pattern for Undo/Replay"
+          language="typescript"
+          code={`
+// ─────────────────────────────────
+// Command Interface
+// ─────────────────────────────────
+interface Command {
+  execute(): void;
+  undo(): void;
+}
+
+// ─────────────────────────────────
+// Concrete Commands
+// ─────────────────────────────────
+class MoveCommand implements Command {
+  private unit: Unit;
+  private dx: number;
+  private dy: number;
+  private prevX: number;
+  private prevY: number;
+  
+  constructor(unit: Unit, dx: number, dy: number) {
+    this.unit = unit;
+    this.dx = dx;
+    this.dy = dy;
+    this.prevX = unit.x;
+    this.prevY = unit.y;
+  }
+  
+  execute(): void {
+    this.unit.x += this.dx;
+    this.unit.y += this.dy;
+  }
+  
+  undo(): void {
+    this.unit.x = this.prevX;
+    this.unit.y = this.prevY;
+  }
+}
+
+class AttackCommand implements Command {
+  private attacker: Unit;
+  private target: Unit;
+  private damageDealt: number = 0;
+  
+  execute(): void {
+    this.damageDealt = calculateDamage(this.attacker, this.target);
+    this.target.health -= this.damageDealt;
+  }
+  
+  undo(): void {
+    this.target.health += this.damageDealt;
+  }
+}
+
+// ─────────────────────────────────
+// Command Manager (for undo/replay)
+// ─────────────────────────────────
+class CommandManager {
+  private history: Command[] = [];
+  private undoStack: Command[] = [];
+  
+  execute(command: Command): void {
+    command.execute();
+    this.history.push(command);
+    this.undoStack = [];  // Clear redo stack
+  }
+  
+  undo(): void {
+    const command = this.history.pop();
+    if (command) {
+      command.undo();
+      this.undoStack.push(command);
+    }
+  }
+  
+  redo(): void {
+    const command = this.undoStack.pop();
+    if (command) {
+      command.execute();
+      this.history.push(command);
+    }
+  }
+  
+  // For replay system
+  getHistory(): Command[] {
+    return [...this.history];
+  }
+}
+
+// ─────────────────────────────────
+// Usage
+// ─────────────────────────────────
+const commands = new CommandManager();
+
+// Player moves
+commands.execute(new MoveCommand(player, 1, 0));
+commands.execute(new MoveCommand(player, 0, 1));
+commands.execute(new AttackCommand(player, enemy));
+
+// Undo last action
+commands.undo();
+          `}
+        />
+      </Section>
+
+      <Section title="Observer Pattern" icon="📡">
+        <CodeBlock
+          title="Event System"
+          language="typescript"
+          code={`
+// ─────────────────────────────────
+// Event Emitter / Event Bus
+// ─────────────────────────────────
+type EventCallback = (...args: any[]) => void;
+
+class EventEmitter {
+  private listeners: Map<string, EventCallback[]> = new Map();
+  
+  on(event: string, callback: EventCallback): void {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, []);
+    }
+    this.listeners.get(event)!.push(callback);
+  }
+  
+  off(event: string, callback: EventCallback): void {
+    const callbacks = this.listeners.get(event);
+    if (callbacks) {
+      const index = callbacks.indexOf(callback);
+      if (index > -1) {
+        callbacks.splice(index, 1);
+      }
+    }
+  }
+  
+  emit(event: string, ...args: any[]): void {
+    const callbacks = this.listeners.get(event);
+    if (callbacks) {
+      callbacks.forEach(cb => cb(...args));
+    }
+  }
+}
+
+// ─────────────────────────────────
+// Global Event Bus
+// ─────────────────────────────────
+const gameEvents = new EventEmitter();
+
+// ─────────────────────────────────
+// Usage: Decoupled systems
+// ─────────────────────────────────
+
+// Player (publisher)
+class Player {
+  takeDamage(amount: number) {
+    this.health -= amount;
+    
+    gameEvents.emit('player:damaged', { 
+      damage: amount, 
+      health: this.health 
+    });
+    
+    if (this.health <= 0) {
+      gameEvents.emit('player:died');
+    }
+  }
+  
+  collectItem(item: Item) {
+    this.inventory.add(item);
+    gameEvents.emit('item:collected', item);
+  }
+}
+
+// UI (subscriber) - doesn't know about Player directly
+class HealthBar {
   constructor() {
-    this.states = {};
-    this.current = null;
+    gameEvents.on('player:damaged', this.onPlayerDamaged.bind(this));
+    gameEvents.on('player:died', this.onPlayerDied.bind(this));
   }
   
-  add(name, { enter, update, exit }) {
-    this.states[name] = { enter, update, exit };
+  onPlayerDamaged(data: { damage: number; health: number }) {
+    this.updateDisplay(data.health);
+    this.showDamageNumber(data.damage);
   }
   
-  change(name) {
-    if (this.current && this.states[this.current].exit) {
-      this.states[this.current].exit();
-    }
-    this.current = name;
-    if (this.states[name].enter) {
-      this.states[name].enter();
-    }
-  }
-  
-  update(dt) {
-    if (this.current && this.states[this.current].update) {
-      this.states[this.current].update(dt);
-    }
+  onPlayerDied() {
+    this.showGameOver();
   }
 }
 
-// ─────────────────────────────────
-// Problem 4: Smooth camera follow
-// ─────────────────────────────────
-function updateCamera(camera, target, dt) {
-  const smoothness = 0.1;
-  camera.x += (target.x - camera.x) * smoothness;
-  camera.y += (target.y - camera.y) * smoothness;
+// Sound (subscriber)
+class SoundManager {
+  constructor() {
+    gameEvents.on('player:damaged', () => this.play('hit'));
+    gameEvents.on('player:died', () => this.play('death'));
+    gameEvents.on('item:collected', () => this.play('pickup'));
+  }
 }
 
-// Or with lerp
-function lerp(a, b, t) {
-  return a + (b - a) * t;
+// Achievement System (subscriber)
+class Achievements {
+  constructor() {
+    gameEvents.on('player:died', this.checkDeathAchievements.bind(this));
+    gameEvents.on('item:collected', this.checkCollectionAchievements.bind(this));
+  }
 }
-          `}
-        />
-      </Section>
-
-      <Section title="Portfolio Review Tips" icon="🎨">
-        <CodeBlock
-          title="Presenting Your Work"
-          language="text"
-          code={`
-📋 PREPARATION
-- เตรียม demo ที่ work (check links!)
-- รู้ code ของตัวเอง (เค้าอาจถาม detail)
-- เตรียมพูดเรื่อง challenges และ solutions
-
-🎯 DURING PRESENTATION
-"This is [Project Name], a [genre] game built with [tech].
-
-The main challenge was [problem].
-I solved it by [solution], which [result].
-
-Let me show you [interesting feature]...
-*demonstrate*
-
-If I were to improve it, I would [future improvement]."
-
-❓ EXPECT QUESTIONS LIKE:
-- Why did you choose [technology]?
-- How would you scale this for more players?
-- What was the hardest bug you fixed?
-- What would you do differently?
-- Walk me through the code for [feature]
-          `}
-        />
-      </Section>
-
-      <Section title="Questions to Ask" icon="🙋">
-        <CodeBlock
-          title="Questions for Interviewer"
-          language="text"
-          code={`
-🎮 ABOUT THE ROLE
-- What does a typical day/week look like?
-- What projects would I work on first?
-- How is the team structured?
-
-👥 ABOUT THE TEAM
-- What's the code review process?
-- How do you handle crunch?
-- What's the onboarding like?
-
-🚀 ABOUT THE COMPANY
-- What's the tech stack?
-- How do you approach game design decisions?
-- What's the biggest challenge the team faces?
-
-📈 ABOUT GROWTH
-- How do you support skill development?
-- What does success look like in this role?
-- Are there opportunities to work on different projects?
           `}
         />
       </Section>
@@ -263,28 +340,22 @@ If I were to improve it, I would [future improvement]."
         <Quiz
           questions={[
             {
-              question: "Game Loop ประกอบด้วยอะไรบ้าง?",
-              options: ["Render อย่างเดียว", "Input, Update, Render", "โหลด กับ เล่น", "เชื่อมต่อ network"],
+              question: "Object Pool ช่วยแก้ปัญหาอะไร?",
+              options: ["Rendering ช้า", "GC pauses จาก allocations บ่อยๆ", "Network lag", "Audio delay"],
               correctIndex: 1,
-              explanation: "Game Loop ประกอบด้วย Input -> Update -> Render ทุก frame"
+              explanation: "Object Pool reuse objects แทนการ create/destroy ลด GC"
             },
             {
-              question: "STAR method ใช้ตอบคำถาม behavioral อย่างไร?",
-              options: ["Situation, Task, Action, Result", "Start, Tell, Answer, Respond", "Story, Theme, Action, Review", "Simple, True, Accurate, Real"],
-              correctIndex: 0,
-              explanation: "STAR: Situation, Task, Action, Result ช่วยเล่าเรื่องราวอย่างมีโครงสร้าง"
+              question: "Command Pattern ใช้ทำอะไรได้?",
+              options: ["Rendering", "Undo/Redo และ Replay", "Collision detection", "Pathfinding"],
+              correctIndex: 1,
+              explanation: "Command เก็บ action เป็น object ทำให้ undo และ replay ได้"
             },
             {
-              question: "ก่อน interview ต้องทำอะไร?",
-              options: ["ไปเลย", "Research บริษัทและเตรียม portfolio", "ท่องจำ code", "อดนอนให้เต็มที่"],
+              question: "Observer Pattern ช่วยเรื่องอะไร?",
+              options: ["เพิ่ม performance", "Decouple systems", "ลด memory", "เพิ่ม graphics"],
               correctIndex: 1,
-              explanation: "Research บริษัท, เตรียม portfolio และ test demos"
-            },
-            {
-              question: "ควรถามคำถาม interviewer ไหม?",
-              options: ["ไม่ต้องถาม", "ถามเรื่อง role, team, และบริษัท", "ถามเงินเดือนทันที", "ถามวันหยุด"],
-              correctIndex: 1,
-              explanation: "ถามเกี่ยวกับ role, team, และวัฒนธรรมบริษัท"
+              explanation: "Observer ทำให้ systems สื่อสารโดยไม่ต้องรู้จักกันโดยตรง"
             }
           ]}
         />
@@ -292,29 +363,33 @@ If I were to improve it, I would [future improvement]."
 
       <Section title="สรุป" icon="✅">
         <Table
-          headers={["Before", "During", "After"]}
+          headers={["Pattern", "Use Case"]}
           rows={[
-            ["Research company", "Be confident", "Send thank you"],
-            ["Practice problems", "Ask questions", "Follow up"],
-            ["Prepare portfolio", "Show enthusiasm", "Reflect & learn"],
-            ["Test all demos", "Be honest", ""],
+            ["Object Pool", "Bullets, particles, enemies"],
+            ["Command", "Undo/redo, replay, AI"],
+            ["Observer", "Events, UI updates, achievements"],
+            ["Singleton", "GameManager, AudioManager"],
+            ["Factory", "Create entities, spawn enemies"],
           ]}
         />
 
         <ProgressCheck
           items={[
-            "เตรียมคำตอบ technical questions ได้",
-            "ใช้ STAR method ได้",
-            "เตรียม portfolio presentation ได้",
-            "มีคำถามสำหรับ interviewer ได้",
-            "🎉 พร้อมสำหรับงาน Game Dev!"
+            "Implement Object Pool ได้",
+            "ใช้ Command Pattern ได้",
+            "ใช้ Observer Pattern ได้",
+            "เลือก pattern ที่เหมาะสมได้",
+            "จบ Phase 5: Advanced Topics! 🎉"
           ]}
         />
 
         <TipBox type="success">
-          <strong>🎉 Congratulations!</strong>
-          <br />
-          คุณเรียนจบ PlayStack Course แล้ว! 🚀
+          <strong>🎉 ยินดีด้วย! คุณเรียนจบ PlayStack แล้ว!</strong>
+          <p className="mt-2">
+            จาก text games → 2D → 3D → Multiplayer → Architecture
+            <br />
+            พร้อมสร้างเกมของตัวเองแล้ว! 🚀
+          </p>
         </TipBox>
       </Section>
     </div>

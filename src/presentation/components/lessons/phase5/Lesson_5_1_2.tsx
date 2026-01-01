@@ -1,230 +1,334 @@
 "use client";
 
-import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_5_1_2() {
   return (
     <div className="lesson-content">
-      <h1 className="text-3xl font-bold mb-6">Resume สำหรับ Game Developer</h1>
+      <h1 className="text-3xl font-bold mb-6">State Machines</h1>
 
       <Objectives
         items={[
-          "เขียน Resume ที่โดดเด่น",
-          "Highlight tech skills อย่างมีประสิทธิภาพ",
-          "Project descriptions ที่น่าสนใจ",
-          "Tailor resume สำหรับแต่ละตำแหน่ง",
+          "ทำความเข้าใจ Finite State Machines",
+          "Implement FSM สำหรับ character AI",
+          "ใช้ Hierarchical State Machines",
+          "จัดการ state transitions",
         ]}
       />
 
-      <Section title="Resume Structure" icon="📄">
-        <CodeBlock
-          title="Resume Template"
-          language="markdown"
-          code={`
-# [Your Name]
-**Game Developer**
+      <Section title="State Machine คืออะไร?" icon="🔄">
+        <Diagram caption="Player State Machine">
+{`
+                    ┌─────────┐
+                    │  IDLE   │
+                    └────┬────┘
+                         │
+         ┌───────────────┼───────────────┐
+         │ move          │ attack        │ jump
+         ▼               ▼               ▼
+    ┌─────────┐    ┌───────────┐    ┌─────────┐
+    │ WALKING │    │ ATTACKING │    │ JUMPING │
+    └────┬────┘    └─────┬─────┘    └────┬────┘
+         │               │               │
+         │ stop          │ done          │ land
+         └───────────────┴───────────────┘
+                         │
+                         ▼
+                    ┌─────────┐
+                    │  IDLE   │
+                    └─────────┘
+`}
+        </Diagram>
 
-📧 email@example.com | 🌐 portfolio.com | 💼 linkedin.com/in/you | 🐙 github.com/you
-
----
-
-## 🎯 Summary
-Passionate game developer with X years of experience creating engaging 
-web-based games. Specialized in [Phaser/Three.js/etc.] with a focus on 
-[gameplay programming/technical art/etc.]. Shipped X games with Y+ players.
-
----
-
-## 💼 Experience
-
-### Game Developer | Company Name
-*Jan 2023 - Present*
-
-- Developed and shipped 3 HTML5 games with 100K+ total plays
-- Implemented A* pathfinding reducing CPU usage by 40%
-- Created reusable component library used across 5 projects
-- Optimized rendering pipeline achieving 60 FPS on mobile devices
-
-### Junior Developer | Previous Company
-*Jun 2021 - Dec 2022*
-
-- Built gameplay features for match-3 puzzle game
-- Integrated analytics and player progression systems
-- Collaborated with designers to implement game mechanics
-
----
-
-## 🎮 Projects
-
-### Space Shooter (Phaser 3, TypeScript)
-[Play](link) | [Source](github)
-- Fast-paced arcade game with 10 enemy types
-- Custom particle system and screen shake effects
-- 4.5★ rating on itch.io with 5,000+ plays
-
-### 3D Dungeon Crawler (Three.js, React)
-[Play](link) | [Source](github)
-- Procedurally generated dungeons using BSP algorithm
-- Real-time lighting with dynamic shadows
-- Save/load system using IndexedDB
-
----
-
-## 🛠️ Skills
-
-**Languages:** JavaScript, TypeScript, Python, C#
-**Game Engines:** Phaser, PixiJS, Three.js, Unity (learning)
-**Web:** React, Next.js, Node.js, WebSocket
-**Tools:** Git, VS Code, Tiled, Aseprite, Blender
-**Concepts:** Game loops, Physics, AI/Pathfinding, ECS
-
----
-
-## 📚 Education
-
-### Bachelor of Computer Science
-University Name | 2017 - 2021
-- Relevant coursework: Computer Graphics, Game Design, AI
-
----
-
-## 🏆 Achievements
-
-- 🥇 1st Place, GameJam Thailand 2023
-- 📜 Published article "Optimizing Phaser Games" (500+ views)
-- ⭐ 100+ GitHub stars across projects
-          `}
-        />
-      </Section>
-
-      <Section title="Project Descriptions" icon="✍️">
-        <TipBox type="tip">
-          <strong>ใช้ Formula นี้:</strong>
-          <br />
-          [Action verb] + [What you did] + [Impact/Result]
-        </TipBox>
-
-        <CodeBlock
-          title="ก่อน vs หลัง"
-          language="text"
-          code={`
-❌ Bad:
-- Made a game using Phaser
-- Added multiplayer
-- Fixed bugs
-
-✅ Good:
-- Developed roguelike game with procedural level generation 
-  and 20+ unique items, achieving 5,000+ plays on itch.io
-  
-- Implemented real-time multiplayer using WebSocket, 
-  supporting 8 concurrent players with <50ms latency
-  
-- Reduced memory usage by 60% through object pooling, 
-  enabling smooth gameplay on low-end mobile devices
-          `}
-        />
-
-        <Table
-          headers={["Action Verbs", "ใช้เมื่อ"]}
-          rows={[
-            ["Developed, Built, Created", "สร้าง features ใหม่"],
-            ["Implemented, Integrated", "Technical work"],
-            ["Optimized, Improved", "Performance/quality"],
-            ["Designed, Architected", "System design"],
-            ["Led, Collaborated", "Teamwork"],
-          ]}
-        />
-      </Section>
-
-      <Section title="Skills Section" icon="🛠️">
-        <CodeBlock
-          title="Skills Formatting"
-          language="markdown"
-          code={`
-# Option 1: Categorized (Recommended)
-**Languages:** JavaScript/TypeScript (Expert), Python (Intermediate)
-**Game Dev:** Phaser, PixiJS, Three.js, Matter.js
-**Web:** React, Next.js, Node.js, WebSocket
-
-# Option 2: Proficiency Bars (อาจใช้ใน PDF)
-JavaScript     ████████░░ 80%
-TypeScript     ███████░░░ 70%
-Phaser         ████████░░ 80%
-Three.js       ██████░░░░ 60%
-
-# Option 3: Years of Experience
-- JavaScript (5 years)
-- Phaser (3 years)
-- Three.js (2 years)
-          `}
-        />
-
-        <TipBox type="warning">
-          <strong>อย่า:</strong>
+        <TipBox type="info">
+          <strong>Why State Machines?</strong>
           <ul className="mt-2 space-y-1">
-            <li>• ใส่ skills ที่ไม่เกี่ยว (MS Office)</li>
-            <li>• โอ้อวด skills ที่ยังไม่แข็งแรง</li>
-            <li>• ใส่ rating ที่ไม่มีมาตรฐาน</li>
+            <li>• จัดการ complex behaviors</li>
+            <li>• ป้องกัน invalid states</li>
+            <li>• Debug และ visualize ง่าย</li>
+            <li>• เพิ่ม states ใหม่ได้ง่าย</li>
           </ul>
         </TipBox>
       </Section>
 
-      <Section title="Tailoring Resume" icon="🎯">
+      <Section title="Basic FSM Implementation" icon="📦">
         <CodeBlock
-          title="Match Job Description"
-          language="text"
+          title="State Interface"
+          language="typescript"
           code={`
-Job Description Says:
-"Looking for experience with Unity, C#, and multiplayer games"
+// ─────────────────────────────────
+// State interface
+// ─────────────────────────────────
+interface State<T> {
+  enter(owner: T): void;
+  update(owner: T, dt: number): void;
+  exit(owner: T): void;
+}
 
-Your Resume Should Highlight:
-✅ Unity projects (even if personal)
-✅ C# skills and related OOP experience
-✅ Any multiplayer implementation
-✅ Networking knowledge
-
-Job Description Says:
-"Web game developer for casual mobile games"
-
-Your Resume Should Highlight:
-✅ Phaser, PixiJS, or similar
-✅ Mobile-first development
-✅ Performance optimization
-✅ Touch controls implementation
+// ─────────────────────────────────
+// State Machine class
+// ─────────────────────────────────
+class StateMachine<T> {
+  private owner: T;
+  private states: Map<string, State<T>> = new Map();
+  private currentState: State<T> | null = null;
+  private currentStateName: string = '';
+  
+  constructor(owner: T) {
+    this.owner = owner;
+  }
+  
+  addState(name: string, state: State<T>): void {
+    this.states.set(name, state);
+  }
+  
+  setState(name: string): void {
+    const newState = this.states.get(name);
+    if (!newState) {
+      console.warn(\`State "\${name}" not found\`);
+      return;
+    }
+    
+    // Exit current state
+    if (this.currentState) {
+      this.currentState.exit(this.owner);
+    }
+    
+    // Enter new state
+    this.currentState = newState;
+    this.currentStateName = name;
+    this.currentState.enter(this.owner);
+  }
+  
+  update(dt: number): void {
+    if (this.currentState) {
+      this.currentState.update(this.owner, dt);
+    }
+  }
+  
+  getCurrentState(): string {
+    return this.currentStateName;
+  }
+}
           `}
         />
       </Section>
 
-      <Section title="Cover Letter Tips" icon="📨">
+      <Section title="Player States Example" icon="🎮">
         <CodeBlock
-          title="Cover Letter Structure"
-          language="text"
+          title="Player States"
+          language="typescript"
           code={`
-Dear [Hiring Manager],
+class Player {
+  x = 0;
+  y = 0;
+  vx = 0;
+  vy = 0;
+  
+  speed = 200;
+  jumpForce = 400;
+  isGrounded = false;
+  
+  input = {
+    left: false,
+    right: false,
+    jump: false,
+    attack: false
+  };
+  
+  stateMachine: StateMachine<Player>;
+  sprite: Sprite;
+  
+  constructor() {
+    this.stateMachine = new StateMachine(this);
+    
+    this.stateMachine.addState('idle', new IdleState());
+    this.stateMachine.addState('walking', new WalkingState());
+    this.stateMachine.addState('jumping', new JumpingState());
+    this.stateMachine.addState('attacking', new AttackingState());
+    
+    this.stateMachine.setState('idle');
+  }
+  
+  update(dt: number) {
+    this.stateMachine.update(dt);
+    
+    // Apply physics
+    this.vy += 980 * dt;  // gravity
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+    
+    // Ground check
+    if (this.y >= groundY) {
+      this.y = groundY;
+      this.vy = 0;
+      this.isGrounded = true;
+    }
+  }
+}
 
-[Paragraph 1: Hook]
-As a game developer who has shipped X games played by Y+ users, 
-I was excited to see the [Position] role at [Company]. Your work 
-on [Specific Game/Project] resonates with my passion for [Genre/Style].
+// ─────────────────────────────────
+// Idle State
+// ─────────────────────────────────
+class IdleState implements State<Player> {
+  enter(player: Player) {
+    player.sprite.play('idle');
+    player.vx = 0;
+  }
+  
+  update(player: Player, dt: number) {
+    if (player.input.left || player.input.right) {
+      player.stateMachine.setState('walking');
+    }
+    if (player.input.jump && player.isGrounded) {
+      player.stateMachine.setState('jumping');
+    }
+    if (player.input.attack) {
+      player.stateMachine.setState('attacking');
+    }
+  }
+  
+  exit(player: Player) {}
+}
 
-[Paragraph 2: Why You're a Fit]
-In my current role at [Company], I [specific achievement aligned 
-with job requirements]. My experience with [Tech Stack] and 
-[Relevant Skill] makes me well-prepared for this opportunity.
+// ─────────────────────────────────
+// Walking State
+// ─────────────────────────────────
+class WalkingState implements State<Player> {
+  enter(player: Player) {
+    player.sprite.play('walk');
+  }
+  
+  update(player: Player, dt: number) {
+    // Movement
+    if (player.input.left) {
+      player.vx = -player.speed;
+    } else if (player.input.right) {
+      player.vx = player.speed;
+    }
+    
+    // Transitions
+    if (!player.input.left && !player.input.right) {
+      player.stateMachine.setState('idle');
+    }
+    if (player.input.jump && player.isGrounded) {
+      player.stateMachine.setState('jumping');
+    }
+    if (player.input.attack) {
+      player.stateMachine.setState('attacking');
+    }
+  }
+  
+  exit(player: Player) {}
+}
 
-[Paragraph 3: Why This Company]
-I'm particularly drawn to [Company] because of [specific reason - 
-studio culture, games they've made, technology]. I believe my 
-[skill/experience] would contribute to [specific project/goal].
+// ─────────────────────────────────
+// Jumping State
+// ─────────────────────────────────
+class JumpingState implements State<Player> {
+  enter(player: Player) {
+    player.sprite.play('jump');
+    player.vy = -player.jumpForce;
+    player.isGrounded = false;
+  }
+  
+  update(player: Player, dt: number) {
+    // Air control
+    if (player.input.left) {
+      player.vx = -player.speed * 0.8;
+    } else if (player.input.right) {
+      player.vx = player.speed * 0.8;
+    }
+    
+    // Land
+    if (player.isGrounded) {
+      player.stateMachine.setState('idle');
+    }
+  }
+  
+  exit(player: Player) {}
+}
 
-[Paragraph 4: Call to Action]
-I'd love the opportunity to discuss how my experience aligns 
-with your team's needs. My portfolio at [link] showcases my 
-recent work. Thank you for your consideration.
+// ─────────────────────────────────
+// Attacking State
+// ─────────────────────────────────
+class AttackingState implements State<Player> {
+  timer = 0;
+  duration = 0.4;
+  
+  enter(player: Player) {
+    player.sprite.play('attack');
+    player.vx = 0;
+    this.timer = 0;
+    
+    // Spawn hitbox
+    createHitbox(player.x + 40, player.y, 30, 40);
+  }
+  
+  update(player: Player, dt: number) {
+    this.timer += dt;
+    
+    if (this.timer >= this.duration) {
+      player.stateMachine.setState('idle');
+    }
+  }
+  
+  exit(player: Player) {}
+}
+          `}
+        />
+      </Section>
 
-Best regards,
-[Your Name]
+      <Section title="Hierarchical State Machines" icon="📊">
+        <CodeBlock
+          title="Nested States"
+          language="typescript"
+          code={`
+// ─────────────────────────────────
+// HSM: States can contain sub-states
+// ─────────────────────────────────
+class CombatState implements State<Enemy> {
+  subStateMachine: StateMachine<Enemy>;
+  
+  constructor() {
+    // Sub-states within Combat
+  }
+  
+  enter(enemy: Enemy) {
+    this.subStateMachine = new StateMachine(enemy);
+    this.subStateMachine.addState('approach', new ApproachState());
+    this.subStateMachine.addState('attack', new AttackState());
+    this.subStateMachine.addState('retreat', new RetreatState());
+    
+    this.subStateMachine.setState('approach');
+  }
+  
+  update(enemy: Enemy, dt: number) {
+    // Update sub-state
+    this.subStateMachine.update(dt);
+    
+    // Global transitions (exit combat)
+    if (!enemy.canSeePlayer()) {
+      enemy.stateMachine.setState('patrol');
+    }
+  }
+  
+  exit(enemy: Enemy) {}
+}
+
+// Enemy FSM structure:
+// ┌─────────────────────────────────┐
+// │ Enemy State Machine             │
+// ├─────────────────────────────────┤
+// │ - Idle                          │
+// │ - Patrol                        │
+// │ - Combat                        │
+// │   ├─ Approach                   │
+// │   ├─ Attack                     │
+// │   └─ Retreat                    │
+// │ - Flee                          │
+// │ - Dead                          │
+// └─────────────────────────────────┘
           `}
         />
       </Section>
@@ -233,28 +337,22 @@ Best regards,
         <Quiz
           questions={[
             {
-              question: "เขียน achievements แบบไหนดีที่สุด?",
-              options: ["บอกว่าทำอะไร", "Action verb + What + Impact/Result", "ยาวๆ มี detail เยอะ", "สั้นๆ เฉยๆ"],
+              question: "State Machine ใช้แก้ปัญหาอะไร?",
+              options: ["Rendering", "จัดการ complex behaviors และ transitions", "Memory management", "Networking"],
               correctIndex: 1,
-              explanation: "Formula: [Action verb] + [What you did] + [Impact/Result] ช่วยให้ specific และน่าสนใจ"
+              explanation: "FSM จัดการ behaviors ที่มีหลาย states และ transitions ระหว่างกัน"
             },
             {
-              question: "Resume ควรยาวกี่หน้า?",
-              options: ["5+ หน้า", "1-2 หน้า", "10 หน้า", "ไม่จำกัด"],
+              question: "enter() ถูกเรียกเมื่อไหร่?",
+              options: ["ทุก frame", "เมื่อเข้า state ใหม่", "เมื่อออกจาก state", "เมื่อ game start"],
               correctIndex: 1,
-              explanation: "1-2 หน้าเพียงพอ กระชับและอ่านง่าย"
+              explanation: "enter() เรียกครั้งเดียวเมื่อ transition เข้า state นั้น"
             },
             {
-              question: "ทำไมต้อง tailor resume สำหรับแต่ละงาน?",
-              options: ["ไม่จำเป็น", "Highlight skills ที่ตรงกับ job description", "เสียเวลา", "ยากกว่า"],
+              question: "Hierarchical State Machine (HSM) คืออะไร?",
+              options: ["FSM ที่เร็ว", "FSM ที่มี sub-states ซ้อนกัน", "FSM หลายตัว", "FSM แบบ async"],
               correctIndex: 1,
-              explanation: "การ match skills กับ job requirements ช่วยให้โดดเด่น"
-            },
-            {
-              question: "Cover letter ควรเริ่มอย่างไร?",
-              options: ["แนะนำตัวเองยาวๆ", "Hook ที่น่าสนใจและเกี่ยวกับบริษัท", "ลอก resume", "เรียกร้องเงินเดือน"],
-              correctIndex: 1,
-              explanation: "เริ่มด้วย hook และทำไมคุณสนใจบริษัทนี้"
+              explanation: "HSM คือ FSM ที่ states สามารถมี sub-state machine ภายในได้"
             }
           ]}
         />
@@ -262,28 +360,29 @@ Best regards,
 
       <Section title="สรุป" icon="✅">
         <Table
-          headers={["Do", "Don't"]}
+          headers={["Concept", "คำอธิบาย"]}
           rows={[
-            ["Quantify achievements", "Vague descriptions"],
-            ["Tailor for each job", "One-size-fits-all"],
-            ["Include portfolio link", "Text-only projects"],
-            ["1-2 pages max", "5+ pages"],
-            ["Proofread carefully", "Typos/errors"],
+            ["State", "Behavior เฉพาะ (idle, walk, attack)"],
+            ["Transition", "เปลี่ยนจาก state หนึ่งไปอีก state"],
+            ["enter()", "เรียกเมื่อเข้า state"],
+            ["update()", "เรียกทุก frame"],
+            ["exit()", "เรียกเมื่อออกจาก state"],
+            ["HSM", "States ซ้อนกันหลายชั้น"],
           ]}
         />
 
         <ProgressCheck
           items={[
-            "เขียน resume แบบมืออาชีพได้",
-            "ใช้ action verbs ได้",
-            "Quantify achievements ได้",
-            "Tailor resume ตามงานได้",
-            "พร้อมเรียน Interview Prep!"
+            "เข้าใจ FSM concepts",
+            "Implement basic state machine ได้",
+            "สร้าง player states ได้",
+            "เข้าใจ HSM",
+            "พร้อมเรียน Design Patterns!"
           ]}
         />
 
         <TipBox type="success">
-          <strong>บทต่อไป: Interview Preparation! 🎤</strong>
+          <strong>บทต่อไป: Design Patterns! 🎯</strong>
         </TipBox>
       </Section>
     </div>

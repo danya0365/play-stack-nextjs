@@ -57,25 +57,35 @@ const lessonComponents: Record<string, ComponentType> = {
   "lesson-3-2-3": dynamic(() => import("./phase3/Lesson_3_2_3")),
   
   // ==========================================
-  // Phase 4: Advanced Concepts
+  // Phase 4: 3D Game Development
   // ==========================================
   
-  // Module 4.1: Game Systems
+  // Module 4.1: Three.js Fundamentals
   "lesson-4-1-1": dynamic(() => import("./phase4/Lesson_4_1_1")),
   "lesson-4-1-2": dynamic(() => import("./phase4/Lesson_4_1_2")),
   "lesson-4-1-3": dynamic(() => import("./phase4/Lesson_4_1_3")),
   "lesson-4-1-4": dynamic(() => import("./phase4/Lesson_4_1_4")),
   
-  // Module 4.2: Production
+  // Module 4.2: Babylon.js
   "lesson-4-2-1": dynamic(() => import("./phase4/Lesson_4_2_1")),
   "lesson-4-2-2": dynamic(() => import("./phase4/Lesson_4_2_2")),
   "lesson-4-2-3": dynamic(() => import("./phase4/Lesson_4_2_3")),
+  "lesson-4-2-4": dynamic(() => import("./phase4/Lesson_4_2_4")),
+  
+  // Module 4.3: PlayCanvas
+  "lesson-4-3-1": dynamic(() => import("./phase4/Lesson_4_3_1")),
+  "lesson-4-3-2": dynamic(() => import("./phase4/Lesson_4_3_2")),
+  
+  // Module 4.4: Unity WebGL
+  "lesson-4-4-1": dynamic(() => import("./phase4/Lesson_4_4_1")),
+  "lesson-4-4-2": dynamic(() => import("./phase4/Lesson_4_4_2")),
+  "lesson-4-4-3": dynamic(() => import("./phase4/Lesson_4_4_3")),
   
   // ==========================================
-  // Phase 5: Career Prep
+  // Phase 5: Advanced Topics
   // ==========================================
   
-  // Module 5.1: Career Development
+  // Module 5.1: Game Architecture Patterns
   "lesson-5-1-1": dynamic(() => import("./phase5/Lesson_5_1_1")),
   "lesson-5-1-2": dynamic(() => import("./phase5/Lesson_5_1_2")),
   "lesson-5-1-3": dynamic(() => import("./phase5/Lesson_5_1_3")),

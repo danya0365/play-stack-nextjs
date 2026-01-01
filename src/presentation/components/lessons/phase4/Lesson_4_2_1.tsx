@@ -1,519 +1,281 @@
 "use client";
 
-import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_4_2_1() {
   return (
     <div className="lesson-content">
-      <h1 className="text-3xl font-bold mb-6">Performance Optimization</h1>
+      <h1 className="text-3xl font-bold mb-6">Babylon.js Setup</h1>
 
       <Objectives
         items={[
-          "Profiling และ identifying bottlenecks",
-          "Rendering optimization",
-          "Memory management",
-          "Object pooling",
+          "ทำความรู้จัก Babylon.js",
+          "ตั้งค่า Babylon.js project",
+          "เข้าใจ Scene, Engine, Camera",
+          "สร้าง 3D scene แรก",
         ]}
       />
 
-      <Section title="Performance Profiling" icon="📊">
+      <Section title="Babylon.js คืออะไร?" icon="🔮">
+        <p className="mb-4">
+          <strong>Babylon.js</strong> เป็น full-featured 3D engine สำหรับ web:
+        </p>
+        <ul className="list-disc list-inside space-y-2 ml-4">
+          <li>🎮 Built-in physics (Havok, Cannon, Oimo)</li>
+          <li>🎬 Advanced animation system</li>
+          <li>✨ PBR rendering by default</li>
+          <li>🥽 Native XR (VR/AR) support</li>
+          <li>🛠️ Node Material Editor (visual shader)</li>
+          <li>📦 GLTF loader, asset manager</li>
+        </ul>
+
+        <Table
+          headers={["", "Three.js", "Babylon.js"]}
+          rows={[
+            ["Philosophy", "Library (flexible)", "Engine (batteries included)"],
+            ["Physics", "External (Cannon, Rapier)", "Built-in (Havok)"],
+            ["GUI", "External", "Built-in"],
+            ["XR", "Basic", "Full support"],
+            ["Learning Curve", "Lower", "Higher"],
+          ]}
+        />
+      </Section>
+
+      <Section title="Installation" icon="📦">
         <CodeBlock
-          title="Basic Performance Monitoring"
-          language="javascript"
+          title="Setup Babylon.js Project"
+          language="bash"
           code={`
-// ─────────────────────────────────
-// FPS Counter
-// ─────────────────────────────────
-class FPSCounter {
-  constructor() {
-    this.frames = 0;
-    this.lastTime = performance.now();
-    this.fps = 0;
-  }
-  
-  update() {
-    this.frames++;
-    const now = performance.now();
-    
-    if (now - this.lastTime >= 1000) {
-      this.fps = this.frames;
-      this.frames = 0;
-      this.lastTime = now;
-    }
-    
-    return this.fps;
-  }
-}
+# Create Vite project
+npm create vite@latest my-babylon-game -- --template vanilla-ts
+cd my-babylon-game
 
-const fpsCounter = new FPSCounter();
+# Install Babylon.js
+npm install @babylonjs/core
+npm install @babylonjs/loaders      # GLTF/OBJ loaders
+npm install @babylonjs/gui          # 2D GUI
+npm install @babylonjs/materials    # Additional materials
 
-function gameLoop() {
-  const fps = fpsCounter.update();
-  // Display FPS
-  
-  requestAnimationFrame(gameLoop);
-}
-
-// ─────────────────────────────────
-// Performance marks
-// ─────────────────────────────────
-function update(dt) {
-  performance.mark('update-start');
-  
-  // Update logic...
-  updatePhysics(dt);
-  updateAI(dt);
-  updateAnimations(dt);
-  
-  performance.mark('update-end');
-  performance.measure('update', 'update-start', 'update-end');
-}
-
-function render() {
-  performance.mark('render-start');
-  
-  // Render logic...
-  
-  performance.mark('render-end');
-  performance.measure('render', 'render-start', 'render-end');
-}
-
-// Log performance data
-setInterval(() => {
-  const updateMeasures = performance.getEntriesByName('update');
-  const renderMeasures = performance.getEntriesByName('render');
-  
-  if (updateMeasures.length > 0) {
-    const avgUpdate = updateMeasures.reduce((a, b) => a + b.duration, 0) / updateMeasures.length;
-    const avgRender = renderMeasures.reduce((a, b) => a + b.duration, 0) / renderMeasures.length;
-    
-    console.log(\`Update: \${avgUpdate.toFixed(2)}ms, Render: \${avgRender.toFixed(2)}ms\`);
-  }
-  
-  performance.clearMeasures();
-}, 5000);
+# Optional: Havok physics
+npm install @babylonjs/havok
           `}
         />
       </Section>
 
-      <Section title="Object Pooling" icon="♻️">
-        <Diagram caption="Object Pool Concept">
-{`
-┌─────────────────────────────────────────────┐
-│              OBJECT POOL                     │
-│                                              │
-│   Available: [●] [●] [●] [ ] [ ]            │
-│                                              │
-│   acquire() ──► Get from pool               │
-│   release() ◄── Return to pool              │
-│                                              │
-│   Benefits:                                  │
-│   • No garbage collection spikes             │
-│   • Faster than new object creation          │
-│   • Consistent memory usage                  │
-└─────────────────────────────────────────────┘
-`}
-        </Diagram>
-
+      <Section title="Basic Setup" icon="🎬">
         <CodeBlock
-          title="Generic Object Pool"
-          language="javascript"
+          title="Complete Babylon.js Setup"
+          language="typescript"
           code={`
-class ObjectPool {
-  constructor(factory, initialSize = 10) {
-    this.factory = factory;
-    this.pool = [];
-    this.active = new Set();
-    
-    // Pre-create objects
-    for (let i = 0; i < initialSize; i++) {
-      this.pool.push(this.createNew());
-    }
-  }
-  
-  createNew() {
-    const obj = this.factory();
-    obj.__pooled = true;
-    return obj;
-  }
-  
-  acquire() {
-    let obj = this.pool.pop();
-    
-    if (!obj) {
-      obj = this.createNew();
-    }
-    
-    this.active.add(obj);
-    return obj;
-  }
-  
-  release(obj) {
-    if (!obj.__pooled) return;
-    
-    this.active.delete(obj);
-    this.pool.push(obj);
-  }
-  
-  releaseAll() {
-    this.active.forEach(obj => this.pool.push(obj));
-    this.active.clear();
-  }
-  
-  get activeCount() {
-    return this.active.size;
-  }
-  
-  get poolSize() {
-    return this.pool.length;
-  }
-}
+import {
+  Engine,
+  Scene,
+  ArcRotateCamera,
+  HemisphericLight,
+  MeshBuilder,
+  StandardMaterial,
+  Color3,
+  Vector3
+} from "@babylonjs/core";
 
 // ─────────────────────────────────
-// Usage: Bullet Pool
+// 1. Get canvas & create engine
 // ─────────────────────────────────
-class Bullet {
-  constructor() {
-    this.x = 0;
-    this.y = 0;
-    this.vx = 0;
-    this.vy = 0;
-    this.alive = false;
-  }
-  
-  init(x, y, vx, vy) {
-    this.x = x;
-    this.y = y;
-    this.vx = vx;
-    this.vy = vy;
-    this.alive = true;
-  }
-  
-  update(dt) {
-    if (!this.alive) return;
-    
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
-    
-    // Out of bounds
-    if (this.x < 0 || this.x > 800 || this.y < 0 || this.y > 600) {
-      this.alive = false;
-    }
-  }
-}
-
-const bulletPool = new ObjectPool(() => new Bullet(), 50);
-
-function shoot(x, y, angle, speed) {
-  const bullet = bulletPool.acquire();
-  bullet.init(
-    x, y,
-    Math.cos(angle) * speed,
-    Math.sin(angle) * speed
-  );
-  return bullet;
-}
-
-function update(dt) {
-  bulletPool.active.forEach(bullet => {
-    bullet.update(dt);
-    
-    if (!bullet.alive) {
-      bulletPool.release(bullet);
-    }
-  });
-}
-
-// ─────────────────────────────────
-// Particle Pool
-// ─────────────────────────────────
-const particlePool = new ObjectPool(() => ({
-  x: 0, y: 0,
-  vx: 0, vy: 0,
-  life: 0,
-  maxLife: 60,
-  color: 0xffffff,
-  size: 5
-}), 200);
-
-function spawnParticle(x, y, color) {
-  const p = particlePool.acquire();
-  p.x = x;
-  p.y = y;
-  p.vx = (Math.random() - 0.5) * 5;
-  p.vy = (Math.random() - 0.5) * 5;
-  p.life = p.maxLife;
-  p.color = color;
-  return p;
-}
-          `}
-        />
-      </Section>
-
-      <Section title="Rendering Optimization" icon="🎨">
-        <CodeBlock
-          title="Canvas Optimization"
-          language="javascript"
-          code={`
-// ─────────────────────────────────
-// Batch similar draw calls
-// ─────────────────────────────────
-
-// BAD: Switch context for each sprite
-sprites.forEach(sprite => {
-  ctx.fillStyle = sprite.color;  // Context switch
-  ctx.fillRect(sprite.x, sprite.y, sprite.w, sprite.h);
-});
-
-// GOOD: Group by color
-const byColor = new Map();
-sprites.forEach(sprite => {
-  if (!byColor.has(sprite.color)) {
-    byColor.set(sprite.color, []);
-  }
-  byColor.get(sprite.color).push(sprite);
-});
-
-byColor.forEach((sprites, color) => {
-  ctx.fillStyle = color;  // One context switch per color
-  sprites.forEach(s => {
-    ctx.fillRect(s.x, s.y, s.w, s.h);
-  });
+const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
+const engine = new Engine(canvas, true, { 
+  preserveDrawingBuffer: true, 
+  stencil: true 
 });
 
 // ─────────────────────────────────
-// Offscreen canvas for complex drawings
+// 2. Create scene
 // ─────────────────────────────────
-const offscreen = document.createElement('canvas');
-offscreen.width = 100;
-offscreen.height = 100;
-const offCtx = offscreen.getContext('2d');
-
-// Draw complex shape once
-function prerenderComplexShape() {
-  offCtx.clearRect(0, 0, 100, 100);
-  // Complex drawing...
-  offCtx.beginPath();
-  offCtx.arc(50, 50, 40, 0, Math.PI * 2);
-  offCtx.fill();
-  // More drawing...
-}
-prerenderComplexShape();
-
-// Use as stamp
-function render() {
-  entities.forEach(e => {
-    ctx.drawImage(offscreen, e.x, e.y);  // Fast!
-  });
-}
+const scene = new Scene(engine);
+scene.clearColor = new BABYLON.Color4(0.1, 0.1, 0.15, 1);
 
 // ─────────────────────────────────
-// Dirty rectangles
+// 3. Add camera
 // ─────────────────────────────────
-class DirtyRectRenderer {
-  constructor(ctx) {
-    this.ctx = ctx;
-    this.dirtyRects = [];
-  }
-  
-  markDirty(x, y, w, h) {
-    this.dirtyRects.push({ x, y, w, h });
-  }
-  
-  render(drawFn) {
-    if (this.dirtyRects.length === 0) return;
-    
-    // Merge overlapping rects
-    const merged = this.mergeRects(this.dirtyRects);
-    
-    merged.forEach(rect => {
-      this.ctx.save();
-      this.ctx.beginPath();
-      this.ctx.rect(rect.x, rect.y, rect.w, rect.h);
-      this.ctx.clip();
-      
-      // Clear and redraw only this area
-      this.ctx.clearRect(rect.x, rect.y, rect.w, rect.h);
-      drawFn(rect);
-      
-      this.ctx.restore();
-    });
-    
-    this.dirtyRects = [];
-  }
-}
+const camera = new ArcRotateCamera(
+  "camera",
+  Math.PI / 2,    // alpha (horizontal rotation)
+  Math.PI / 3,    // beta (vertical angle)
+  10,             // radius (distance)
+  Vector3.Zero(), // target
+  scene
+);
+camera.attachControl(canvas, true);  // Enable mouse control
+
+// ─────────────────────────────────
+// 4. Add light
+// ─────────────────────────────────
+const light = new HemisphericLight(
+  "light",
+  new Vector3(0, 1, 0),  // direction
+  scene
+);
+light.intensity = 0.8;
+
+// ─────────────────────────────────
+// 5. Create shapes
+// ─────────────────────────────────
+// Ground
+const ground = MeshBuilder.CreateGround(
+  "ground",
+  { width: 10, height: 10 },
+  scene
+);
+
+// Box
+const box = MeshBuilder.CreateBox("box", { size: 1 }, scene);
+box.position.y = 0.5;
+
+// Sphere
+const sphere = MeshBuilder.CreateSphere(
+  "sphere",
+  { diameter: 1, segments: 32 },
+  scene
+);
+sphere.position = new Vector3(2, 0.5, 0);
+
+// ─────────────────────────────────
+// 6. Add materials
+// ─────────────────────────────────
+const boxMat = new StandardMaterial("boxMat", scene);
+boxMat.diffuseColor = new Color3(0.3, 0.8, 0.5);  // green
+box.material = boxMat;
+
+const sphereMat = new StandardMaterial("sphereMat", scene);
+sphereMat.diffuseColor = new Color3(0.4, 0.6, 1);  // blue
+sphere.material = sphereMat;
+
+// ─────────────────────────────────
+// 7. Render loop
+// ─────────────────────────────────
+engine.runRenderLoop(() => {
+  box.rotation.y += 0.01;
+  scene.render();
+});
+
+// ─────────────────────────────────
+// 8. Handle resize
+// ─────────────────────────────────
+window.addEventListener("resize", () => {
+  engine.resize();
+});
           `}
         />
       </Section>
 
-      <Section title="Memory Management" icon="🧹">
+      <Section title="Camera Types" icon="📷">
         <CodeBlock
-          title="Avoiding Memory Leaks"
-          language="javascript"
+          title="Different Cameras"
+          language="typescript"
           code={`
-// ─────────────────────────────────
-// Cleanup event listeners
-// ─────────────────────────────────
-class GameObject {
-  constructor() {
-    this.onKeyDown = this.onKeyDown.bind(this);
-    document.addEventListener('keydown', this.onKeyDown);
-  }
-  
-  onKeyDown(e) {
-    // Handle input
-  }
-  
-  destroy() {
-    // IMPORTANT: Remove listeners!
-    document.removeEventListener('keydown', this.onKeyDown);
-  }
-}
+import {
+  ArcRotateCamera,
+  FreeCamera,
+  FollowCamera,
+  UniversalCamera,
+  Vector3
+} from "@babylonjs/core";
 
 // ─────────────────────────────────
-// Cleanup textures/resources
+// ArcRotateCamera (orbit around target)
 // ─────────────────────────────────
-function unloadLevel(level) {
-  // Dispose textures
-  level.textures.forEach(tex => {
-    tex.dispose();
-  });
-  
-  // Clear arrays
-  level.enemies.length = 0;
-  level.items.length = 0;
-  
-  // Clear references
-  level.player = null;
-}
+const arcCam = new ArcRotateCamera(
+  "arcCam",
+  Math.PI / 2,    // alpha
+  Math.PI / 3,    // beta
+  10,             // radius
+  Vector3.Zero(), // target
+  scene
+);
+arcCam.lowerRadiusLimit = 2;
+arcCam.upperRadiusLimit = 20;
+arcCam.attachControl(canvas, true);
 
 // ─────────────────────────────────
-// Reuse vectors (avoid allocation)
+// FreeCamera (first-person)
 // ─────────────────────────────────
+const freeCam = new FreeCamera(
+  "freeCam",
+  new Vector3(0, 2, -10),
+  scene
+);
+freeCam.setTarget(Vector3.Zero());
+freeCam.attachControl(canvas, true);
 
-// BAD: Creates new vector every frame
-function update() {
-  const direction = new Vector2(target.x - player.x, target.y - player.y);
-  direction.normalize();
-  // ...
-}
-
-// GOOD: Reuse pre-allocated vector
-const tempVec = new Vector2();
-
-function update() {
-  tempVec.x = target.x - player.x;
-  tempVec.y = target.y - player.y;
-  tempVec.normalize();
-  // ...
-}
+// WASD movement
+freeCam.keysUp.push(87);     // W
+freeCam.keysDown.push(83);   // S
+freeCam.keysLeft.push(65);   // A
+freeCam.keysRight.push(68);  // D
+freeCam.speed = 0.5;
 
 // ─────────────────────────────────
-// WeakMap for metadata
+// FollowCamera (third-person)
 // ─────────────────────────────────
-// When object is garbage collected, so is metadata
-const entityData = new WeakMap();
-
-function setEntityHealth(entity, health) {
-  entityData.set(entity, { health });
-}
-
-function getEntityHealth(entity) {
-  return entityData.get(entity)?.health ?? 0;
-}
+const followCam = new FollowCamera(
+  "followCam",
+  new Vector3(0, 10, -10),
+  scene
+);
+followCam.radius = 10;
+followCam.heightOffset = 4;
+followCam.rotationOffset = 180;
+followCam.lockedTarget = playerMesh;  // target to follow
           `}
         />
       </Section>
 
-      <Section title="Spatial Optimization" icon="🗺️">
+      <Section title="Built-in Shapes" icon="🧱">
         <CodeBlock
-          title="Spatial Partitioning"
-          language="javascript"
+          title="MeshBuilder Shapes"
+          language="typescript"
           code={`
-// ─────────────────────────────────
-// Grid-based spatial hash
-// ─────────────────────────────────
-class SpatialHash {
-  constructor(cellSize) {
-    this.cellSize = cellSize;
-    this.cells = new Map();
-  }
-  
-  getKey(x, y) {
-    const cx = Math.floor(x / this.cellSize);
-    const cy = Math.floor(y / this.cellSize);
-    return \`\${cx},\${cy}\`;
-  }
-  
-  insert(entity) {
-    const key = this.getKey(entity.x, entity.y);
-    
-    if (!this.cells.has(key)) {
-      this.cells.set(key, new Set());
-    }
-    
-    this.cells.get(key).add(entity);
-    entity.__spatialKey = key;
-  }
-  
-  remove(entity) {
-    const cell = this.cells.get(entity.__spatialKey);
-    if (cell) {
-      cell.delete(entity);
-    }
-  }
-  
-  update(entity) {
-    const newKey = this.getKey(entity.x, entity.y);
-    
-    if (newKey !== entity.__spatialKey) {
-      this.remove(entity);
-      this.insert(entity);
-    }
-  }
-  
-  getNearby(x, y, radius = 1) {
-    const nearby = [];
-    const cellRadius = Math.ceil(radius / this.cellSize);
-    const cx = Math.floor(x / this.cellSize);
-    const cy = Math.floor(y / this.cellSize);
-    
-    for (let dx = -cellRadius; dx <= cellRadius; dx++) {
-      for (let dy = -cellRadius; dy <= cellRadius; dy++) {
-        const key = \`\${cx + dx},\${cy + dy}\`;
-        const cell = this.cells.get(key);
-        
-        if (cell) {
-          nearby.push(...cell);
-        }
-      }
-    }
-    
-    return nearby;
-  }
-  
-  clear() {
-    this.cells.clear();
-  }
-}
+import { MeshBuilder, Vector3 } from "@babylonjs/core";
 
-// Usage
-const spatialHash = new SpatialHash(100);
+// Box
+const box = MeshBuilder.CreateBox("box", {
+  width: 1,
+  height: 2,
+  depth: 0.5
+}, scene);
 
-// Insert all entities
-entities.forEach(e => spatialHash.insert(e));
+// Sphere
+const sphere = MeshBuilder.CreateSphere("sphere", {
+  diameter: 2,
+  segments: 32
+}, scene);
 
-// Fast collision check
-function checkCollisions(entity) {
-  // Only check nearby entities, not all!
-  const nearby = spatialHash.getNearby(entity.x, entity.y, 50);
-  
-  for (const other of nearby) {
-    if (other !== entity && isColliding(entity, other)) {
-      handleCollision(entity, other);
-    }
-  }
-}
+// Cylinder
+const cylinder = MeshBuilder.CreateCylinder("cylinder", {
+  height: 3,
+  diameterTop: 0.5,
+  diameterBottom: 1.5,
+  tessellation: 24
+}, scene);
+
+// Plane
+const plane = MeshBuilder.CreatePlane("plane", {
+  width: 5,
+  height: 5
+}, scene);
+
+// Ground
+const ground = MeshBuilder.CreateGround("ground", {
+  width: 10,
+  height: 10,
+  subdivisions: 10
+}, scene);
+
+// Torus
+const torus = MeshBuilder.CreateTorus("torus", {
+  diameter: 2,
+  thickness: 0.5,
+  tessellation: 32
+}, scene);
           `}
         />
       </Section>
@@ -522,28 +284,22 @@ function checkCollisions(entity) {
         <Quiz
           questions={[
             {
-              question: "Object Pooling ช่วยแก้ปัญหาอะไร?",
-              options: ["โหลดเร็วขึ้น", "ลด GC spikes จากการสร้าง/ทำลาย objects", "เพิ่ม memory", "ทำ graphics สวยขึ้น"],
+              question: "Babylon.js ต่างจาก Three.js อย่างไร?",
+              options: ["เหมือนกัน", "Babylon มี physics, GUI built-in", "Three.js มีของครบกว่า", "Babylon.js ใช้ได้เฉพาะ iOS"],
               correctIndex: 1,
-              explanation: "Pooling reuse objects แทนการสร้างใหม่ ลด garbage collection"
+              explanation: "Babylon.js มา 'batteries included' รวม physics, GUI, XR ในตัว"
             },
             {
-              question: "Spatial Hashing ใช้ทำอะไร?",
-              options: ["เข้ารหัส password", "หา entities ใกล้เคียงแบบ O(1)", "บีบอัดภาพ", "เล่นเสียง"],
+              question: "ArcRotateCamera ใช้ทำอะไร?",
+              options: ["First-person view", "หมุนรอบ target (orbit camera)", "Follow character", "Bird's eye view"],
               correctIndex: 1,
-              explanation: "Spatial Hash แบ่ง world เป็น cells หา nearby ได้เร็ว"
+              explanation: "ArcRotateCamera หมุนรอบจุด target เหมาะกับ model viewer หรือ isometric games"
             },
             {
-              question: "ทำไมต้อง cleanup event listeners?",
-              options: ["ไม่จำเป็น", "ป้องกัน memory leaks", "เพิ่มความเร็ว", "ลดขนาดไฟล์"],
+              question: "engine.runRenderLoop() ทำอะไร?",
+              options: ["โหลด assets", "เรียก render ทุก frame", "สร้าง engine", "หยุด game"],
               correctIndex: 1,
-              explanation: "Listeners ที่ไม่ลบจะอ้างถึง objects ทำให้ memory leak"
-            },
-            {
-              question: "Batch rendering ช่วยอย่างไร?",
-              options: ["เพิ่มสีสัน", "ลด draw calls และ context switches", "เพิ่มขนาดภาพ", "เพิ่ม animation speed"],
-              correctIndex: 1,
-              explanation: "การ group draw calls ที่เหมือนกันลด overhead"
+              explanation: "runRenderLoop เรียก callback ทุก frame สำหรับ animation และ render"
             }
           ]}
         />
@@ -551,28 +307,29 @@ function checkCollisions(entity) {
 
       <Section title="สรุป" icon="✅">
         <Table
-          headers={["Technique", "Improvement"]}
+          headers={["Concept", "คำอธิบาย"]}
           rows={[
-            ["Object Pooling", "No GC spikes, faster spawn"],
-            ["Batch Rendering", "Fewer draw calls"],
-            ["Spatial Hashing", "O(1) nearby lookup"],
-            ["Dirty Rectangles", "Partial screen update"],
-            ["Listener Cleanup", "Prevent memory leaks"],
+            ["Engine", "จัดการ rendering และ browser APIs"],
+            ["Scene", "Container สำหรับ objects ทั้งหมด"],
+            ["Camera", "มุมมอง (Arc, Free, Follow)"],
+            ["Light", "แหล่งแสง (Hemispheric, Point, Directional)"],
+            ["MeshBuilder", "สร้าง 3D shapes"],
+            ["Material", "พื้นผิวของ mesh"],
           ]}
         />
 
         <ProgressCheck
           items={[
-            "ใช้ Object Pooling ได้",
-            "Batch rendering ได้",
-            "ใช้ Spatial Hashing ได้",
-            "Cleanup memory leaks ได้",
-            "พร้อมเรียน Save/Load!"
+            "ตั้งค่า Babylon.js project ได้",
+            "เข้าใจ Engine, Scene, Camera",
+            "สร้าง 3D objects ได้",
+            "ใช้ camera types ต่างๆ ได้",
+            "พร้อมเรียน PBR Materials!"
           ]}
         />
 
         <TipBox type="success">
-          <strong>บทต่อไป: Save/Load System! 💾</strong>
+          <strong>บทต่อไป: PBR Materials! 🎨</strong>
         </TipBox>
       </Section>
     </div>
