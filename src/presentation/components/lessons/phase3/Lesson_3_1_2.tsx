@@ -1,331 +1,322 @@
 "use client";
 
-import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_1_2() {
   return (
     <div className="lesson-content">
-      <h1 className="text-3xl font-bold mb-6">Materials และ Textures</h1>
+      <h1 className="text-3xl font-bold mb-6">State Synchronization</h1>
 
       <Objectives
         items={[
-          "Material types และความแตกต่าง",
-          "โหลดและใช้ textures",
-          "PBR Materials สำหรับ realistic rendering",
-          "Environment maps และ reflections",
+          "เข้าใจการทำงานของ State Sync",
+          "ใช้ Schema types ต่างๆ",
+          "จัดการ Nested schemas",
+          "เข้าใจ Delta patches",
         ]}
       />
 
-      <Section title="Material Types" icon="🎨">
+      <Section title="State Sync คืออะไร?" icon="🔄">
+        <p className="mb-4">
+          Colyseus ใช้ระบบ <strong>Automatic State Synchronization</strong>:
+        </p>
+        <ul className="list-disc list-inside space-y-2 ml-4">
+          <li>🔄 Server state → Client state อัตโนมัติ</li>
+          <li>📦 ส่งเฉพาะ changes (delta patches)</li>
+          <li>⚡ Binary serialization (ประหยัด bandwidth)</li>
+          <li>🎯 Selective sync ตาม @type decorator</li>
+        </ul>
+
+        <Diagram caption="State Synchronization Flow">
+{`
+ SERVER                              CLIENT
+┌──────────────┐                  ┌──────────────┐
+│ GameState    │                  │ GameState    │
+│ ─────────────│   Automatic     │ ─────────────│
+│ players: {...}│ ─────────────► │ players: {...}│
+│ score: 100   │   Delta Patch   │ score: 100   │
+│ status: play │                  │ status: play │
+└──────────────┘                  └──────────────┘
+       │                                 │
+       │ Change: score = 150             │
+       ▼                                 ▼
+┌──────────────┐                  ┌──────────────┐
+│ score: 150   │ ─── PATCH ────► │ score: 150   │
+└──────────────┘  (only delta)   └──────────────┘
+`}
+        </Diagram>
+      </Section>
+
+      <Section title="Schema Types" icon="📝">
+        <CodeBlock
+          title="Primitive Types"
+          language="typescript"
+          code={`
+import { Schema, type } from "@colyseus/schema";
+
+class PlayerState extends Schema {
+  // String
+  @type("string") name: string = "";
+  
+  // Numbers
+  @type("number") x: number = 0;      // float64
+  @type("int8") health: number = 100;  // -128 to 127
+  @type("uint8") level: number = 1;    // 0 to 255
+  @type("int16") damage: number = 0;   // -32768 to 32767
+  @type("uint16") gold: number = 0;    // 0 to 65535
+  @type("int32") experience: number = 0;
+  @type("uint32") score: number = 0;
+  @type("float32") speed: number = 1.0;
+  @type("float64") precise: number = 0.0;
+  
+  // Boolean
+  @type("boolean") isAlive: boolean = true;
+}
+          `}
+        />
+
         <Table
-          headers={["Material", "Use Case", "Performance"]}
+          headers={["Type", "Size", "Range"]}
           rows={[
-            ["MeshBasicMaterial", "ไม่ต้องการ lighting", "เร็วมาก"],
-            ["MeshLambertMaterial", "Matte surfaces", "เร็ว"],
-            ["MeshPhongMaterial", "Shiny surfaces", "ปานกลาง"],
-            ["MeshStandardMaterial", "PBR (realistic)", "ช้ากว่า"],
-            ["MeshPhysicalMaterial", "Glass, clearcoat", "ช้าสุด"],
+            ["int8", "1 byte", "-128 to 127"],
+            ["uint8", "1 byte", "0 to 255"],
+            ["int16", "2 bytes", "-32,768 to 32,767"],
+            ["uint16", "2 bytes", "0 to 65,535"],
+            ["int32", "4 bytes", "±2 billion"],
+            ["uint32", "4 bytes", "0 to 4 billion"],
+            ["float32", "4 bytes", "~7 digits precision"],
+            ["float64/number", "8 bytes", "~15 digits precision"],
           ]}
         />
 
-        <CodeBlock
-          title="Material Comparison"
-          language="javascript"
-          code={`
-// ─────────────────────────────────
-// Basic - No lighting
-// ─────────────────────────────────
-const basicMat = new THREE.MeshBasicMaterial({
-  color: 0x4ade80,
-  wireframe: false
-});
-
-// ─────────────────────────────────
-// Lambert - Matte (non-shiny)
-// ─────────────────────────────────
-const lambertMat = new THREE.MeshLambertMaterial({
-  color: 0x60a5fa,
-  emissive: 0x222222
-});
-
-// ─────────────────────────────────
-// Phong - Shiny with specular
-// ─────────────────────────────────
-const phongMat = new THREE.MeshPhongMaterial({
-  color: 0xf472b6,
-  specular: 0xffffff,
-  shininess: 100
-});
-
-// ─────────────────────────────────
-// Standard - PBR (recommended)
-// ─────────────────────────────────
-const standardMat = new THREE.MeshStandardMaterial({
-  color: 0xfbbf24,
-  metalness: 0.5,      // 0 = plastic, 1 = metal
-  roughness: 0.3       // 0 = smooth, 1 = rough
-});
-
-// ─────────────────────────────────
-// Physical - Advanced PBR
-// ─────────────────────────────────
-const physicalMat = new THREE.MeshPhysicalMaterial({
-  color: 0xffffff,
-  metalness: 0,
-  roughness: 0,
-  transmission: 1,     // glass transparency
-  thickness: 0.5,      // glass thickness
-  clearcoat: 1,        // car paint effect
-  clearcoatRoughness: 0.1
-});
-          `}
-        />
-      </Section>
-
-      <Section title="Loading Textures" icon="🖼️">
-        <CodeBlock
-          title="TextureLoader"
-          language="javascript"
-          code={`
-const textureLoader = new THREE.TextureLoader();
-
-// ─────────────────────────────────
-// Load single texture
-// ─────────────────────────────────
-const texture = textureLoader.load(
-  'textures/brick.jpg',
-  // onLoad callback
-  (tex) => console.log('Texture loaded!'),
-  // onProgress callback
-  (xhr) => console.log((xhr.loaded / xhr.total * 100) + '% loaded'),
-  // onError callback
-  (err) => console.error('Error loading texture')
-);
-
-// Apply to material
-const material = new THREE.MeshStandardMaterial({
-  map: texture
-});
-
-// ─────────────────────────────────
-// Texture settings
-// ─────────────────────────────────
-texture.wrapS = THREE.RepeatWrapping;
-texture.wrapT = THREE.RepeatWrapping;
-texture.repeat.set(4, 4);  // tile 4x4
-
-texture.minFilter = THREE.LinearMipmapLinearFilter;
-texture.magFilter = THREE.LinearFilter;
-
-// ─────────────────────────────────
-// Load multiple textures
-// ─────────────────────────────────
-const loadingManager = new THREE.LoadingManager();
-loadingManager.onLoad = () => console.log('All textures loaded!');
-loadingManager.onProgress = (url, loaded, total) => {
-  console.log(\`Loading: \${loaded}/\${total}\`);
-};
-
-const loader = new THREE.TextureLoader(loadingManager);
-const colorMap = loader.load('textures/color.jpg');
-const normalMap = loader.load('textures/normal.jpg');
-const roughnessMap = loader.load('textures/roughness.jpg');
-          `}
-        />
-      </Section>
-
-      <Section title="PBR Textures" icon="✨">
-        <TipBox type="info">
-          <strong>PBR Texture Set:</strong>
-          <ul className="mt-2 space-y-1">
-            <li>• <strong>Color/Albedo</strong> - Base color</li>
-            <li>• <strong>Normal</strong> - Surface detail</li>
-            <li>• <strong>Roughness</strong> - Surface smoothness</li>
-            <li>• <strong>Metalness</strong> - Metal vs non-metal</li>
-            <li>• <strong>AO</strong> - Ambient occlusion</li>
-            <li>• <strong>Height/Displacement</strong> - Geometry detail</li>
-          </ul>
+        <TipBox type="tip">
+          <strong>Bandwidth Optimization:</strong> ใช้ type ที่เล็กที่สุดที่เพียงพอ
+          เช่น health 0-100 ใช้ uint8 แทน number
         </TipBox>
-
-        <CodeBlock
-          title="Full PBR Material"
-          language="javascript"
-          code={`
-const loader = new THREE.TextureLoader();
-
-// Load all maps
-const colorMap = loader.load('textures/brick/color.jpg');
-const normalMap = loader.load('textures/brick/normal.jpg');
-const roughnessMap = loader.load('textures/brick/roughness.jpg');
-const aoMap = loader.load('textures/brick/ao.jpg');
-const displacementMap = loader.load('textures/brick/height.jpg');
-
-// Create PBR material
-const brickMaterial = new THREE.MeshStandardMaterial({
-  map: colorMap,
-  normalMap: normalMap,
-  normalScale: new THREE.Vector2(1, 1),
-  roughnessMap: roughnessMap,
-  roughness: 1,
-  aoMap: aoMap,
-  aoMapIntensity: 1,
-  displacementMap: displacementMap,
-  displacementScale: 0.1
-});
-
-// Important: Set UV2 for AO map
-const geometry = new THREE.BoxGeometry(2, 2, 2, 32, 32, 32);
-geometry.setAttribute('uv2', geometry.attributes.uv);
-
-const mesh = new THREE.Mesh(geometry, brickMaterial);
-scene.add(mesh);
-          `}
-        />
       </Section>
 
-      <Section title="Environment Maps" icon="🌌">
+      <Section title="Collections" icon="📚">
         <CodeBlock
-          title="Cube Environment Map"
-          language="javascript"
+          title="MapSchema & ArraySchema"
+          language="typescript"
           code={`
-// ─────────────────────────────────
-// Load cubemap (6 images)
-// ─────────────────────────────────
-const cubeLoader = new THREE.CubeTextureLoader();
-const envMap = cubeLoader.load([
-  'envmap/px.jpg', 'envmap/nx.jpg',  // positive/negative X
-  'envmap/py.jpg', 'envmap/ny.jpg',  // positive/negative Y
-  'envmap/pz.jpg', 'envmap/nz.jpg'   // positive/negative Z
-]);
-
-// Set as scene background
-scene.background = envMap;
-scene.environment = envMap;  // affects all PBR materials
+import { Schema, type, MapSchema, ArraySchema } from "@colyseus/schema";
 
 // ─────────────────────────────────
-// Reflective material
+// Player Schema
 // ─────────────────────────────────
-const chromeMaterial = new THREE.MeshStandardMaterial({
-  color: 0xffffff,
-  metalness: 1,
-  roughness: 0,
-  envMap: envMap,
-  envMapIntensity: 1
-});
-
-const chromeSphere = new THREE.Mesh(
-  new THREE.SphereGeometry(1, 32, 32),
-  chromeMaterial
-);
-scene.add(chromeSphere);
-
-// ─────────────────────────────────
-// HDR Environment (more realistic)
-// ─────────────────────────────────
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
-
-const rgbeLoader = new RGBELoader();
-rgbeLoader.load('env.hdr', (texture) => {
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  scene.background = texture;
-  scene.environment = texture;
-});
-          `}
-        />
-      </Section>
-
-      <Section title="Special Materials" icon="🔮">
-        <CodeBlock
-          title="Glass & Transparent Materials"
-          language="javascript"
-          code={`
-// ─────────────────────────────────
-// Glass
-// ─────────────────────────────────
-const glassMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0xffffff,
-  metalness: 0,
-  roughness: 0,
-  transmission: 1,      // glass mode
-  thickness: 1,
-  ior: 1.5,             // index of refraction
-  envMapIntensity: 1
-});
-
-// ─────────────────────────────────
-// Water
-// ─────────────────────────────────
-const waterMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0x4488ff,
-  metalness: 0,
-  roughness: 0.1,
-  transmission: 0.8,
-  thickness: 0.5,
-  ior: 1.33
-});
-
-// ─────────────────────────────────
-// Emissive (Glowing)
-// ─────────────────────────────────
-const glowMaterial = new THREE.MeshStandardMaterial({
-  color: 0xff0000,
-  emissive: 0xff0000,
-  emissiveIntensity: 2
-});
-
-// ─────────────────────────────────
-// Two-sided material
-// ─────────────────────────────────
-const doubleSideMaterial = new THREE.MeshStandardMaterial({
-  color: 0x4ade80,
-  side: THREE.DoubleSide
-});
-
-// ─────────────────────────────────
-// Wireframe
-// ─────────────────────────────────
-const wireframeMaterial = new THREE.MeshBasicMaterial({
-  color: 0xffffff,
-  wireframe: true
-});
-          `}
-        />
-      </Section>
-
-      <Section title="Material Properties" icon="🔧">
-        <CodeBlock
-          title="Runtime Material Updates"
-          language="javascript"
-          code={`
-// Change color
-material.color.setHex(0xff0000);
-material.color.set('#4ade80');
-material.color.setRGB(0.5, 1, 0.5);
-
-// Change properties
-material.metalness = 0.8;
-material.roughness = 0.2;
-material.opacity = 0.5;
-material.transparent = true;
-
-// Animate properties
-function animate() {
-  requestAnimationFrame(animate);
-  
-  // Pulsing glow
-  const intensity = Math.sin(Date.now() * 0.005) * 0.5 + 0.5;
-  glowMaterial.emissiveIntensity = intensity * 3;
-  
-  // Color cycling
-  const hue = (Date.now() * 0.0001) % 1;
-  material.color.setHSL(hue, 1, 0.5);
-  
-  renderer.render(scene, camera);
+class Player extends Schema {
+  @type("string") id: string;
+  @type("string") name: string;
+  @type("number") x: number = 0;
+  @type("number") y: number = 0;
 }
 
-// Clone material
-const newMaterial = material.clone();
-newMaterial.color.setHex(0x00ff00);
+// ─────────────────────────────────
+// Item Schema
+// ─────────────────────────────────
+class Item extends Schema {
+  @type("string") id: string;
+  @type("string") type: string;
+  @type("uint8") quantity: number = 1;
+}
+
+// ─────────────────────────────────
+// Main Game State
+// ─────────────────────────────────
+class GameState extends Schema {
+  // Map: key-value pairs (great for players by ID)
+  @type({ map: Player }) 
+  players = new MapSchema<Player>();
+  
+  // Array: ordered list
+  @type([ Item ]) 
+  items = new ArraySchema<Item>();
+  
+  // Nested schema
+  @type(Player)
+  currentTurn: Player;
+}
+          `}
+        />
+
+        <CodeBlock
+          title="Working with Collections"
+          language="typescript"
+          code={`
+// ─────────────────────────────────
+// MapSchema Operations
+// ─────────────────────────────────
+// Add player
+const player = new Player();
+player.id = client.sessionId;
+player.name = "Hero";
+this.state.players.set(client.sessionId, player);
+
+// Get player
+const p = this.state.players.get(client.sessionId);
+
+// Remove player
+this.state.players.delete(client.sessionId);
+
+// Iterate
+this.state.players.forEach((player, key) => {
+  console.log(key, player.name);
+});
+
+// Size
+console.log("Players:", this.state.players.size);
+
+// ─────────────────────────────────
+// ArraySchema Operations
+// ─────────────────────────────────
+// Add item
+const item = new Item();
+item.id = "sword-1";
+item.type = "weapon";
+this.state.items.push(item);
+
+// Remove item
+const index = this.state.items.findIndex(i => i.id === "sword-1");
+if (index !== -1) {
+  this.state.items.splice(index, 1);
+}
+
+// Clear
+this.state.items.clear();
+          `}
+        />
+      </Section>
+
+      <Section title="Nested Schemas" icon="🏗️">
+        <CodeBlock
+          title="Complex State Structure"
+          language="typescript"
+          code={`
+import { Schema, type, MapSchema, ArraySchema } from "@colyseus/schema";
+
+// ─────────────────────────────────
+// Stats (nested)
+// ─────────────────────────────────
+class Stats extends Schema {
+  @type("uint16") hp: number = 100;
+  @type("uint16") maxHp: number = 100;
+  @type("uint16") mp: number = 50;
+  @type("uint16") attack: number = 10;
+  @type("uint16") defense: number = 5;
+}
+
+// ─────────────────────────────────
+// Inventory Item
+// ─────────────────────────────────
+class InventoryItem extends Schema {
+  @type("string") itemId: string;
+  @type("uint8") quantity: number = 1;
+  @type("uint8") slot: number = 0;
+}
+
+// ─────────────────────────────────
+// Player with nested schemas
+// ─────────────────────────────────
+class Player extends Schema {
+  @type("string") id: string;
+  @type("string") name: string;
+  @type("number") x: number = 0;
+  @type("number") y: number = 0;
+  
+  // Nested schema
+  @type(Stats) stats = new Stats();
+  
+  // Array of nested schemas
+  @type([ InventoryItem ]) inventory = new ArraySchema<InventoryItem>();
+}
+
+// ─────────────────────────────────
+// Game State
+// ─────────────────────────────────
+class GameState extends Schema {
+  @type({ map: Player }) players = new MapSchema<Player>();
+  @type("string") phase: string = "lobby";
+  @type("uint16") round: number = 0;
+}
+          `}
+        />
+
+        <CodeBlock
+          title="Modifying Nested State"
+          language="typescript"
+          code={`
+// Get player
+const player = this.state.players.get(sessionId);
+
+// Modify nested stats (auto-synced!)
+player.stats.hp -= 20;
+player.stats.mp -= 10;
+
+// Add inventory item
+const newItem = new InventoryItem();
+newItem.itemId = "potion-hp";
+newItem.quantity = 3;
+newItem.slot = 0;
+player.inventory.push(newItem);
+
+// Update existing item
+const item = player.inventory.find(i => i.itemId === "potion-hp");
+if (item) {
+  item.quantity += 1;
+}
+          `}
+        />
+      </Section>
+
+      <Section title="Client-Side Listeners" icon="👂">
+        <CodeBlock
+          title="Listening for State Changes"
+          language="typescript"
+          code={`
+import { Client, Room } from "colyseus.js";
+
+// Connect to room
+const client = new Client("ws://localhost:2567");
+const room = await client.joinOrCreate("game", { name: "Player1" });
+
+// ─────────────────────────────────
+// Listen for full state
+// ─────────────────────────────────
+room.onStateChange((state) => {
+  console.log("Full state:", state);
+});
+
+// ─────────────────────────────────
+// Listen for player additions
+// ─────────────────────────────────
+room.state.players.onAdd((player, sessionId) => {
+  console.log("Player joined:", sessionId, player.name);
+  
+  // Listen for this player's changes
+  player.onChange(() => {
+    console.log("Player updated:", player.x, player.y);
+  });
+  
+  // Listen for specific field
+  player.listen("x", (newX, prevX) => {
+    console.log(\`X changed: \${prevX} → \${newX}\`);
+  });
+});
+
+// ─────────────────────────────────
+// Listen for player removals
+// ─────────────────────────────────
+room.state.players.onRemove((player, sessionId) => {
+  console.log("Player left:", sessionId);
+});
+
+// ─────────────────────────────────
+// Listen for specific field changes
+// ─────────────────────────────────
+room.state.listen("phase", (newPhase, prevPhase) => {
+  console.log(\`Game phase: \${prevPhase} → \${newPhase}\`);
+});
           `}
         />
       </Section>
@@ -334,28 +325,28 @@ newMaterial.color.setHex(0x00ff00);
         <Quiz
           questions={[
             {
-              question: "MeshStandardMaterial เหมาะกับอะไร?",
-              options: ["ไม่ต้องการ lighting", "PBR realistic rendering", "Wireframe only", "2D sprites"],
+              question: "Delta patch คืออะไร?",
+              options: ["ส่ง state ทั้งหมด", "ส่งเฉพาะ changes", "ลบ state", "สร้าง state ใหม่"],
               correctIndex: 1,
-              explanation: "MeshStandardMaterial ใช้ PBR (Physically Based Rendering) สำหรับ realistic look"
+              explanation: "Delta patch ส่งเฉพาะส่วนที่เปลี่ยนแปลง ประหยัด bandwidth"
             },
             {
-              question: "metalness: 1 หมายความว่าอะไร?",
-              options: ["พลาสติก 100%", "โลหะ 100%", "โปร่งใส 100%", "ปิด lighting"],
+              question: "uint8 เก็บค่าได้ช่วงเท่าไหร่?",
+              options: ["-128 ถึง 127", "0 ถึง 255", "-32768 ถึง 32767", "0 ถึง 65535"],
               correctIndex: 1,
-              explanation: "metalness: 1 = โลหะเต็มที่ (chrome, gold)"
+              explanation: "uint8 = unsigned 8-bit = 0 to 255"
             },
             {
-              question: "normalMap ใช้ทำอะไร?",
-              options: ["เปลี่ยนสี", "สร้างรายละเอียดพื้นผิวโดยไม่เพิ่ม geometry", "เพิ่มความสว่าง", "ทำให้โปร่งใส"],
+              question: "MapSchema เหมาะกับอะไร?",
+              options: ["เก็บ ordered list", "เก็บ key-value pairs เช่น players by ID", "เก็บแผนที่เกม", "เก็บ single value"],
               correctIndex: 1,
-              explanation: "normalMap สร้าง fake surface detail โดยไม่ต้องเพิ่ม polygons"
+              explanation: "MapSchema เหมาะสำหรับเก็บ collection ที่ access ด้วย key"
             },
             {
-              question: "envMap ใช้ทำอะไร?",
-              options: ["สร้างเงา", "สะท้อนสิ่งแวดล้อม (reflections)", "เพิ่มแสง", "ทำให้สีเทา"],
+              question: "onAdd() ถูกเรียกเมื่อไหร่?",
+              options: ["เมื่อ player disconnect", "เมื่อมี item ใหม่ถูกเพิ่มเข้า collection", "เมื่อ game start", "เมื่อ room ถูกสร้าง"],
               correctIndex: 1,
-              explanation: "envMap ใช้สะท้อน environment ทำให้เห็น reflections บน material"
+              explanation: "onAdd() ถูกเรียกทุกครั้งที่มี element ใหม่ใน MapSchema/ArraySchema"
             }
           ]}
         />
@@ -363,29 +354,29 @@ newMaterial.color.setHex(0x00ff00);
 
       <Section title="สรุป" icon="✅">
         <Table
-          headers={["Property", "คำอธิบาย"]}
+          headers={["Concept", "คำอธิบาย"]}
           rows={[
-            ["map", "Color/Albedo texture"],
-            ["normalMap", "Surface bumps/detail"],
-            ["roughnessMap", "Surface smoothness"],
-            ["metalnessMap", "Metal areas"],
-            ["envMap", "Reflections"],
-            ["emissive", "Glow color"],
+            ["Schema", "Class กำหนด synced state structure"],
+            ["@type()", "Decorator บอก type และ enable sync"],
+            ["MapSchema", "Key-value collection (players)"],
+            ["ArraySchema", "Ordered list (items, bullets)"],
+            ["Delta Patch", "ส่งเฉพาะ changes ประหยัด bandwidth"],
+            ["onAdd/onRemove", "Client listeners for collection changes"],
           ]}
         />
 
         <ProgressCheck
           items={[
-            "เข้าใจความต่าง Material types",
-            "โหลดและใช้ Textures ได้",
-            "สร้าง PBR Material ได้",
-            "ใช้ Environment Maps สำหรับ reflections ได้",
-            "พร้อมเรียน 3D Models!"
+            "เข้าใจ Schema types ต่างๆ",
+            "ใช้ MapSchema และ ArraySchema ได้",
+            "สร้าง Nested schemas ได้",
+            "ฟังการเปลี่ยนแปลง state บน client ได้",
+            "พร้อมเรียน Client Integration!"
           ]}
         />
 
         <TipBox type="success">
-          <strong>บทต่อไป: 3D Models - GLTF Loader! 🏛️</strong>
+          <strong>บทต่อไป: Client Integration! 📱</strong>
         </TipBox>
       </Section>
     </div>

@@ -1,375 +1,354 @@
 "use client";
 
-import { CodeBlock, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
+import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, TipBox } from "../LessonComponents";
 
 export default function Lesson_3_1_4() {
   return (
     <div className="lesson-content">
-      <h1 className="text-3xl font-bold mb-6">Camera Controls</h1>
+      <h1 className="text-3xl font-bold mb-6">ระบบ Matchmaking</h1>
 
       <Objectives
         items={[
-          "OrbitControls สำหรับ 3rd person",
-          "PointerLockControls สำหรับ FPS",
-          "Custom camera follow",
-          "Raycast สำหรับ picking objects",
+          "ทำความเข้าใจ Matchmaking concepts",
+          "สร้าง Room filtering",
+          "ใช้ Lobby room",
+          "จัดการ room metadata",
         ]}
       />
 
-      <Section title="OrbitControls" icon="🔄">
+      <Section title="Matchmaking คืออะไร?" icon="🎯">
+        <p className="mb-4">
+          <strong>Matchmaking</strong> คือกระบวนการจับคู่ผู้เล่นเข้าห้องเกมที่เหมาะสม:
+        </p>
+        <ul className="list-disc list-inside space-y-2 ml-4">
+          <li>🔍 หา room ที่มีที่ว่าง</li>
+          <li>🎮 จับคู่ตามทักษะ (skill-based)</li>
+          <li>🌍 จับคู่ตามภูมิภาค (region-based)</li>
+          <li>👥 จับคู่ตามจำนวนผู้เล่น</li>
+          <li>🎲 จับคู่ตาม game mode</li>
+        </ul>
+
+        <Diagram caption="Matchmaking Flow">
+{`
+   Player Request              Matchmaking              Result
+  ┌───────────┐              ┌───────────┐           ┌───────────┐
+  │ Join Game │   filter     │  Search   │  found   │  Join     │
+  │ mode: pvp │───────────►  │  Rooms    │─────────►│  Room A   │
+  │ region:us │              │           │          │           │
+  └───────────┘              └───────────┘          └───────────┘
+                                  │
+                                  │ not found
+                                  ▼
+                             ┌───────────┐
+                             │  Create   │
+                             │  New Room │
+                             └───────────┘
+`}
+        </Diagram>
+      </Section>
+
+      <Section title="Room Filtering" icon="🔍">
         <CodeBlock
-          title="Orbit Around Target"
-          language="javascript"
+          title="Server: Define Room with Metadata"
+          language="typescript"
           code={`
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { Room, Client } from "colyseus";
+import { Schema, type } from "@colyseus/schema";
 
-// Create controls
-const controls = new OrbitControls(camera, renderer.domElement);
+class GameState extends Schema {
+  @type("string") mode: string = "casual";
+  @type("string") region: string = "asia";
+  @type("uint8") playerCount: number = 0;
+}
 
-// Configuration
-controls.enableDamping = true;     // smooth movement
-controls.dampingFactor = 0.05;
-controls.rotateSpeed = 0.5;
-controls.zoomSpeed = 1;
-controls.panSpeed = 0.5;
-
-// Limits
-controls.minDistance = 2;          // min zoom
-controls.maxDistance = 50;         // max zoom
-controls.minPolarAngle = 0;        // top limit (0 = top down)
-controls.maxPolarAngle = Math.PI / 2;  // bottom limit (PI/2 = horizon)
-
-// Lock vertical axis
-controls.minAzimuthAngle = -Math.PI / 4;  // left limit
-controls.maxAzimuthAngle = Math.PI / 4;   // right limit
-
-// Disable features
-controls.enablePan = false;        // no panning
-controls.enableZoom = true;
-controls.enableRotate = true;
-
-// Target (what camera looks at)
-controls.target.set(0, 1, 0);
-
-// Update in animation loop
-function animate() {
-  requestAnimationFrame(animate);
+export class GameRoom extends Room<GameState> {
+  maxClients = 4;
   
-  controls.update();  // required when damping is enabled
+  onCreate(options: any) {
+    this.setState(new GameState());
+    this.state.mode = options.mode || "casual";
+    this.state.region = options.region || "asia";
+    
+    // ─────────────────────────────────
+    // Set room metadata for filtering
+    // ─────────────────────────────────
+    this.setMetadata({
+      mode: this.state.mode,
+      region: this.state.region,
+      minLevel: options.minLevel || 1,
+      maxLevel: options.maxLevel || 100
+    });
+  }
   
-  renderer.render(scene, camera);
+  onJoin(client: Client, options: any) {
+    this.state.playerCount++;
+    
+    // Update metadata when players change
+    this.setMetadata({
+      ...this.metadata,
+      playerCount: this.state.playerCount
+    });
+  }
+  
+  onLeave(client: Client) {
+    this.state.playerCount--;
+    this.setMetadata({
+      ...this.metadata,
+      playerCount: this.state.playerCount
+    });
+  }
+}
+          `}
+        />
+
+        <CodeBlock
+          title="Client: Filter Rooms"
+          language="typescript"
+          code={`
+import { Client } from "colyseus.js";
+
+const client = new Client("ws://localhost:2567");
+
+// ─────────────────────────────────
+// Get available rooms with filter
+// ─────────────────────────────────
+async function findRooms(mode: string, region: string) {
+  const rooms = await client.getAvailableRooms("game");
+  
+  // Filter by criteria
+  const filtered = rooms.filter(room => {
+    const meta = room.metadata;
+    return meta.mode === mode && 
+           meta.region === region &&
+           room.clients < room.maxClients;
+  });
+  
+  return filtered;
+}
+
+// ─────────────────────────────────
+// Smart join with fallback
+// ─────────────────────────────────
+async function smartJoin(playerOptions: {
+  name: string;
+  mode: string;
+  region: string;
+  level: number;
+}) {
+  const { name, mode, region, level } = playerOptions;
+  
+  // 1. Try region + mode match
+  const rooms = await findRooms(mode, region);
+  
+  if (rooms.length > 0) {
+    // Join room with fewest players (fastest to fill)
+    const bestRoom = rooms.sort((a, b) => 
+      (b.maxClients - b.clients) - (a.maxClients - a.clients)
+    )[0];
+    
+    return await client.joinById(bestRoom.roomId, { name });
+  }
+  
+  // 2. Fallback: create new room
+  return await client.create("game", { 
+    name, 
+    mode, 
+    region,
+    minLevel: Math.max(1, level - 10),
+    maxLevel: level + 10
+  });
 }
           `}
         />
       </Section>
 
-      <Section title="PointerLock (FPS)" icon="🎯">
+      <Section title="Lobby Room Pattern" icon="🏠">
         <CodeBlock
-          title="First Person Controls"
-          language="javascript"
+          title="Lobby Room Implementation"
+          language="typescript"
           code={`
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
+import { Room, Client } from "colyseus";
+import { Schema, type, MapSchema, ArraySchema } from "@colyseus/schema";
 
-// Create controls
-const controls = new PointerLockControls(camera, document.body);
-
-// Click to lock
-document.addEventListener('click', () => {
-  controls.lock();
-});
-
-// Events
-controls.addEventListener('lock', () => {
-  console.log('Pointer locked');
-  // Hide menu, show crosshair
-});
-
-controls.addEventListener('unlock', () => {
-  console.log('Pointer unlocked');
-  // Show menu
-});
-
-// Add to scene (for movement)
-scene.add(controls.getObject());
-
-// Movement
-const velocity = new THREE.Vector3();
-const direction = new THREE.Vector3();
-
-const moveForward = { pressed: false };
-const moveBackward = { pressed: false };
-const moveLeft = { pressed: false };
-const moveRight = { pressed: false };
-
-document.addEventListener('keydown', (e) => {
-  switch (e.code) {
-    case 'KeyW': moveForward.pressed = true; break;
-    case 'KeyS': moveBackward.pressed = true; break;
-    case 'KeyA': moveLeft.pressed = true; break;
-    case 'KeyD': moveRight.pressed = true; break;
-  }
-});
-
-document.addEventListener('keyup', (e) => {
-  switch (e.code) {
-    case 'KeyW': moveForward.pressed = false; break;
-    case 'KeyS': moveBackward.pressed = false; break;
-    case 'KeyA': moveLeft.pressed = false; break;
-    case 'KeyD': moveRight.pressed = false; break;
-  }
-});
-
-// Update
-const speed = 10;
-const clock = new THREE.Clock();
-
-function animate() {
-  requestAnimationFrame(animate);
-  
-  if (controls.isLocked) {
-    const delta = clock.getDelta();
-    
-    // Damping
-    velocity.x -= velocity.x * 10 * delta;
-    velocity.z -= velocity.z * 10 * delta;
-    
-    // Direction
-    direction.z = Number(moveForward.pressed) - Number(moveBackward.pressed);
-    direction.x = Number(moveRight.pressed) - Number(moveLeft.pressed);
-    direction.normalize();
-    
-    // Apply movement
-    if (moveForward.pressed || moveBackward.pressed) {
-      velocity.z -= direction.z * speed * delta;
-    }
-    if (moveLeft.pressed || moveRight.pressed) {
-      velocity.x -= direction.x * speed * delta;
-    }
-    
-    controls.moveRight(-velocity.x);
-    controls.moveForward(-velocity.z);
-  }
-  
-  renderer.render(scene, camera);
-}
-          `}
-        />
-      </Section>
-
-      <Section title="Third Person Camera" icon="👤">
-        <CodeBlock
-          title="Follow Player Camera"
-          language="javascript"
-          code={`
-class ThirdPersonCamera {
-  constructor(camera, target) {
-    this.camera = camera;
-    this.target = target;
-    
-    this.offset = new THREE.Vector3(0, 3, 5);
-    this.lookAtOffset = new THREE.Vector3(0, 1, 0);
-    this.smoothness = 0.1;
-    
-    this.currentPosition = new THREE.Vector3();
-    this.currentLookAt = new THREE.Vector3();
-  }
-  
-  update() {
-    // Calculate desired position
-    const targetPosition = this.target.position.clone();
-    const desiredPosition = targetPosition.clone().add(this.offset);
-    
-    // Smooth follow
-    this.currentPosition.lerp(desiredPosition, this.smoothness);
-    this.camera.position.copy(this.currentPosition);
-    
-    // Calculate look at
-    const desiredLookAt = targetPosition.clone().add(this.lookAtOffset);
-    this.currentLookAt.lerp(desiredLookAt, this.smoothness);
-    this.camera.lookAt(this.currentLookAt);
-  }
-  
-  // Rotate camera around target
-  setRotation(angle) {
-    const radius = Math.sqrt(this.offset.x ** 2 + this.offset.z ** 2);
-    this.offset.x = Math.sin(angle) * radius;
-    this.offset.z = Math.cos(angle) * radius;
-  }
+// ─────────────────────────────────
+// Available Room Info
+// ─────────────────────────────────
+class RoomInfo extends Schema {
+  @type("string") roomId: string;
+  @type("string") name: string;
+  @type("string") mode: string;
+  @type("uint8") players: number;
+  @type("uint8") maxPlayers: number;
+  @type("boolean") isPlaying: boolean;
 }
 
-// Usage
-const thirdPersonCam = new ThirdPersonCamera(camera, player);
-
-let cameraAngle = 0;
-
-document.addEventListener('mousemove', (e) => {
-  if (document.pointerLockElement) {
-    cameraAngle += e.movementX * 0.002;
-    thirdPersonCam.setRotation(cameraAngle);
-  }
-});
-
-function animate() {
-  requestAnimationFrame(animate);
-  
-  thirdPersonCam.update();
-  renderer.render(scene, camera);
-}
-          `}
-        />
-      </Section>
-
-      <Section title="Raycasting" icon="🎯">
-        <CodeBlock
-          title="Mouse Picking"
-          language="javascript"
-          code={`
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-// Update mouse position
-document.addEventListener('mousemove', (e) => {
-  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-});
-
-// Click to select
-document.addEventListener('click', () => {
-  raycaster.setFromCamera(mouse, camera);
-  
-  const intersects = raycaster.intersectObjects(scene.children, true);
-  
-  if (intersects.length > 0) {
-    const selected = intersects[0].object;
-    console.log('Clicked:', selected.name);
-    
-    // Highlight
-    selected.material.emissive?.setHex(0xff0000);
-  }
-});
-
-// Hover effect
-let hoveredObject = null;
-
-function updateHover() {
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(selectableObjects, true);
-  
-  // Reset previous
-  if (hoveredObject) {
-    hoveredObject.material.emissive?.setHex(0x000000);
-    hoveredObject = null;
-  }
-  
-  if (intersects.length > 0) {
-    hoveredObject = intersects[0].object;
-    hoveredObject.material.emissive?.setHex(0x333333);
-    document.body.style.cursor = 'pointer';
-  } else {
-    document.body.style.cursor = 'default';
-  }
+class LobbyState extends Schema {
+  @type([ RoomInfo ]) rooms = new ArraySchema<RoomInfo>();
 }
 
 // ─────────────────────────────────
-// Raycast from camera center (FPS shooting)
+// Lobby Room
 // ─────────────────────────────────
-function shoot() {
-  raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-  
-  const intersects = raycaster.intersectObjects(enemies, true);
-  
-  if (intersects.length > 0) {
-    const enemy = intersects[0].object;
-    const point = intersects[0].point;
-    const distance = intersects[0].distance;
+export class LobbyRoom extends Room<LobbyState> {
+  onCreate() {
+    this.setState(new LobbyState());
     
-    // Hit enemy
-    enemy.userData.health -= 10;
-    spawnHitEffect(point);
+    // Update room list periodically
+    this.clock.setInterval(() => {
+      this.updateRoomList();
+    }, 2000);
     
-    console.log(\`Hit at distance: \${distance.toFixed(2)}\`);
-  }
-}
-
-// ─────────────────────────────────
-// Ground picking (RTS style)
-// ─────────────────────────────────
-function getGroundPosition() {
-  raycaster.setFromCamera(mouse, camera);
-  
-  const intersects = raycaster.intersectObject(ground);
-  
-  if (intersects.length > 0) {
-    return intersects[0].point;
-  }
-  return null;
-}
-
-document.addEventListener('click', () => {
-  const pos = getGroundPosition();
-  if (pos) {
-    // Move unit to position
-    selectedUnit.moveTo(pos.x, pos.z);
-  }
-});
-          `}
-        />
-      </Section>
-
-      <Section title="Camera Shake" icon="📳">
-        <CodeBlock
-          title="Screen Shake Effect"
-          language="javascript"
-          code={`
-class CameraShake {
-  constructor(camera) {
-    this.camera = camera;
-    this.originalPosition = camera.position.clone();
-    this.shakeIntensity = 0;
-    this.shakeDuration = 0;
-    this.shakeTimer = 0;
-  }
-  
-  shake(intensity = 0.5, duration = 0.3) {
-    this.shakeIntensity = intensity;
-    this.shakeDuration = duration;
-    this.shakeTimer = 0;
-    this.originalPosition.copy(this.camera.position);
-  }
-  
-  update(delta) {
-    if (this.shakeTimer < this.shakeDuration) {
-      this.shakeTimer += delta;
-      
-      const progress = this.shakeTimer / this.shakeDuration;
-      const currentIntensity = this.shakeIntensity * (1 - progress);
-      
-      this.camera.position.x = this.originalPosition.x + 
-        (Math.random() - 0.5) * currentIntensity;
-      this.camera.position.y = this.originalPosition.y + 
-        (Math.random() - 0.5) * currentIntensity;
-      this.camera.position.z = this.originalPosition.z + 
-        (Math.random() - 0.5) * currentIntensity;
-      
-      if (this.shakeTimer >= this.shakeDuration) {
-        this.camera.position.copy(this.originalPosition);
+    // Handle create room request
+    this.onMessage("createRoom", async (client, options) => {
+      const room = await this.presence.exists("game:" + options.roomName);
+      if (!room) {
+        client.send("roomCreated", { 
+          success: true,
+          roomName: options.roomName 
+        });
+      } else {
+        client.send("roomCreated", { 
+          success: false, 
+          error: "Room exists" 
+        });
       }
+    });
+  }
+  
+  async updateRoomList() {
+    // Get all game rooms from matchmaker
+    const rooms = await this.presence.hgetall("game:rooms");
+    
+    this.state.rooms.clear();
+    
+    for (const [roomId, data] of Object.entries(rooms)) {
+      const info = new RoomInfo();
+      const roomData = JSON.parse(data as string);
+      info.roomId = roomId;
+      info.name = roomData.name;
+      info.mode = roomData.mode;
+      info.players = roomData.players;
+      info.maxPlayers = roomData.maxPlayers;
+      info.isPlaying = roomData.isPlaying;
+      this.state.rooms.push(info);
     }
   }
 }
+          `}
+        />
 
-// Usage
-const cameraShake = new CameraShake(camera);
+        <CodeBlock
+          title="Client: Lobby UI"
+          language="typescript"
+          code={`
+const client = new Client("ws://localhost:2567");
+let lobbyRoom: Room;
 
-function onExplosion() {
-  cameraShake.shake(0.5, 0.3);
+// ─────────────────────────────────
+// Connect to Lobby
+// ─────────────────────────────────
+async function connectLobby() {
+  lobbyRoom = await client.joinOrCreate("lobby");
+  
+  // Listen for room list updates
+  lobbyRoom.state.rooms.onAdd((roomInfo, index) => {
+    addRoomToUI(roomInfo);
+    
+    roomInfo.onChange(() => {
+      updateRoomInUI(roomInfo);
+    });
+  });
+  
+  lobbyRoom.state.rooms.onRemove((roomInfo, index) => {
+    removeRoomFromUI(roomInfo.roomId);
+  });
 }
 
-function animate() {
-  const delta = clock.getDelta();
-  cameraShake.update(delta);
-  // ...
+// ─────────────────────────────────
+// Join Game from Lobby
+// ─────────────────────────────────
+async function joinGameRoom(roomId: string) {
+  // Leave lobby
+  lobbyRoom.leave();
+  
+  // Join game room
+  const gameRoom = await client.joinById(roomId, { 
+    name: playerName 
+  });
+  
+  return gameRoom;
 }
+
+// ─────────────────────────────────
+// Create New Game Room
+// ─────────────────────────────────
+async function createGameRoom(options: { 
+  name: string; 
+  mode: string 
+}) {
+  lobbyRoom.leave();
+  
+  const gameRoom = await client.create("game", {
+    roomName: options.name,
+    mode: options.mode,
+    creatorName: playerName
+  });
+  
+  return gameRoom;
+}
+          `}
+        />
+      </Section>
+
+      <Section title="Skill-Based Matchmaking" icon="🏆">
+        <CodeBlock
+          title="Rating-Based Room Matching"
+          language="typescript"
+          code={`
+// Server: GameRoom
+export class RankedGameRoom extends Room<GameState> {
+  minRating: number;
+  maxRating: number;
+  
+  onCreate(options: any) {
+    this.setState(new GameState());
+    
+    this.minRating = options.rating - 200;
+    this.maxRating = options.rating + 200;
+    
+    this.setMetadata({
+      mode: "ranked",
+      minRating: this.minRating,
+      maxRating: this.maxRating
+    });
+  }
+  
+  // Custom filter function
+  static onFilter(options: any, roomInfo: any): boolean {
+    const meta = roomInfo.metadata;
+    const playerRating = options.rating;
+    
+    // Check if player rating is within room's range
+    return playerRating >= meta.minRating && 
+           playerRating <= meta.maxRating;
+  }
+  
+  onJoin(client: Client, options: any) {
+    // Validate player rating
+    if (options.rating < this.minRating || 
+        options.rating > this.maxRating) {
+      throw new Error("Rating mismatch");
+    }
+    
+    // Add player...
+  }
+}
+
+// Server: Register with filter
+gameServer.define("ranked", RankedGameRoom, {
+  // Use filterBy for efficient matchmaking
+  filterBy: ["mode", "minRating", "maxRating"]
+});
           `}
         />
       </Section>
@@ -378,28 +357,22 @@ function animate() {
         <Quiz
           questions={[
             {
-              question: "OrbitControls เหมาะกับเกมแบบไหน?",
-              options: ["FPS shooter", "3rd person / 3D viewer", "Racing game", "2D platformer"],
+              question: "setMetadata() ใช้ทำอะไร?",
+              options: ["เปลี่ยน room state", "กำหนดข้อมูลสำหรับ filtering", "ส่ง message", "เปลี่ยน maxClients"],
               correctIndex: 1,
-              explanation: "OrbitControls ช่วยหมุนกล้องรอบ target เหมาะกับ 3D viewer"
+              explanation: "setMetadata กำหนดข้อมูลที่ clients ใช้ filter rooms"
             },
             {
-              question: "PointerLockControls ใช้ทำอะไร?",
-              options: ["หมุนกล้องรอบ object", "ควบคุมกล้องแบบ FPS (ล็อคเมาส์)", "Zoom in/out", "เลื่อนกล้อง"],
+              question: "getAvailableRooms() return อะไร?",
+              options: ["Players ทั้งหมด", "รายการ rooms ที่ยังเข้าได้", "Room state", "Server info"],
               correctIndex: 1,
-              explanation: "PointerLockControls ล็อคเมาส์และควบคุมด้วย mouse movement"
+              explanation: "getAvailableRooms ให้ list ของ rooms พร้อม metadata"
             },
             {
-              question: "Raycaster ใช้ทำอะไร?",
-              options: ["สร้างแสง", "ตรวจจับ object ที่เมาส์ชี้/คลิก", "เคลื่อนย้าย object", "หมุน camera"],
-              correctIndex: 1,
-              explanation: "Raycaster ยิงลำแสงเพื่อหา objects ที่ถูกชี้ (mouse picking)"
-            },
-            {
-              question: "controls.update() ต้องเรียกเมื่อไหร่?",
-              options: ["เมื่อเปิดเกม", "ทุก frame (ถ้าใช้ damping)", "เมื่อคลิก", "เมื่อ resize"],
-              correctIndex: 1,
-              explanation: "ถ้าใช้ enableDamping ต้องเรียก controls.update() ทุก frame"
+              question: "Lobby room pattern ใช้ทำอะไร?",
+              options: ["เล่นเกม", "แสดง UI", "รวม players ก่อนจับคู่เข้า game room", "เก็บ score"],
+              correctIndex: 2,
+              explanation: "Lobby room ใช้รวบรวม players และแสดง available rooms"
             }
           ]}
         />
@@ -407,29 +380,28 @@ function animate() {
 
       <Section title="สรุป" icon="✅">
         <Table
-          headers={["Control Type", "Use Case"]}
+          headers={["Concept", "คำอธิบาย"]}
           rows={[
-            ["OrbitControls", "3rd person, editor, viewer"],
-            ["PointerLockControls", "First person shooter"],
-            ["Custom Follow", "3rd person action game"],
-            ["Raycaster", "Mouse picking, shooting"],
+            ["Matchmaking", "กระบวนการจับคู่ players เข้า rooms"],
+            ["setMetadata()", "กำหนด room info สำหรับ filtering"],
+            ["getAvailableRooms()", "ดึงรายการ rooms ที่สามารถ join ได้"],
+            ["Lobby Room", "Room สำหรับรอ และเลือก game room"],
+            ["filterBy", "Efficient matchmaking option"],
           ]}
         />
 
         <ProgressCheck
           items={[
-            "ใช้ OrbitControls ได้",
-            "ใช้ PointerLockControls สำหรับ FPS ได้",
-            "สร้าง third-person camera follow ได้",
-            "ใช้ Raycaster ตรวจจับ object ได้",
-            "พร้อมเรียน Physics!"
+            "เข้าใจ Matchmaking concepts",
+            "ใช้ Room metadata ได้",
+            "Filter rooms บน client ได้",
+            "สร้าง Lobby room pattern ได้",
+            "พร้อมเรียน P2P with PeerJS!"
           ]}
         />
 
         <TipBox type="success">
-          <strong>🎉 จบ Three.js Basics Module!</strong>
-          <br />
-          บทต่อไป: Physics with Cannon.js!
+          <strong>Module ต่อไป: P2P with PeerJS! 🔗</strong>
         </TipBox>
       </Section>
     </div>

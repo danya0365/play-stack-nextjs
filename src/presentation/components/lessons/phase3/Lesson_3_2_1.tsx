@@ -5,395 +5,262 @@ import { CodeBlock, Diagram, Objectives, ProgressCheck, Quiz, Section, Table, Ti
 export default function Lesson_3_2_1() {
   return (
     <div className="lesson-content">
-      <h1 className="text-3xl font-bold mb-6">พื้นฐาน Cannon.js Physics</h1>
+      <h1 className="text-3xl font-bold mb-6">พื้นฐาน WebRTC</h1>
 
       <Objectives
         items={[
-          "ทำความเข้าใจ physics simulation",
-          "ตั้งค่า Cannon.js world",
-          "สร้าง physics bodies",
-          "Sync กับ Three.js meshes",
+          "ทำความเข้าใจ WebRTC และ P2P",
+          "รู้จัก Signaling process",
+          "เข้าใจ NAT traversal",
+          "เปรียบเทียบ P2P vs Server-based",
         ]}
       />
 
-      <Section title="Cannon.js คืออะไร?" icon="🔬">
-        <p className="mb-4">
-          <strong>Cannon.js</strong> (หรือ cannon-es) เป็น 3D physics engine:
-        </p>
-        <ul className="list-disc list-inside space-y-2 ml-4">
-          <li>🎯 Rigid body dynamics</li>
-          <li>💥 Collision detection</li>
-          <li>🔗 Constraints และ joints</li>
-          <li>⚡ Optimized สำหรับ web</li>
-        </ul>
-
-        <Diagram caption="Physics Pipeline">
+      <Section title="P2P vs Server-Based" icon="🔄">
+        <Diagram caption="Architecture Comparison">
 {`
-Three.js (Visual)          Cannon.js (Physics)
-┌─────────────────┐        ┌─────────────────┐
-│     Mesh        │◄───────│     Body        │
-│  - position     │  sync  │  - position     │
-│  - rotation     │        │  - quaternion   │
-│  - geometry     │        │  - shape        │
-└─────────────────┘        └─────────────────┘
-                                   │
-                                   ▼
-                           World.step(dt)
-                                   │
-                                   ▼
-                           Physics calculated
+     SERVER-BASED (Colyseus)              P2P (WebRTC)
+    
+         ┌────────┐                      ┌────────┐
+         │ Server │                      │Signaling│
+         └───┬────┘                      │ Server │
+             │                           └────────┘
+      ┌──────┼──────┐                    (only for initial connect)
+      │      │      │                         │
+      ▼      ▼      ▼                    ┌────┴────┐
+   ┌───┐  ┌───┐  ┌───┐               ┌───┐       ┌───┐
+   │ A │  │ B │  │ C │               │ A │◄─────►│ B │
+   └───┘  └───┘  └───┘               └───┘       └───┘
+                                       │           │
+   All traffic through server           Direct connection!
 `}
         </Diagram>
-      </Section>
 
-      <Section title="Installation" icon="📦">
-        <CodeBlock
-          title="Setup"
-          language="bash"
-          code={`
-# Install cannon-es (maintained fork)
-npm install cannon-es
-
-# TypeScript types included
-          `}
-        />
-
-        <CodeBlock
-          title="Basic Import"
-          language="javascript"
-          code={`
-import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
-          `}
+        <Table
+          headers={["", "Server-Based", "P2P"]}
+          rows={[
+            ["Latency", "Higher (A→Server→B)", "Lower (A→B direct)"],
+            ["Server Cost", "ต้องมี server", "แทบไม่มี"],
+            ["Scalability", "ต้อง scale server", "Scale ตาม peers"],
+            ["Authority", "Server = ความจริง", "ต้องตกลงกัน"],
+            ["Use Case", "MMO, Competitive", "1v1, Co-op, Video call"],
+          ]}
         />
       </Section>
 
-      <Section title="World Setup" icon="🌍">
-        <CodeBlock
-          title="Creating Physics World"
-          language="javascript"
-          code={`
-// Create physics world
-const world = new CANNON.World();
+      <Section title="WebRTC คืออะไร?" icon="🌐">
+        <p className="mb-4">
+          <strong>WebRTC</strong> (Web Real-Time Communication) คือ technology สำหรับ:
+        </p>
+        <ul className="list-disc list-inside space-y-2 ml-4">
+          <li>📹 Video/Audio streaming</li>
+          <li>📦 Data channels (game data)</li>
+          <li>🔒 Encrypted connections</li>
+          <li>🌍 Works in browsers</li>
+        </ul>
 
-// Gravity
-world.gravity.set(0, -9.82, 0);  // Earth gravity
+        <Diagram caption="WebRTC Components">
+{`
+┌─────────────────────────────────────────────┐
+│                  WebRTC                      │
+├─────────────────────────────────────────────┤
+│                                              │
+│  ┌──────────────┐  ┌──────────────────────┐ │
+│  │ MediaStream  │  │    RTCDataChannel    │ │
+│  │ (Video/Audio)│  │ (Game Data, Messages)│ │
+│  └──────────────┘  └──────────────────────┘ │
+│                                              │
+│  ┌──────────────────────────────────────┐   │
+│  │         RTCPeerConnection            │   │
+│  │   (handles the actual connection)     │   │
+│  └──────────────────────────────────────┘   │
+│                                              │
+└─────────────────────────────────────────────┘
+`}
+        </Diagram>
 
-// Broadphase (collision detection optimization)
-world.broadphase = new CANNON.NaiveBroadphase();
-
-// For small/static objects
-world.broadphase = new CANNON.SAPBroadphase(world);
-
-// Solver iterations (higher = more accurate but slower)
-world.solver.iterations = 10;
-
-// Allow sleeping (performance)
-world.allowSleep = true;
-          `}
-        />
+        <TipBox type="info">
+          <strong>Data Channels</strong> คือสิ่งที่เราใช้สำหรับเกม! 
+          ส่งข้อมูลแบบ reliable หรือ unreliable ได้
+        </TipBox>
       </Section>
 
-      <Section title="Creating Bodies" icon="📦">
+      <Section title="Signaling Process" icon="🤝">
+        <p className="mb-4">
+          เนื่องจาก peers ไม่รู้ที่อยู่กัน จึงต้องมี <strong>Signaling Server</strong> ช่วย:
+        </p>
+
+        <Diagram caption="Signaling Flow">
+{`
+  Peer A                Signaling Server              Peer B
+    │                         │                          │
+    │   1. Create Offer       │                          │
+    ├────────────────────────►│                          │
+    │                         │   2. Forward Offer       │
+    │                         ├─────────────────────────►│
+    │                         │                          │
+    │                         │   3. Create Answer       │
+    │                         │◄─────────────────────────┤
+    │   4. Forward Answer     │                          │
+    │◄────────────────────────┤                          │
+    │                         │                          │
+    │   5. Exchange ICE Candidates                       │
+    │◄────────────────────────┼─────────────────────────►│
+    │                         │                          │
+    │         6. Direct P2P Connection Established       │
+    │◄═══════════════════════════════════════════════════╡
+    │                         │                          │
+`}
+        </Diagram>
+
         <CodeBlock
-          title="Physics Bodies"
-          language="javascript"
+          title="Signaling Concepts"
+          language="typescript"
           code={`
 // ─────────────────────────────────
-// Static body (ground)
+// Offer: "นี่คือวิธีที่ฉันสื่อสารได้"
 // ─────────────────────────────────
-const groundShape = new CANNON.Plane();
-const groundBody = new CANNON.Body({
-  mass: 0,  // mass = 0 means static
-  shape: groundShape
-});
-groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-world.addBody(groundBody);
+const offer = await peerConnection.createOffer();
+// Contains: codecs, encryption, etc.
 
 // ─────────────────────────────────
-// Dynamic body (will fall)
+// Answer: "โอเค ฉันยอมรับและนี่คือของฉัน"
 // ─────────────────────────────────
-const boxShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
-const boxBody = new CANNON.Body({
-  mass: 1,
-  shape: boxShape,
-  position: new CANNON.Vec3(0, 5, 0)
-});
-world.addBody(boxBody);
+const answer = await peerConnection.createAnswer();
 
 // ─────────────────────────────────
-// Sphere
+// ICE Candidates: "นี่คือทางที่จะติดต่อฉันได้"
 // ─────────────────────────────────
-const sphereShape = new CANNON.Sphere(0.5);
-const sphereBody = new CANNON.Body({
-  mass: 1,
-  shape: sphereShape,
-  position: new CANNON.Vec3(2, 10, 0)
-});
-world.addBody(sphereBody);
-
-// ─────────────────────────────────
-// Cylinder
-// ─────────────────────────────────
-const cylinderShape = new CANNON.Cylinder(0.5, 0.5, 1, 8);
-const cylinderBody = new CANNON.Body({
-  mass: 1,
-  shape: cylinderShape
-});
-world.addBody(cylinderBody);
-
-// ─────────────────────────────────
-// Body properties
-// ─────────────────────────────────
-boxBody.velocity.set(0, 0, 0);         // initial velocity
-boxBody.angularVelocity.set(0, 0, 0);  // rotation velocity
-boxBody.linearDamping = 0.01;          // air resistance
-boxBody.angularDamping = 0.01;
-boxBody.fixedRotation = true;          // no rotation
+// - Local IP (same network)
+// - Public IP (via STUN)
+// - Relay IP (via TURN)
           `}
         />
       </Section>
 
-      <Section title="Syncing with Three.js" icon="🔄">
+      <Section title="NAT Traversal" icon="🔀">
+        <p className="mb-4">
+          ปัญหาหลักของ P2P คือ <strong>NAT (Network Address Translation)</strong>:
+        </p>
+
+        <Diagram caption="NAT Problem">
+{`
+     Internet                              Internet
+         │                                     │
+    ┌────┴────┐                          ┌────┴────┐
+    │  NAT/   │                          │  NAT/   │
+    │ Router  │                          │ Router  │
+    └────┬────┘                          └────┬────┘
+         │ Private IP: 192.168.1.x           │ Private IP: 192.168.1.x
+    ┌────┴────┐                          ┌────┴────┐
+    │ Peer A  │         ???              │ Peer B  │
+    └─────────┘         How to connect?  └─────────┘
+    
+    Both peers have private IPs!
+    They can't directly reach each other!
+`}
+        </Diagram>
+
+        <Table
+          headers={["Server", "หน้าที่"]}
+          rows={[
+            ["STUN", "ค้นหา public IP ของเรา (free, fast)"],
+            ["TURN", "Relay traffic เมื่อ direct connection ไม่ได้ (costly)"],
+            ["ICE", "ลองทุกทางเพื่อหาการเชื่อมต่อที่ดีที่สุด"],
+          ]}
+        />
+
         <CodeBlock
-          title="Physics-Visual Sync"
-          language="javascript"
+          title="ICE Configuration"
+          language="typescript"
           code={`
-// Store pairs
-const objectsToUpdate = [];
+const config = {
+  iceServers: [
+    // Free STUN servers
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" },
+    
+    // TURN server (for fallback)
+    {
+      urls: "turn:your-turn-server.com:3478",
+      username: "user",
+      credential: "password"
+    }
+  ]
+};
 
-// Create paired objects
-function createBox(width, height, depth, position) {
-  // Three.js mesh
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(width, height, depth),
-    new THREE.MeshStandardMaterial({ color: 0x4ade80 })
-  );
-  mesh.position.copy(position);
-  mesh.castShadow = true;
-  scene.add(mesh);
-  
-  // Cannon.js body
-  const shape = new CANNON.Box(new CANNON.Vec3(width/2, height/2, depth/2));
-  const body = new CANNON.Body({
-    mass: 1,
-    shape: shape,
-    position: new CANNON.Vec3(position.x, position.y, position.z)
-  });
-  world.addBody(body);
-  
-  // Store pair
-  objectsToUpdate.push({ mesh, body });
-  
-  return { mesh, body };
-}
+const peerConnection = new RTCPeerConnection(config);
+          `}
+        />
 
-function createSphere(radius, position) {
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(radius, 32, 32),
-    new THREE.MeshStandardMaterial({ color: 0x60a5fa })
-  );
-  mesh.position.copy(position);
-  scene.add(mesh);
-  
-  const body = new CANNON.Body({
-    mass: 1,
-    shape: new CANNON.Sphere(radius),
-    position: new CANNON.Vec3(position.x, position.y, position.z)
-  });
-  world.addBody(body);
-  
-  objectsToUpdate.push({ mesh, body });
-  return { mesh, body };
-}
+        <TipBox type="warning">
+          <strong>TURN servers มีค่าใช้จ่าย!</strong> 
+          เพราะ traffic ทั้งหมดผ่าน server ของคุณ
+          ใช้เฉพาะเมื่อ STUN ไม่ work
+        </TipBox>
+      </Section>
 
-// Animation loop
-const clock = new THREE.Clock();
-let previousTime = 0;
+      <Section title="Raw WebRTC Example" icon="📝">
+        <CodeBlock
+          title="Basic RTCPeerConnection"
+          language="typescript"
+          code={`
+// ─────────────────────────────────
+// Peer A (Caller)
+// ─────────────────────────────────
+const config = {
+  iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+};
 
-function animate() {
-  requestAnimationFrame(animate);
-  
-  const elapsedTime = clock.getElapsedTime();
-  const deltaTime = elapsedTime - previousTime;
-  previousTime = elapsedTime;
-  
-  // Step physics world
-  world.step(1/60, deltaTime, 3);
-  
-  // Sync all objects
-  for (const obj of objectsToUpdate) {
-    obj.mesh.position.copy(obj.body.position);
-    obj.mesh.quaternion.copy(obj.body.quaternion);
+const peerA = new RTCPeerConnection(config);
+
+// Create data channel
+const dataChannel = peerA.createDataChannel("game");
+
+dataChannel.onopen = () => {
+  console.log("Channel open!");
+  dataChannel.send(JSON.stringify({ type: "hello" }));
+};
+
+dataChannel.onmessage = (event) => {
+  console.log("Received:", event.data);
+};
+
+// Create offer
+const offer = await peerA.createOffer();
+await peerA.setLocalDescription(offer);
+
+// Collect ICE candidates
+peerA.onicecandidate = (event) => {
+  if (event.candidate) {
+    // Send to Peer B via signaling server
+    signalingServer.send({
+      type: "ice-candidate",
+      candidate: event.candidate
+    });
   }
-  
-  renderer.render(scene, camera);
-}
+};
 
-animate();
-          `}
-        />
-      </Section>
+// ─────────────────────────────────
+// Peer B (Callee)
+// ─────────────────────────────────
+const peerB = new RTCPeerConnection(config);
 
-      <Section title="Materials & Friction" icon="🧱">
-        <CodeBlock
-          title="Contact Materials"
-          language="javascript"
-          code={`
-// Create materials
-const defaultMaterial = new CANNON.Material('default');
-const bouncyMaterial = new CANNON.Material('bouncy');
-const iceMaterial = new CANNON.Material('ice');
+// Receive data channel
+peerB.ondatachannel = (event) => {
+  const channel = event.channel;
+  channel.onmessage = (e) => console.log("Got:", e.data);
+};
 
-// Define contact behavior
-const defaultContactMaterial = new CANNON.ContactMaterial(
-  defaultMaterial,
-  defaultMaterial,
-  {
-    friction: 0.3,
-    restitution: 0.3  // bounciness
-  }
-);
-world.addContactMaterial(defaultContactMaterial);
+// Receive offer
+await peerB.setRemoteDescription(offer);
 
-// Bouncy contact
-const bouncyContactMaterial = new CANNON.ContactMaterial(
-  bouncyMaterial,
-  defaultMaterial,
-  {
-    friction: 0.1,
-    restitution: 0.9  // very bouncy
-  }
-);
-world.addContactMaterial(bouncyContactMaterial);
+// Create answer
+const answer = await peerB.createAnswer();
+await peerB.setLocalDescription(answer);
 
-// Ice (slippery)
-const iceContactMaterial = new CANNON.ContactMaterial(
-  iceMaterial,
-  defaultMaterial,
-  {
-    friction: 0.01,  // very low friction
-    restitution: 0.2
-  }
-);
-world.addContactMaterial(iceContactMaterial);
-
-// Apply material to body
-boxBody.material = bouncyMaterial;
-groundBody.material = defaultMaterial;
-
-// Or set world default
-world.defaultContactMaterial = defaultContactMaterial;
-          `}
-        />
-      </Section>
-
-      <Section title="Complete Example" icon="🎮">
-        <CodeBlock
-          title="Falling Boxes Demo"
-          language="javascript"
-          code={`
-import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
-
-// Three.js setup
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 5, 10);
-camera.lookAt(0, 0, 0);
-
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-document.body.appendChild(renderer.domElement);
-
-// Lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(5, 10, 5);
-directionalLight.castShadow = true;
-scene.add(directionalLight);
-
-// Physics world
-const world = new CANNON.World();
-world.gravity.set(0, -9.82, 0);
-
-// Ground
-const groundMesh = new THREE.Mesh(
-  new THREE.PlaneGeometry(20, 20),
-  new THREE.MeshStandardMaterial({ color: 0x333333 })
-);
-groundMesh.rotation.x = -Math.PI / 2;
-groundMesh.receiveShadow = true;
-scene.add(groundMesh);
-
-const groundBody = new CANNON.Body({
-  mass: 0,
-  shape: new CANNON.Plane()
-});
-groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-world.addBody(groundBody);
-
-// Objects to sync
-const objects = [];
-
-// Create random box
-function createRandomBox() {
-  const x = (Math.random() - 0.5) * 6;
-  const y = 5 + Math.random() * 5;
-  const z = (Math.random() - 0.5) * 6;
-  
-  const size = 0.3 + Math.random() * 0.5;
-  
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(size, size, size),
-    new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff })
-  );
-  mesh.castShadow = true;
-  scene.add(mesh);
-  
-  const body = new CANNON.Body({
-    mass: 1,
-    shape: new CANNON.Box(new CANNON.Vec3(size/2, size/2, size/2)),
-    position: new CANNON.Vec3(x, y, z)
-  });
-  body.angularVelocity.set(
-    Math.random() * 5,
-    Math.random() * 5,
-    Math.random() * 5
-  );
-  world.addBody(body);
-  
-  objects.push({ mesh, body });
-}
-
-// Spawn boxes
-for (let i = 0; i < 50; i++) {
-  setTimeout(() => createRandomBox(), i * 100);
-}
-
-// Animation
-const clock = new THREE.Clock();
-let lastTime = 0;
-
-function animate() {
-  requestAnimationFrame(animate);
-  
-  const time = clock.getElapsedTime();
-  const delta = time - lastTime;
-  lastTime = time;
-  
-  world.step(1/60, delta, 3);
-  
-  for (const obj of objects) {
-    obj.mesh.position.copy(obj.body.position);
-    obj.mesh.quaternion.copy(obj.body.quaternion);
-  }
-  
-  renderer.render(scene, camera);
-}
-
-animate();
+// Back to Peer A
+await peerA.setRemoteDescription(answer);
           `}
         />
       </Section>
@@ -402,28 +269,28 @@ animate();
         <Quiz
           questions={[
             {
-              question: "mass: 0 หมายความว่าอะไรใน Cannon.js?",
-              options: ["ไม่มีมวล", "Static object (ไม่เคลื่อนที่)", "ลอยได้", "โปร่งใส"],
+              question: "P2P มีข้อดีกว่า Server-based อย่างไร?",
+              options: ["มี authority กลาง", "Latency ต่ำกว่า", "Scale ง่ายกว่า", "ปลอดภัยกว่า"],
               correctIndex: 1,
-              explanation: "mass: 0 ทำให้ body เป็น static (เช่น ground, กำแพง)"
+              explanation: "P2P ส่งข้อมูลตรงถึงกัน ไม่ต้องผ่าน server จึง latency ต่ำ"
             },
             {
-              question: "world.step() ทำอะไร?",
-              options: ["สร้าง body", "คำนวณ physics simulation 1 step", "เพิ่มแรงโน้มถ่วง", "ลบ body"],
+              question: "Signaling Server ทำหน้าที่อะไร?",
+              options: ["ส่งข้อมูลเกม", "ช่วย peers หากันและแลกเปลี่ยน connection info", "เก็บ game state", "Verify players"],
               correctIndex: 1,
-              explanation: "world.step(dt) เดิน physics simulation ไปข้างหน้า"
+              explanation: "Signaling server ช่วยแลกเปลี่ยน offer/answer/ICE เพื่อสร้าง connection"
             },
             {
-              question: "restitution คืออะไร?",
-              options: ["แรงเสียดทาน", "ความเด้ง (bounciness)", "แรงโน้มถ่วง", "ความเร็ว"],
+              question: "STUN server ทำอะไร?",
+              options: ["Relay traffic", "ค้นหา public IP ของเรา", "เก็บข้อมูล", "Encrypt data"],
               correctIndex: 1,
-              explanation: "restitution กำหนดว่าเด้งแค่ไหน (0 = ไม่เด้ง, 1 = เด้งเต็มที่)"
+              explanation: "STUN ช่วยให้รู้ public IP/port ของตัวเอง"
             },
             {
-              question: "ทำไมต้อง sync position ระหว่าง Cannon.js และ Three.js?",
-              options: ["อัตโนมัติ", "Three.js ไม่เข้าใจ physics", "Cannon.js คำนวณแล้วต้อง copy position มาเอง", "ใช้ library เสริม"],
-              correctIndex: 2,
-              explanation: "ต้อง copy body.position มาใส่ mesh.position ทุก frame"
+              question: "TURN server ใช้เมื่อไหร่?",
+              options: ["ทุกครั้ง", "เมื่อ direct connection ไม่ได้ (symmetric NAT)", "เมื่อต้องการ low latency", "เมื่อต้องการ security"],
+              correctIndex: 1,
+              explanation: "TURN เป็น fallback เมื่อ P2P direct ไม่ได้ โดย relay traffic ผ่าน"
             }
           ]}
         />
@@ -433,27 +300,27 @@ animate();
         <Table
           headers={["Concept", "คำอธิบาย"]}
           rows={[
-            ["CANNON.World", "Physics simulation world"],
-            ["CANNON.Body", "Physics object"],
-            ["CANNON.Shape", "Collision shape (Box, Sphere, etc)"],
-            ["CANNON.Material", "Friction & bounce properties"],
-            ["world.step()", "Advance simulation"],
-            ["mass: 0", "Static object"],
+            ["WebRTC", "P2P communication in browsers"],
+            ["RTCDataChannel", "ส่งข้อมูลเกมแบบ P2P"],
+            ["Signaling", "กระบวนการแลกเปลี่ยน connection info"],
+            ["STUN", "ค้นหา public IP (free)"],
+            ["TURN", "Relay fallback (costly)"],
+            ["ICE", "ลองทุกทางเพื่อ connect"],
           ]}
         />
 
         <ProgressCheck
           items={[
-            "ตั้งค่า Cannon.js world ได้",
-            "สร้าง physics bodies ได้",
-            "Sync กับ Three.js meshes ได้",
-            "ใช้ ContactMaterial กำหนด friction/bounce ได้",
-            "พร้อมเรียน Collision Events!"
+            "เข้าใจความแตกต่าง P2P vs Server",
+            "เข้าใจ Signaling process",
+            "รู้จัก STUN/TURN/ICE",
+            "เห็นภาพ Raw WebRTC API",
+            "พร้อมใช้ PeerJS!"
           ]}
         />
 
         <TipBox type="success">
-          <strong>บทต่อไป: Collision Events และ Triggers! 💥</strong>
+          <strong>บทต่อไป: ตั้งค่า PeerJS! 🔗</strong>
         </TipBox>
       </Section>
     </div>
