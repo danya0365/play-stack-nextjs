@@ -275,7 +275,7 @@ export function CinemaCoursesView({ viewModel }: CinemaCoursesViewProps) {
       <header className="flex-shrink-0 h-16 px-4 md:px-6 flex items-center justify-between bg-black/30 backdrop-blur-sm border-b border-white/10">
         <div className="flex items-center gap-4">
           <Link
-            href="/courses/tree"
+            href="/courses"
             className="flex items-center gap-2 px-3 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
           >
             <span>←</span>
