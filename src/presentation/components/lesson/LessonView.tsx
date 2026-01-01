@@ -63,8 +63,9 @@ export function LessonView({
       title: `Slide ${idx + 1}`,
     }));
     
-    if (slides.length > 0) {
-      enterPresentation(slides);
+    if (slides.length > 0 && hasLessonComponent(lesson.id)) {
+      const LessonComp = getLessonComponent(lesson.id);
+      enterPresentation(slides, LessonComp || undefined);
     }
   };
 

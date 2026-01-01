@@ -154,7 +154,7 @@ export function FullScreenTreeView({ viewModel }: FullScreenTreeViewProps) {
 
   // Enter presentation mode
   const handleEnterPresentation = useCallback(() => {
-    if (!contentRef.current) return;
+    if (!contentRef.current || !selectedLesson) return;
     
     // Extract sections as slides
     const sections = contentRef.current.querySelectorAll("section.mb-8");
@@ -163,10 +163,10 @@ export function FullScreenTreeView({ viewModel }: FullScreenTreeViewProps) {
       title: `Slide ${idx + 1}`,
     }));
     
-    if (slides.length > 0) {
-      enterPresentation(slides);
+    if (slides.length > 0 && LessonComponent) {
+      enterPresentation(slides, LessonComponent);
     }
-  }, [enterPresentation]);
+  }, [enterPresentation, selectedLesson, LessonComponent]);
 
   // Check if at first or last lesson
   const isFirstLesson = currentIndex === 0;

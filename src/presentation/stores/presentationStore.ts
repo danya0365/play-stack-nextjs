@@ -1,5 +1,6 @@
 "use client";
 
+import { ComponentType } from "react";
 import { create } from "zustand";
 
 interface Slide {
@@ -12,9 +13,10 @@ interface PresentationState {
   isPresenting: boolean;
   currentSlide: number;
   slides: Slide[];
+  lessonComponent: ComponentType | null;
 
   // Actions
-  enterPresentation: (slides: Slide[]) => void;
+  enterPresentation: (slides: Slide[], component?: ComponentType) => void;
   exitPresentation: () => void;
   goToSlide: (index: number) => void;
   nextSlide: () => void;
@@ -26,13 +28,15 @@ export const usePresentationStore = create<PresentationState>()((set, get) => ({
   isPresenting: false,
   currentSlide: 0,
   slides: [],
+  lessonComponent: null,
 
-  // Enter presentation mode with slides data
-  enterPresentation: (slides) =>
+  // Enter presentation mode with slides data and optional component
+  enterPresentation: (slides, component) =>
     set({
       isPresenting: true,
       currentSlide: 0,
       slides,
+      lessonComponent: component || null,
     }),
 
   // Exit presentation mode
@@ -41,22 +45,22 @@ export const usePresentationStore = create<PresentationState>()((set, get) => ({
       isPresenting: false,
       currentSlide: 0,
       slides: [],
+      lessonComponent: null,
     }),
 
   // Navigate to specific slide
   goToSlide: (index) => {
-    const { slides } = get();
-    if (index >= 0 && index < slides.length) {
+    const { slides, lessonComponent } = get();
+    // Allow navigation even when using component-based rendering
+    if (index >= 0) {
       set({ currentSlide: index });
     }
   },
 
   // Next slide
   nextSlide: () => {
-    const { currentSlide, slides } = get();
-    if (currentSlide < slides.length - 1) {
-      set({ currentSlide: currentSlide + 1 });
-    }
+    const { currentSlide } = get();
+    set({ currentSlide: currentSlide + 1 });
   },
 
   // Previous slide

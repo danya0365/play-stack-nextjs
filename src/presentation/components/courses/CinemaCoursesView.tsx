@@ -64,21 +64,63 @@ export function CinemaCoursesView({ viewModel }: CinemaCoursesViewProps) {
   // Extract slides from rendered content
   const [slides, setSlides] = useState<SlideData[]>([]);
   
+  // Extract slides and add data-slide attributes
   useEffect(() => {
     if (contentRef.current) {
       const timer = setTimeout(() => {
-        const sections = contentRef.current?.querySelectorAll("section.mb-8");
-        if (sections) {
-          const extractedSlides = Array.from(sections).map(s => ({
-            html: s.outerHTML,
-            text: s.textContent || "",
-          }));
+        const content = contentRef.current;
+        if (!content) return;
+        
+        // Find .lesson-content inside (the actual content wrapper from LessonComponent)
+        const lessonContent = content.querySelector('.lesson-content') as HTMLElement;
+        if (!lessonContent) return;
+        
+        // Hide ALL direct children of lesson-content (H1, Intro Card, sections, etc.)
+        const allChildren = lessonContent.children;
+        for (let i = 0; i < allChildren.length; i++) {
+          (allChildren[i] as HTMLElement).style.display = 'none';
+        }
+        
+        // Find all sections and add data-slide attribute
+        const sections = lessonContent.querySelectorAll("section.mb-8");
+        if (sections && sections.length > 0) {
+          const extractedSlides = Array.from(sections).map((s, index) => {
+            const el = s as HTMLElement;
+            el.setAttribute('data-slide', String(index));
+            // Show only first slide initially
+            el.style.display = index === 0 ? 'block' : 'none';
+            return {
+              html: s.outerHTML,
+              text: s.textContent || "",
+            };
+          });
           setSlides(extractedSlides);
         }
       }, 100);
       return () => clearTimeout(timer);
     }
   }, [currentLessonData?.lesson.id, LessonComponent]);
+  
+  // Update visibility when slide changes
+  useEffect(() => {
+    if (contentRef.current && slides.length > 0) {
+      const lessonContent = contentRef.current.querySelector('.lesson-content') as HTMLElement;
+      if (!lessonContent) return;
+      
+      // Hide all direct children of lesson-content (H1, Intro Card, etc.)
+      const allChildren = lessonContent.children;
+      for (let i = 0; i < allChildren.length; i++) {
+        (allChildren[i] as HTMLElement).style.display = 'none';
+      }
+      
+      // Then show only the current section
+      const sections = lessonContent.querySelectorAll("section.mb-8");
+      sections.forEach((s, index) => {
+        const el = s as HTMLElement;
+        el.style.display = index === cinema.currentSlideIndex ? 'block' : 'none';
+      });
+    }
+  }, [cinema.currentSlideIndex, slides.length]);
   
   // Current slide
   const currentSlide = slides[cinema.currentSlideIndex];
@@ -212,10 +254,6 @@ export function CinemaCoursesView({ viewModel }: CinemaCoursesViewProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Hidden content for extracting slides */}
-      <div className="hidden" ref={contentRef}>
-        {LessonComponent && <LessonComponent />}
-      </div>
       
       {/* Header */}
       <header className="flex-shrink-0 h-16 px-4 md:px-6 flex items-center justify-between bg-black/30 backdrop-blur-sm border-b border-white/10">
@@ -282,20 +320,35 @@ export function CinemaCoursesView({ viewModel }: CinemaCoursesViewProps) {
         </div>
       </header>
       
-      {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-8 overflow-hidden">
-        {currentSlide ? (
-          <div 
-            className="max-w-4xl w-full bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 md:p-12 prose dark:prose-invert max-w-none transform transition-all duration-300"
-            dangerouslySetInnerHTML={{ __html: currentSlide.html }}
-          />
-        ) : (
-          <div className="text-center text-white">
-            <div className="text-6xl mb-4 animate-pulse">🎬</div>
-            <p className="text-white/70">กำลังโหลดเนื้อหา...</p>
-          </div>
-        )}
+      {/* Main Content - One Slide at a Time */}
+      <main className="flex-1 overflow-hidden p-4 md:p-8 flex items-start justify-center">
+        <div 
+          ref={contentRef}
+          className="cinema-content max-w-4xl mx-auto w-full bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-12 prose dark:prose-invert max-w-none max-h-full overflow-y-auto"
+        >
+          {LessonComponent ? (
+            <LessonComponent />
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4 animate-pulse">🎬</div>
+              <p className="text-slate-500">กำลังโหลดเนื้อหา...</p>
+            </div>
+          )}
+        </div>
       </main>
+      
+      {/* CSS to show only current slide */}
+      <style>{`
+        .cinema-content .lesson-content > *:not(section.mb-8) {
+          display: none !important;
+        }
+        .cinema-content .lesson-content section.mb-8 {
+          display: none !important;
+        }
+        .cinema-content .lesson-content section.mb-8[data-slide="${cinema.currentSlideIndex}"] {
+          display: block !important;
+        }
+      `}</style>
       
       {/* Footer Controls */}
       <footer className="flex-shrink-0 h-24 px-4 md:px-6 bg-black/30 backdrop-blur-sm border-t border-white/10">

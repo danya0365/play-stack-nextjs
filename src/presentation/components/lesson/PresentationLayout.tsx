@@ -9,6 +9,7 @@ export function PresentationLayout() {
     isPresenting,
     currentSlide,
     slides,
+    lessonComponent: LessonComponent,
     exitPresentation,
     nextSlide,
     prevSlide,
@@ -16,14 +17,16 @@ export function PresentationLayout() {
   } = usePresentationStore();
 
   const touchStartX = useRef(0);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  const [totalSlides, setTotalSlides] = useState(0);
 
   // Prevent hydration issues
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Spring animation for slide transitions - only initialize when presenting
+  // Spring animation for slide transitions
   const [springStyle, api] = useSpring(
     () => ({
       opacity: 1,
@@ -44,6 +47,36 @@ export function PresentationLayout() {
     },
     [api]
   );
+
+  // Extract slides count and set visibility on mount
+  useEffect(() => {
+    if (!isPresenting || !contentRef.current) return;
+    
+    const timer = setTimeout(() => {
+      const sections = contentRef.current?.querySelectorAll("section.mb-8");
+      if (sections && sections.length > 0) {
+        setTotalSlides(sections.length);
+        // Hide all except current
+        sections.forEach((s, index) => {
+          const el = s as HTMLElement;
+          el.style.display = index === currentSlide ? 'block' : 'none';
+        });
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [isPresenting, LessonComponent]);
+
+  // Update visibility when slide changes
+  useEffect(() => {
+    if (!contentRef.current) return;
+    
+    const sections = contentRef.current.querySelectorAll("section.mb-8");
+    sections.forEach((s, index) => {
+      const el = s as HTMLElement;
+      el.style.display = index === currentSlide ? 'block' : 'none';
+    });
+  }, [currentSlide]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -108,12 +141,9 @@ export function PresentationLayout() {
     animateSlide("prev");
   };
 
-  if (!isPresenting || slides.length === 0) {
+  if (!isPresenting || !LessonComponent) {
     return null;
   }
-
-  const totalSlides = slides.length;
-  const currentHTML = slides[currentSlide]?.html || "";
 
   return (
     <div
@@ -134,7 +164,7 @@ export function PresentationLayout() {
 
         {/* Progress dots */}
         <div className="flex items-center gap-2">
-          {slides.map((_, idx) => (
+          {Array.from({ length: totalSlides }).map((_, idx) => (
             <button
               key={idx}
               onClick={() => {
@@ -153,18 +183,20 @@ export function PresentationLayout() {
 
         {/* Slide counter */}
         <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-          {currentSlide + 1} / {totalSlides}
+          {currentSlide + 1} / {totalSlides || '...'}
         </div>
       </header>
 
-      {/* Slide Content */}
+      {/* Slide Content - Render actual component */}
       <main className="flex-1 overflow-auto p-4 md:p-8">
         <div className="max-w-4xl mx-auto h-full">
           <animated.div
+            ref={contentRef}
             style={springStyle}
             className="slide-content prose dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: currentHTML }}
-          />
+          >
+            <LessonComponent />
+          </animated.div>
         </div>
       </main>
 
