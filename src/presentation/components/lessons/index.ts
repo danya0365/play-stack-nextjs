@@ -89,6 +89,27 @@ const lessonComponents: Record<string, ComponentType> = {
   "lesson-5-1-1": dynamic(() => import("./phase5/Lesson_5_1_1")),
   "lesson-5-1-2": dynamic(() => import("./phase5/Lesson_5_1_2")),
   "lesson-5-1-3": dynamic(() => import("./phase5/Lesson_5_1_3")),
+  
+  // Module 5.2: Advanced Multiplayer
+  "lesson-5-2-1": dynamic(() => import("./phase5/Lesson_5_2_1")),
+  "lesson-5-2-2": dynamic(() => import("./phase5/Lesson_5_2_2")),
+  "lesson-5-2-3": dynamic(() => import("./phase5/Lesson_5_2_3")),
+  
+  // Module 5.3: Monetization
+  "lesson-5-3-1": dynamic(() => import("./phase5/Lesson_5_3_1")),
+  "lesson-5-3-2": dynamic(() => import("./phase5/Lesson_5_3_2")),
+  "lesson-5-3-3": dynamic(() => import("./phase5/Lesson_5_3_3")),
+  
+  // Module 5.4: Performance
+  "lesson-5-4-1": dynamic(() => import("./phase5/Lesson_5_4_1")),
+  "lesson-5-4-2": dynamic(() => import("./phase5/Lesson_5_4_2")),
+  "lesson-5-4-3": dynamic(() => import("./phase5/Lesson_5_4_3")),
+  
+  // Module 5.5: Advanced 3D
+  "lesson-5-5-1": dynamic(() => import("./phase5/Lesson_5_5_1")),
+  "lesson-5-5-2": dynamic(() => import("./phase5/Lesson_5_5_2")),
+  "lesson-5-5-3": dynamic(() => import("./phase5/Lesson_5_5_3")),
+  "lesson-5-5-4": dynamic(() => import("./phase5/Lesson_5_5_4")),
 };
 
 export function getLessonComponent(lessonId: string): ComponentType | null {
