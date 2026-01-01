@@ -2,9 +2,17 @@
 
 import { LoginModal } from "@/src/presentation/components/auth/LoginModal";
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
+import { usePresentationStore } from "@/src/presentation/stores/presentationStore";
+import dynamic from "next/dynamic";
 import { ReactNode, useEffect, useState } from "react";
 import { MainLayout } from "./MainLayout";
 import { RetroLayout } from "./RetroLayout";
+
+// Lazy load PresentationLayout to avoid React Spring initialization issues
+const PresentationLayout = dynamic(
+  () => import("@/src/presentation/components/lesson/PresentationLayout").then(m => ({ default: m.PresentationLayout })),
+  { ssr: false }
+);
 
 interface LayoutWrapperProps {
   children: ReactNode;
@@ -12,6 +20,7 @@ interface LayoutWrapperProps {
 
 export function LayoutWrapper({ children }: LayoutWrapperProps) {
   const { layout } = useLayoutStore();
+  const { isPresenting } = usePresentationStore();
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch
@@ -38,11 +47,17 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   return (
     <>
       <LoginModal />
-      {layout === "retro" ? (
-        <RetroLayout>{children}</RetroLayout>
-      ) : (
-        <MainLayout>{children}</MainLayout>
-      )}
+      {/* Presentation overlay - only render when presenting */}
+      {isPresenting && <PresentationLayout />}
+      
+      {/* Main content - hide when presenting */}
+      <div style={{ display: isPresenting ? 'none' : 'block' }}>
+        {layout === "retro" ? (
+          <RetroLayout>{children}</RetroLayout>
+        ) : (
+          <MainLayout>{children}</MainLayout>
+        )}
+      </div>
     </>
   );
 }

@@ -5,12 +5,13 @@ import { getModulesByPhaseId, Module } from "@/src/data/master/modules";
 import { Phase } from "@/src/data/master/phases";
 import { getLessonComponent, hasLessonComponent } from "@/src/presentation/components/lessons";
 import { CoursesViewModel } from "@/src/presentation/presenters/courses/CoursesPresenter";
+import { usePresentationStore } from "@/src/presentation/stores/presentationStore";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface FullScreenTreeViewProps {
   viewModel: CoursesViewModel;
-  onExit: () => void;
 }
 
 interface TreeState {
@@ -23,9 +24,13 @@ interface LessonWithContext {
   module: Module;
 }
 
-export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProps) {
+export function FullScreenTreeView({ viewModel }: FullScreenTreeViewProps) {
   const { phases } = viewModel;
   const { isLessonComplete, markLessonComplete } = useProgressStore();
+  const { enterPresentation } = usePresentationStore();
+  
+  // Ref for extracting slides from content
+  const contentRef = useRef<HTMLDivElement>(null);
   
   // Build flat list of all lessons with their context
   const allLessons = useMemo<LessonWithContext[]>(() => {
@@ -147,6 +152,22 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
   // Get lesson component
   const LessonComponent = selectedLesson ? getLessonComponent(selectedLesson.id) : null;
 
+  // Enter presentation mode
+  const handleEnterPresentation = useCallback(() => {
+    if (!contentRef.current) return;
+    
+    // Extract sections as slides
+    const sections = contentRef.current.querySelectorAll("section.mb-8");
+    const slides = Array.from(sections).map((s, idx) => ({
+      html: s.outerHTML,
+      title: `Slide ${idx + 1}`,
+    }));
+    
+    if (slides.length > 0) {
+      enterPresentation(slides);
+    }
+  }, [enterPresentation]);
+
   // Check if at first or last lesson
   const isFirstLesson = currentIndex === 0;
   const isLastLesson = currentIndex === allLessons.length - 1;
@@ -162,13 +183,13 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
         {/* Sidebar Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b dark:border-slate-700">
           <h2 className="font-bold text-gray-900 dark:text-white">📚 เนื้อหาทั้งหมด</h2>
-          <button
-            onClick={onExit}
+          <Link
+            href="/courses"
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
             title="ออกจาก Tree Mode"
           >
             ✕
-          </button>
+          </Link>
         </div>
         
         {/* Progress bar */}
@@ -318,19 +339,33 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
               </>
             )}
           </div>
-          <button
-            onClick={onExit}
-            className="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg text-sm transition-colors"
-          >
-            ออก
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Presentation Mode Button */}
+            {selectedLesson && hasLessonComponent(selectedLesson.id) && (
+              <button
+                onClick={handleEnterPresentation}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg text-sm font-medium transition-all shadow-md"
+              >
+                <span>📺</span>
+                <span className="hidden sm:inline">Presentation</span>
+              </button>
+            )}
+            <Link
+              href="/courses"
+              className="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg text-sm transition-colors"
+            >
+              ออก
+            </Link>
+          </div>
         </header>
 
         {/* Lesson Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {selectedLesson && LessonComponent ? (
             <div className="max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-              <LessonComponent />
+              <div ref={contentRef}>
+                <LessonComponent />
+              </div>
             </div>
           ) : selectedLesson && !hasLessonComponent(selectedLesson.id) ? (
             <div className="max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 text-center">

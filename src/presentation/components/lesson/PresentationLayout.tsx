@@ -1,7 +1,7 @@
 "use client";
 
 import { animated, config, useSpring } from "@react-spring/web";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePresentationStore } from "../../stores/presentationStore";
 
 export function PresentationLayout() {
@@ -16,13 +16,22 @@ export function PresentationLayout() {
   } = usePresentationStore();
 
   const touchStartX = useRef(0);
+  const [mounted, setMounted] = useState(false);
 
-  // Spring animation for slide transitions
-  const [springStyle, api] = useSpring(() => ({
-    opacity: 1,
-    x: 0,
-    config: config.gentle,
-  }));
+  // Prevent hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Spring animation for slide transitions - only initialize when presenting
+  const [springStyle, api] = useSpring(
+    () => ({
+      opacity: 1,
+      x: 0,
+      config: config.gentle,
+    }),
+    []
+  );
 
   // Animation helper
   const animateSlide = useCallback(
@@ -41,27 +50,33 @@ export function PresentationLayout() {
     if (!isPresenting) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Avoid repeated triggers from held keys
+      if (e.repeat) return;
+      
       switch (e.key) {
         case "ArrowRight":
         case " ":
           e.preventDefault();
+          e.stopImmediatePropagation();
           nextSlide();
           animateSlide("next");
           break;
         case "ArrowLeft":
           e.preventDefault();
+          e.stopImmediatePropagation();
           prevSlide();
           animateSlide("prev");
           break;
         case "Escape":
           e.preventDefault();
+          e.stopImmediatePropagation();
           exitPresentation();
           break;
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [isPresenting, nextSlide, prevSlide, exitPresentation, animateSlide]);
 
   // Touch/swipe handlers

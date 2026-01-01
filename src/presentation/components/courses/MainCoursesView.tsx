@@ -4,18 +4,13 @@ import { getModulesByPhaseId } from "@/src/data/master/modules";
 import { CoursesViewModel } from "@/src/presentation/presenters/courses/CoursesPresenter";
 import { animated, useSpring, useTrail } from "@react-spring/web";
 import Link from "next/link";
-import { useState } from "react";
-import { FullScreenTreeView } from "./FullScreenTreeView";
 
 interface MainCoursesViewProps {
   viewModel: CoursesViewModel;
 }
 
-type ViewMode = "grid" | "tree";
-
 export function MainCoursesView({ viewModel }: MainCoursesViewProps) {
   const { phases, courseConfig, learningPaths, certificates } = viewModel;
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   // Header animation
   const headerSpring = useSpring({
@@ -29,16 +24,6 @@ export function MainCoursesView({ viewModel }: MainCoursesViewProps) {
     to: { opacity: 1, y: 0, scale: 1 },
     delay: 200,
   });
-
-  // Full-screen tree mode
-  if (viewMode === "tree") {
-    return (
-      <FullScreenTreeView 
-        viewModel={viewModel} 
-        onExit={() => setViewMode("grid")} 
-      />
-    );
-  }
 
   return (
     <div className="h-full overflow-auto">
@@ -62,21 +47,16 @@ export function MainCoursesView({ viewModel }: MainCoursesViewProps) {
         <div className="flex justify-center mb-8">
           <div className="inline-flex rounded-lg bg-slate-100 dark:bg-slate-800 p-1">
             <button
-              onClick={() => setViewMode("grid")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                viewMode === "grid"
-                  ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              }`}
+              className="px-4 py-2 rounded-md text-sm font-medium transition-all bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
             >
               📊 Grid
             </button>
-            <button
-              onClick={() => setViewMode("tree")}
+            <Link
+              href="/courses/tree"
               className="px-4 py-2 rounded-md text-sm font-medium transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
             >
               🌲 Tree
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -166,4 +146,3 @@ export function MainCoursesView({ viewModel }: MainCoursesViewProps) {
     </div>
   );
 }
-
