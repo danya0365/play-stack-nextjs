@@ -6,7 +6,7 @@ import { Phase } from "@/src/data/master/phases";
 import { getLessonComponent, hasLessonComponent } from "@/src/presentation/components/lessons";
 import { CoursesViewModel } from "@/src/presentation/presenters/courses/CoursesPresenter";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface FullScreenTreeViewProps {
   viewModel: CoursesViewModel;
@@ -56,6 +56,18 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
   // Sidebar collapsed state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
+  // Refs for scrolling to lesson
+  const lessonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  
+  // Register lesson ref
+  const setLessonRef = useCallback((lessonId: string, el: HTMLButtonElement | null) => {
+    if (el) {
+      lessonRefs.current.set(lessonId, el);
+    } else {
+      lessonRefs.current.delete(lessonId);
+    }
+  }, []);
+  
   // Track which phases and modules are expanded
   const [expandedPhases, setExpandedPhases] = useState<TreeState>(() => {
     const initial: TreeState = {};
@@ -77,6 +89,20 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
       setExpandedModules({ [first.module.id]: true });
     }
   }, [allLessons, selectedLesson]);
+
+  // Auto-scroll to selected lesson
+  useEffect(() => {
+    if (selectedLesson && !sidebarCollapsed) {
+      // Small delay to allow DOM updates after expand
+      const timer = setTimeout(() => {
+        const el = lessonRefs.current.get(selectedLesson.id);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedLesson, sidebarCollapsed]);
 
   const togglePhase = (phaseId: string) => {
     setExpandedPhases(prev => ({ ...prev, [phaseId]: !prev[phaseId] }));
@@ -224,6 +250,7 @@ export function FullScreenTreeView({ viewModel, onExit }: FullScreenTreeViewProp
                                 return (
                                   <button
                                     key={lesson.id}
+                                    ref={(el) => setLessonRef(lesson.id, el)}
                                     onClick={() => handleSelectLesson(lesson, phase, mod)}
                                     className={`w-full pl-14 pr-4 py-2 flex items-center gap-2 transition-colors text-left ${
                                       isSelected 
