@@ -75,11 +75,14 @@ export function CinemaCoursesView({ viewModel }: CinemaCoursesViewProps) {
         const lessonContent = content.querySelector('.lesson-content') as HTMLElement;
         if (!lessonContent) return;
         
-        // Hide ALL direct children of lesson-content (H1, Intro Card, sections, etc.)
+        // Hide ALL direct children of lesson-content (H1, Objectives, sections, etc.)
         const allChildren = lessonContent.children;
         for (let i = 0; i < allChildren.length; i++) {
           (allChildren[i] as HTMLElement).style.display = 'none';
         }
+        
+        // Find Objectives card (has bg-gradient-to-r class)
+        const objectivesCard = lessonContent.querySelector('.bg-gradient-to-r.from-indigo-50') as HTMLElement;
         
         // Find all sections and add data-slide attribute
         const sections = lessonContent.querySelectorAll("section.mb-8");
@@ -95,6 +98,11 @@ export function CinemaCoursesView({ viewModel }: CinemaCoursesViewProps) {
             };
           });
           setSlides(extractedSlides);
+          
+          // Show Objectives on first slide only
+          if (objectivesCard) {
+            objectivesCard.style.display = 'block';
+          }
         }
       }, 100);
       return () => clearTimeout(timer);
@@ -107,10 +115,18 @@ export function CinemaCoursesView({ viewModel }: CinemaCoursesViewProps) {
       const lessonContent = contentRef.current.querySelector('.lesson-content') as HTMLElement;
       if (!lessonContent) return;
       
-      // Hide all direct children of lesson-content (H1, Intro Card, etc.)
+      // Hide all direct children of lesson-content (H1, Objectives, etc.)
       const allChildren = lessonContent.children;
       for (let i = 0; i < allChildren.length; i++) {
         (allChildren[i] as HTMLElement).style.display = 'none';
+      }
+      
+      // Find Objectives card
+      const objectivesCard = lessonContent.querySelector('.bg-gradient-to-r.from-indigo-50') as HTMLElement;
+      
+      // Show Objectives on first slide only
+      if (objectivesCard && cinema.currentSlideIndex === 0) {
+        objectivesCard.style.display = 'block';
       }
       
       // Then show only the current section
@@ -339,8 +355,11 @@ export function CinemaCoursesView({ viewModel }: CinemaCoursesViewProps) {
       
       {/* CSS to show only current slide */}
       <style>{`
-        .cinema-content .lesson-content > *:not(section.mb-8) {
+        .cinema-content .lesson-content > h1 {
           display: none !important;
+        }
+        .cinema-content .lesson-content > .bg-gradient-to-r.from-indigo-50 {
+          display: ${cinema.currentSlideIndex === 0 ? 'block' : 'none'} !important;
         }
         .cinema-content .lesson-content section.mb-8 {
           display: none !important;

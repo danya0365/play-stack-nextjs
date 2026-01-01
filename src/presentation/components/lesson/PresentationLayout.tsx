@@ -53,14 +53,35 @@ export function PresentationLayout() {
     if (!isPresenting || !contentRef.current) return;
     
     const timer = setTimeout(() => {
-      const sections = contentRef.current?.querySelectorAll("section.mb-8");
+      const content = contentRef.current;
+      if (!content) return;
+      
+      // Find .lesson-content inside (the actual content wrapper from LessonComponent)
+      const lessonContent = content.querySelector('.lesson-content') as HTMLElement;
+      if (!lessonContent) return;
+      
+      // Hide ALL direct children of lesson-content (H1, Objectives, sections, etc.)
+      const allChildren = lessonContent.children;
+      for (let i = 0; i < allChildren.length; i++) {
+        (allChildren[i] as HTMLElement).style.display = 'none';
+      }
+      
+      // Find Objectives card (has bg-gradient-to-r class and mb-6)
+      const objectivesCard = lessonContent.querySelector('.bg-gradient-to-r.from-indigo-50') as HTMLElement;
+      
+      // Find all sections and show only current
+      const sections = lessonContent.querySelectorAll("section.mb-8");
       if (sections && sections.length > 0) {
         setTotalSlides(sections.length);
-        // Hide all except current
         sections.forEach((s, index) => {
           const el = s as HTMLElement;
           el.style.display = index === currentSlide ? 'block' : 'none';
         });
+        
+        // Show Objectives on first slide only
+        if (objectivesCard && currentSlide === 0) {
+          objectivesCard.style.display = 'block';
+        }
       }
     }, 100);
     
@@ -71,7 +92,25 @@ export function PresentationLayout() {
   useEffect(() => {
     if (!contentRef.current) return;
     
-    const sections = contentRef.current.querySelectorAll("section.mb-8");
+    const lessonContent = contentRef.current.querySelector('.lesson-content') as HTMLElement;
+    if (!lessonContent) return;
+    
+    // Hide all direct children of lesson-content (H1, Objectives, etc.)
+    const allChildren = lessonContent.children;
+    for (let i = 0; i < allChildren.length; i++) {
+      (allChildren[i] as HTMLElement).style.display = 'none';
+    }
+    
+    // Find Objectives card
+    const objectivesCard = lessonContent.querySelector('.bg-gradient-to-r.from-indigo-50') as HTMLElement;
+    
+    // Show Objectives on first slide only
+    if (objectivesCard && currentSlide === 0) {
+      objectivesCard.style.display = 'block';
+    }
+    
+    // Then show only the current section
+    const sections = lessonContent.querySelectorAll("section.mb-8");
     sections.forEach((s, index) => {
       const el = s as HTMLElement;
       el.style.display = index === currentSlide ? 'block' : 'none';
