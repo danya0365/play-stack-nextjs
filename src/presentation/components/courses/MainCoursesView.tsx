@@ -45,17 +45,29 @@ export function MainCoursesView({ viewModel }: MainCoursesViewProps) {
 
         {/* View Mode Toggle */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex rounded-lg bg-slate-100 dark:bg-slate-800 p-1">
+          <div className="inline-flex flex-wrap justify-center gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 p-2">
             <button
-              className="px-4 py-2 rounded-md text-sm font-medium transition-all bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
             >
               📊 Grid
             </button>
             <Link
               href="/courses/tree"
-              className="px-4 py-2 rounded-md text-sm font-medium transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-slate-700/50"
             >
               🌲 Tree
+            </Link>
+            <Link
+              href="/courses/cinema"
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-slate-700/50"
+            >
+              🎬 Cinema
+            </Link>
+            <Link
+              href="/courses/podcast"
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-slate-700/50"
+            >
+              🎧 Podcast
             </Link>
           </div>
         </div>
