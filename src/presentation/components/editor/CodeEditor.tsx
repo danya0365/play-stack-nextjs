@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+// Import Prism for syntax highlighting
+import Prism from "prismjs";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-typescript";
+import "prismjs/themes/prism-tomorrow.css";
 
 interface CodeEditorProps {
   initialCode: string;
@@ -10,7 +16,31 @@ interface CodeEditorProps {
   expectedOutput?: string;
   hints?: string[];
   onComplete?: () => void;
+  storageKey?: string; // For localStorage persistence
 }
+
+export type EditorTheme = "dark" | "monokai" | "github";
+
+const themes: Record<EditorTheme, { bg: string; text: string; lineNumbers: string; border: string }> = {
+  dark: {
+    bg: "bg-slate-900",
+    text: "text-gray-100",
+    lineNumbers: "bg-slate-800/50 text-gray-500",
+    border: "border-slate-700",
+  },
+  monokai: {
+    bg: "bg-[#272822]",
+    text: "text-[#f8f8f2]",
+    lineNumbers: "bg-[#1e1f1a] text-[#75715e]",
+    border: "border-[#49483e]",
+  },
+  github: {
+    bg: "bg-[#f6f8fa]",
+    text: "text-[#24292e]",
+    lineNumbers: "bg-[#ebeef1] text-[#6a737d]",
+    border: "border-[#e1e4e8]",
+  },
+};
 
 export function CodeEditor({
   initialCode,
@@ -20,20 +50,44 @@ export function CodeEditor({
   expectedOutput,
   hints = [],
   onComplete,
+  storageKey,
 }: CodeEditorProps) {
-  const [code, setCode] = useState(initialCode);
+  // Load from localStorage if available
+  const getInitialCode = () => {
+    if (storageKey && typeof window !== "undefined") {
+      const saved = localStorage.getItem(`playground_${storageKey}`);
+      if (saved) return saved;
+    }
+    return initialCode;
+  };
+
+  const [code, setCode] = useState(getInitialCode);
   const [output, setOutput] = useState<string[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showHints, setShowHints] = useState(false);
+  const [executionTime, setExecutionTime] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [errorLine, setErrorLine] = useState<number | null>(null);
+  const [theme] = useState<EditorTheme>("dark");
+  
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  // Sync line numbers with scroll
+  const highlightRef = useRef<HTMLPreElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
 
+  // Auto-save to localStorage
+  useEffect(() => {
+    if (storageKey && code !== initialCode) {
+      localStorage.setItem(`playground_${storageKey}`, code);
+    }
+  }, [code, storageKey, initialCode]);
+
+  // Sync scroll between textarea and highlight
   const handleScroll = useCallback(() => {
-    if (textareaRef.current && lineNumbersRef.current) {
+    if (textareaRef.current && lineNumbersRef.current && highlightRef.current) {
       lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+      highlightRef.current.scrollTop = textareaRef.current.scrollTop;
+      highlightRef.current.scrollLeft = textareaRef.current.scrollLeft;
     }
   }, []);
 
@@ -41,16 +95,23 @@ export function CodeEditor({
   const lineCount = code.split("\n").length;
   const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1);
 
+  // Get highlighted HTML
+  const getHighlightedCode = useCallback(() => {
+    const grammar = Prism.languages[language] || Prism.languages.javascript;
+    return Prism.highlight(code, grammar, language);
+  }, [code, language]);
+
   // Run code safely
   const runCode = useCallback(() => {
     setIsRunning(true);
     setOutput([]);
     setIsCorrect(null);
+    setErrorLine(null);
 
+    const startTime = performance.now();
     const logs: string[] = [];
-    const originalConsole = { ...console };
 
-    // Override console.log
+    // Override console
     const customConsole = {
       log: (...args: unknown[]) => {
         logs.push(args.map(arg => 
@@ -74,12 +135,15 @@ export function CodeEditor({
           ${code}
         } catch (e) {
           console.error(e.message);
+          throw e;
         }
         `
       );
 
       executeCode(customConsole);
 
+      const endTime = performance.now();
+      setExecutionTime(endTime - startTime);
       setOutput(logs);
 
       // Check if output matches expected
@@ -92,23 +156,48 @@ export function CodeEditor({
         }
       }
     } catch (error) {
-      setOutput([`❌ Error: ${(error as Error).message}`]);
+      const endTime = performance.now();
+      setExecutionTime(endTime - startTime);
+      
+      const errorMessage = (error as Error).message;
+      setOutput([`❌ Error: ${errorMessage}`]);
       setIsCorrect(false);
+      
+      // Try to extract line number from error
+      const lineMatch = errorMessage.match(/line (\d+)/i);
+      if (lineMatch) {
+        setErrorLine(parseInt(lineMatch[1], 10));
+      }
     } finally {
       setIsRunning(false);
-      Object.assign(console, originalConsole);
     }
   }, [code, expectedOutput, onComplete]);
 
-  // Handle tab key
+  // Handle keyboard shortcuts
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Ctrl/Cmd + Enter to run
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      runCode();
+      return;
+    }
+
+    // Escape to clear output
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setOutput([]);
+      setIsCorrect(null);
+      setExecutionTime(null);
+      return;
+    }
+
+    // Tab handling
     if (e.key === "Tab") {
       e.preventDefault();
       const start = e.currentTarget.selectionStart;
       const end = e.currentTarget.selectionEnd;
       const newCode = code.substring(0, start) + "  " + code.substring(end);
       setCode(newCode);
-      // Set cursor position after tab
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.selectionStart = textareaRef.current.selectionEnd = start + 2;
@@ -117,17 +206,35 @@ export function CodeEditor({
     }
   };
 
+  // Copy code to clipboard
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      console.error("Failed to copy");
+    }
+  };
+
   // Reset code
   const resetCode = () => {
     setCode(initialCode);
     setOutput([]);
     setIsCorrect(null);
+    setExecutionTime(null);
+    setErrorLine(null);
+    if (storageKey) {
+      localStorage.removeItem(`playground_${storageKey}`);
+    }
   };
 
+  const currentTheme = themes[theme];
+
   return (
-    <div className="bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
+    <div className={`${currentTheme.bg} rounded-xl border ${currentTheme.border} overflow-hidden shadow-xl`}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700">
+      <div className={`flex items-center justify-between px-4 py-3 bg-slate-800 border-b ${currentTheme.border}`}>
         <div className="flex items-center gap-3">
           <div className="flex gap-1.5">
             <div className="w-3 h-3 rounded-full bg-red-500" />
@@ -140,6 +247,13 @@ export function CodeEditor({
         </div>
         <div className="flex gap-2">
           <button
+            onClick={copyCode}
+            className="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-gray-300 rounded transition-colors"
+            title="Copy code"
+          >
+            {copied ? "✅ Copied!" : "📋 Copy"}
+          </button>
+          <button
             onClick={resetCode}
             className="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-gray-300 rounded transition-colors"
           >
@@ -148,9 +262,9 @@ export function CodeEditor({
           <button
             onClick={runCode}
             disabled={isRunning}
-            className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors disabled:opacity-50"
+            className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors disabled:opacity-50 font-medium"
           >
-            {isRunning ? "⏳ Running..." : "▶️ Run"}
+            {isRunning ? "⏳ Running..." : "▶ Run (⌘↵)"}
           </button>
         </div>
       </div>
@@ -167,34 +281,58 @@ export function CodeEditor({
         {/* Line numbers */}
         <div
           ref={lineNumbersRef}
-          className="flex-shrink-0 w-12 bg-slate-800/50 text-right pr-3 py-4 text-gray-500 text-sm font-mono select-none overflow-hidden"
+          className={`flex-shrink-0 w-12 ${currentTheme.lineNumbers} text-right pr-3 py-4 text-sm font-mono select-none overflow-hidden`}
           style={{ height: "300px" }}
         >
           {lineNumbers.map((num) => (
-            <div key={num} className="leading-6">{num}</div>
+            <div 
+              key={num} 
+              className={`leading-6 ${errorLine === num ? "bg-red-500/20 text-red-400" : ""}`}
+            >
+              {num}
+            </div>
           ))}
         </div>
 
-        {/* Textarea */}
-        <textarea
-          ref={textareaRef}
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          onScroll={handleScroll}
-          onKeyDown={handleKeyDown}
-          className="flex-1 bg-transparent text-gray-100 font-mono text-sm p-4 resize-none focus:outline-none leading-6"
-          style={{ height: "300px" }}
-          spellCheck={false}
-        />
+        {/* Editor container */}
+        <div className="relative flex-1" style={{ height: "300px" }}>
+          {/* Syntax highlighted layer */}
+          <pre
+            ref={highlightRef}
+            className={`absolute inset-0 ${currentTheme.text} font-mono text-sm p-4 overflow-auto pointer-events-none leading-6 whitespace-pre-wrap break-words`}
+            dangerouslySetInnerHTML={{ __html: getHighlightedCode() + "\n" }}
+            aria-hidden="true"
+          />
+          
+          {/* Textarea for editing */}
+          <textarea
+            ref={textareaRef}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            onScroll={handleScroll}
+            onKeyDown={handleKeyDown}
+            className="absolute inset-0 w-full h-full bg-transparent text-transparent caret-white font-mono text-sm p-4 resize-none focus:outline-none leading-6"
+            spellCheck={false}
+            autoCapitalize="off"
+            autoCorrect="off"
+          />
+        </div>
       </div>
 
       {/* Output */}
       {output.length > 0 && (
-        <div className="border-t border-slate-700">
+        <div className={`border-t ${currentTheme.border}`}>
           <div className="flex items-center justify-between px-4 py-2 bg-slate-800">
-            <span className="text-sm text-gray-400">📤 Output</span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-400">📤 Output</span>
+              {executionTime !== null && (
+                <span className="text-xs text-gray-500">
+                  ⏱️ {executionTime.toFixed(1)}ms
+                </span>
+              )}
+            </div>
             {isCorrect !== null && (
-              <span className={`text-sm ${isCorrect ? "text-green-400" : "text-red-400"}`}>
+              <span className={`text-sm font-medium ${isCorrect ? "text-green-400" : "text-red-400"}`}>
                 {isCorrect ? "✅ Correct!" : "❌ Try again"}
               </span>
             )}
@@ -209,10 +347,10 @@ export function CodeEditor({
 
       {/* Hints */}
       {hints.length > 0 && (
-        <div className="border-t border-slate-700">
+        <div className={`border-t ${currentTheme.border}`}>
           <button
             onClick={() => setShowHints(!showHints)}
-            className="w-full px-4 py-2 text-left text-sm text-gray-400 hover:text-gray-300 bg-slate-800/50"
+            className="w-full px-4 py-2 text-left text-sm text-gray-400 hover:text-gray-300 bg-slate-800/50 transition-colors"
           >
             💡 {showHints ? "Hide Hints" : "Show Hints"} ({hints.length})
           </button>
@@ -233,13 +371,20 @@ export function CodeEditor({
 
       {/* Success message */}
       {isCorrect && (
-        <div className="px-4 py-3 bg-green-900/30 border-t border-green-500/30">
+        <div className={`px-4 py-3 bg-green-900/30 border-t border-green-500/30`}>
           <div className="flex items-center gap-2 text-green-400">
             <span className="text-xl">🎉</span>
             <span className="font-semibold">ยอดเยี่ยม! คุณทำถูกต้อง!</span>
           </div>
         </div>
       )}
+
+      {/* Keyboard shortcuts hint */}
+      <div className="px-4 py-2 bg-slate-800/30 text-xs text-gray-500 flex gap-4">
+        <span>⌘/Ctrl + Enter: Run</span>
+        <span>Esc: Clear output</span>
+        <span>Tab: Indent</span>
+      </div>
     </div>
   );
 }

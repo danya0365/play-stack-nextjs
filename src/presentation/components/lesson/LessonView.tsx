@@ -344,18 +344,16 @@ export function LessonView({
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-900 dark:text-white">🎯 {lesson.challenge.title}</h3>
               <p className="text-gray-600 dark:text-gray-400">{lesson.challenge.description}</p>
-              <div>
-                <h4 className="text-sm font-medium mb-2">Starter Code:</h4>
-                <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-                  <code>{lesson.challenge.starterCode}</code>
-                </pre>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium mb-2">💡 Hints:</h4>
-                <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
-                  {lesson.challenge.hints.map((hint, i) => <li key={i}>{hint}</li>)}
-                </ul>
-              </div>
+              <CodeEditor
+                initialCode={lesson.challenge.starterCode}
+                expectedOutput={lesson.challenge.expectedOutput || ""}
+                hints={lesson.challenge.hints}
+                onComplete={() => {
+                  if (!isCompleted) {
+                    handleMarkComplete();
+                  }
+                }}
+              />
             </div>
           )}
         </div>

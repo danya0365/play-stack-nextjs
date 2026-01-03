@@ -27,6 +27,7 @@ export interface Challenge {
   description: string;
   starterCode: string;
   solution: string;
+  expectedOutput?: string;
   hints: string[];
   testCases: TestCase[];
 }
@@ -425,6 +426,7 @@ console.log(sword);`,
         "ใช้ type เป็น key ในการดึงข้อมูล",
         "อย่าลืม handle กรณี type ไม่ถูกต้อง"
       ],
+      expectedOutput: "Health Potion",
       testCases: [
         { input: 'createItem("health_potion").value', expectedOutput: "50", description: "Health potion should restore 50 HP" },
         { input: 'createItem("sword").type', expectedOutput: "weapon", description: "Sword should be weapon type" }
