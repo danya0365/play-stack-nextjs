@@ -1,6 +1,7 @@
 "use client";
 
 import { LoginModal } from "@/src/presentation/components/auth/LoginModal";
+import { PaywallModal } from "@/src/presentation/components/auth/PaywallModal";
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
 import { usePresentationStore } from "@/src/presentation/stores/presentationStore";
 import dynamic from "next/dynamic";
@@ -47,7 +48,7 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   return (
     <>
       <LoginModal />
-      {/* Presentation overlay - only render when presenting */}
+      <PaywallModal />
       {isPresenting && <PresentationLayout />}
       
       {/* Main content - hide when presenting */}

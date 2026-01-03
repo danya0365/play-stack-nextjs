@@ -1,6 +1,7 @@
 "use client";
 
 import { LessonContent } from "@/src/data/master/lessonContents";
+import { PaywallGuard } from "@/src/presentation/components/auth/PaywallGuard";
 import { getLessonComponent, hasLessonComponent } from "@/src/presentation/components/lessons";
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
 import { usePresentationStore } from "@/src/presentation/stores/presentationStore";
@@ -209,8 +210,12 @@ export function LessonView({
     );
   }
 
+  // Extract phase number from phaseId (e.g., "phase-2" -> 2)
+  const phaseNumber = parseInt(phaseId.replace(/\D/g, ''), 10) || 1;
+
   // Main Layout
   return (
+    <PaywallGuard phaseNumber={phaseNumber}>
     <div className="h-full overflow-auto">
       <CompletedToast />
       
@@ -388,5 +393,6 @@ export function LessonView({
         </div>
       </div>
     </div>
+    </PaywallGuard>
   );
 }
