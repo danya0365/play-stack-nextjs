@@ -6,6 +6,7 @@ import { useLearnModeStore } from "@/src/presentation/stores/learnModeStore";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import Link from "next/link";
 import { LearnCinemaView } from "./LearnCinemaView";
+import { LearnFocusView } from "./LearnFocusView";
 import { LearnModeSwitcher } from "./LearnModeSwitcher";
 import { LearnPodcastView } from "./LearnPodcastView";
 import { LearnPresentationView } from "./LearnPresentationView";
@@ -44,6 +45,10 @@ export function LearnCourseView({ courseType }: LearnCourseViewProps) {
   const brandColor = isJS ? "yellow" : "blue";
 
   // Render special modes
+  if (viewMode === "focus") {
+    return <LearnFocusView courseType={courseType} />;
+  }
+
   if (viewMode === "presentation") {
     return <LearnPresentationView courseType={courseType} />;
   }

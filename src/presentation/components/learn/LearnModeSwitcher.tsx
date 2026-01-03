@@ -4,6 +4,7 @@ import { LearnViewMode, useLearnModeStore } from "@/src/presentation/stores/lear
 
 const modes: { mode: LearnViewMode; icon: string; label: string }[] = [
   { mode: "normal", icon: "📋", label: "ปกติ" },
+  { mode: "focus", icon: "🎯", label: "Focus" },
   { mode: "presentation", icon: "📊", label: "Presentation" },
   { mode: "cinema", icon: "🎬", label: "Cinema" },
   { mode: "podcast", icon: "🎧", label: "Podcast" },
