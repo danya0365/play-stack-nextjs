@@ -2,15 +2,21 @@
 
 import { getLessonsByTopic } from "@/src/data/master/learnLessons";
 import { learnTopics } from "@/src/data/master/learnTopics";
+import { useLearnModeStore } from "@/src/presentation/stores/learnModeStore";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import Link from "next/link";
+import { LearnCinemaView } from "./LearnCinemaView";
+import { LearnModeSwitcher } from "./LearnModeSwitcher";
+import { LearnPodcastView } from "./LearnPodcastView";
+import { LearnPresentationView } from "./LearnPresentationView";
 
 interface LearnCourseViewProps {
   courseType: "javascript" | "typescript";
 }
 
 export function LearnCourseView({ courseType }: LearnCourseViewProps) {
-  const { isLessonComplete, totalPoints } = useProgressStore();
+  const { isLessonComplete } = useProgressStore();
+  const { viewMode } = useLearnModeStore();
 
   const isJS = courseType === "javascript";
   const topics = learnTopics.filter(t => 
@@ -37,6 +43,20 @@ export function LearnCourseView({ courseType }: LearnCourseViewProps) {
   const totalProgress = getTotalProgress();
   const brandColor = isJS ? "yellow" : "blue";
 
+  // Render special modes
+  if (viewMode === "presentation") {
+    return <LearnPresentationView courseType={courseType} />;
+  }
+
+  if (viewMode === "cinema") {
+    return <LearnCinemaView courseType={courseType} />;
+  }
+
+  if (viewMode === "podcast") {
+    return <LearnPodcastView courseType={courseType} />;
+  }
+
+  // Normal mode
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
@@ -44,6 +64,11 @@ export function LearnCourseView({ courseType }: LearnCourseViewProps) {
         <Link href="/learn" className="hover:text-indigo-400">Learn</Link>
         <span>/</span>
         <span className="text-white">{isJS ? "JavaScript" : "TypeScript"}</span>
+      </div>
+
+      {/* Mode Switcher */}
+      <div className="mb-6 flex justify-center">
+        <LearnModeSwitcher brandColor={brandColor} />
       </div>
 
       {/* Header */}
