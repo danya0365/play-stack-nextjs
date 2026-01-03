@@ -7,6 +7,127 @@ import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// Quiz Section Component
+interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+}
+
+interface QuizSectionProps {
+  quiz: QuizQuestion[];
+  lessonId: string;
+  onComplete: () => void;
+}
+
+function QuizSection({ quiz, lessonId, onComplete }: QuizSectionProps) {
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [showResults, setShowResults] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const handleSelect = (questionIndex: number, optionIndex: number) => {
+    if (showResults) return;
+    setAnswers(prev => ({ ...prev, [questionIndex]: optionIndex }));
+  };
+
+  const handleSubmit = () => {
+    let correct = 0;
+    quiz.forEach((q, i) => {
+      if (answers[i] === q.correctAnswer) correct++;
+    });
+    setScore(correct);
+    setShowResults(true);
+    if (correct === quiz.length) {
+      onComplete();
+    }
+  };
+
+  const handleRetry = () => {
+    setAnswers({});
+    setShowResults(false);
+    setScore(0);
+  };
+
+  const allAnswered = Object.keys(answers).length === quiz.length;
+
+  return (
+    <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-purple-500/30">
+      <h3 className="text-lg font-semibold text-white mb-4">❓ คำถามปิดท้าย</h3>
+      
+      <div className="space-y-6">
+        {quiz.map((q, qIdx) => (
+          <div key={qIdx} className="bg-slate-900/50 rounded-lg p-4">
+            <p className="text-white font-medium mb-3">
+              {qIdx + 1}. {q.question}
+            </p>
+            <div className="space-y-2">
+              {q.options.map((opt, oIdx) => {
+                const isSelected = answers[qIdx] === oIdx;
+                const isCorrect = q.correctAnswer === oIdx;
+                const showCorrect = showResults && isCorrect;
+                const showWrong = showResults && isSelected && !isCorrect;
+                
+                return (
+                  <button
+                    key={oIdx}
+                    onClick={() => handleSelect(qIdx, oIdx)}
+                    disabled={showResults}
+                    className={`w-full text-left px-4 py-2 rounded-lg transition-all ${
+                      showCorrect
+                        ? 'bg-green-600/30 border-2 border-green-500 text-green-300'
+                        : showWrong
+                          ? 'bg-red-600/30 border-2 border-red-500 text-red-300'
+                          : isSelected
+                            ? 'bg-purple-600/30 border-2 border-purple-500 text-purple-300'
+                            : 'bg-slate-700/50 hover:bg-slate-600/50 text-gray-300 border-2 border-transparent'
+                    }`}
+                  >
+                    <span className="mr-2">{String.fromCharCode(65 + oIdx)}.</span>
+                    {opt}
+                    {showCorrect && <span className="float-right">✓</span>}
+                    {showWrong && <span className="float-right">✗</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 flex items-center justify-between">
+        {!showResults ? (
+          <button
+            onClick={handleSubmit}
+            disabled={!allAnswered}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              allAnswered
+                ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                : 'bg-slate-700 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            ✅ ตรวจคำตอบ
+          </button>
+        ) : (
+          <div className="flex items-center gap-4">
+            <div className={`text-lg font-bold ${score === quiz.length ? 'text-green-400' : 'text-yellow-400'}`}>
+              คะแนน: {score}/{quiz.length}
+              {score === quiz.length && ' 🎉 ยอดเยี่ยม!'}
+            </div>
+            {score < quiz.length && (
+              <button
+                onClick={handleRetry}
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg"
+              >
+                🔄 ลองใหม่
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 interface LearnLessonViewProps {
   topicSlug: string;
   lessonSlug: string;
@@ -152,6 +273,15 @@ export function LearnLessonView({ topicSlug, lessonSlug, courseType = "javascrip
             onComplete={handleComplete}
           />
         </div>
+      )}
+
+      {/* Quiz */}
+      {lesson.quiz && lesson.quiz.length > 0 && (
+        <QuizSection 
+          quiz={lesson.quiz} 
+          lessonId={lesson.id}
+          onComplete={handleComplete}
+        />
       )}
 
       {/* Actions */}
