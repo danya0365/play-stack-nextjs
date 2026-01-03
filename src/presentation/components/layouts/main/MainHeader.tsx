@@ -13,6 +13,7 @@ export function MainHeader() {
   const navLinks = [
     { href: "/", label: "หน้าแรก", icon: "🏠" },
     { href: "/courses", label: "คอร์สเรียน", icon: "📚" },
+    { href: "/learn", label: "Learn", icon: "📖" },
     { href: "/playground", label: "Playground", icon: "🎮" },
     { href: "/projects", label: "ผลงาน", icon: "🏆" },
   ];
