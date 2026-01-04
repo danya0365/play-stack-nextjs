@@ -1423,6 +1423,1520 @@ console.log(getLast(["a", "b", "c"]));`,
       }
     ]
   },
+
+  // ============================================
+  // Topic: Classes & OOP
+  // ============================================
+  {
+    id: "learn-classes-1",
+    topicId: "topic-classes",
+    slug: "class-basics",
+    title: "Class Basics",
+    titleTh: "พื้นฐาน Class",
+    description: "Creating classes and objects",
+    order: 1,
+    duration: 20,
+    content: `
+# Class คืออะไร?
+
+Class เป็นพิมพ์เขียว (blueprint) สำหรับสร้าง Object
+
+## สร้าง Class
+\`\`\`javascript
+class Player {
+  constructor(name, level) {
+    this.name = name;
+    this.level = level;
+  }
+  
+  greet() {
+    console.log(\`Hello, I'm \${this.name}\`);
+  }
+}
+\`\`\`
+
+## สร้าง Object
+\`\`\`javascript
+const player1 = new Player("Hero", 10);
+player1.greet(); // Hello, I'm Hero
+\`\`\`
+
+## this
+\`this\` หมายถึง object ปัจจุบัน
+    `,
+    codeExample: `class Player {
+  constructor(name, level) {
+    this.name = name;
+    this.level = level;
+    this.health = 100;
+  }
+  
+  attack() {
+    console.log(this.name + " attacks!");
+  }
+  
+  levelUp() {
+    this.level++;
+    console.log(this.name + " is now level " + this.level);
+  }
+}
+
+const hero = new Player("Hero", 1);
+console.log(hero.name, "Lv.", hero.level);
+hero.attack();
+hero.levelUp();`,
+    challenge: {
+      description: "สร้าง class Enemy ที่มี name และ health",
+      starterCode: `class Enemy {
+  constructor(name, health) {
+    this.name = name;
+    this.health = health;
+  }
+  
+  takeDamage(damage) {
+    this.health -= damage;
+    console.log(this.name + " HP: " + this.health);
+  }
+}
+
+const slime = new Enemy("Slime", 50);
+slime.takeDamage(10);`,
+      expectedOutput: "Slime HP: 40",
+      hints: ["ใช้ class keyword", "constructor รับ parameters"]
+    },
+    quiz: [
+      {
+        question: "Class ใช้ทำอะไร?",
+        options: ["เก็บข้อมูล", "เป็นพิมพ์เขียวสร้าง Object", "สร้าง loop", "ประกาศตัวแปร"],
+        correctAnswer: 1
+      },
+      {
+        question: "this ใน class หมายถึง?",
+        options: ["Global object", "Object ปัจจุบัน", "Class parent", "Function"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-classes-2",
+    topicId: "topic-classes",
+    slug: "inheritance",
+    title: "Inheritance",
+    titleTh: "การสืบทอด",
+    description: "Extending classes",
+    order: 2,
+    duration: 20,
+    content: `
+# Inheritance (การสืบทอด)
+
+Class สามารถสืบทอดคุณสมบัติจาก class อื่นได้
+
+## extends
+\`\`\`javascript
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+  speak() {
+    console.log(this.name + " makes a sound");
+  }
+}
+
+class Dog extends Animal {
+  speak() {
+    console.log(this.name + " barks!");
+  }
+}
+\`\`\`
+
+## super
+\`\`\`javascript
+class Cat extends Animal {
+  constructor(name, color) {
+    super(name); // เรียก parent constructor
+    this.color = color;
+  }
+}
+\`\`\`
+    `,
+    codeExample: `class Character {
+  constructor(name, health) {
+    this.name = name;
+    this.health = health;
+  }
+  
+  attack() {
+    console.log(this.name + " attacks!");
+  }
+}
+
+class Warrior extends Character {
+  constructor(name) {
+    super(name, 150);
+    this.weapon = "Sword";
+  }
+  
+  attack() {
+    console.log(this.name + " slashes with " + this.weapon + "!");
+  }
+}
+
+const warrior = new Warrior("Knight");
+console.log(warrior.name, "HP:", warrior.health);
+warrior.attack();`,
+    challenge: {
+      description: "สร้าง class Mage ที่สืบทอดจาก Character",
+      starterCode: `class Character {
+  constructor(name, health) {
+    this.name = name;
+    this.health = health;
+  }
+}
+
+class Mage extends Character {
+  constructor(name) {
+    super(name, 80);
+    this.mana = 100;
+  }
+  
+  castSpell() {
+    console.log(this.name + " casts Fireball!");
+  }
+}
+
+const mage = new Mage("Wizard");
+console.log(mage.name, "HP:", mage.health, "MP:", mage.mana);
+mage.castSpell();`,
+      expectedOutput: "Wizard HP: 80 MP: 100\nWizard casts Fireball!",
+      hints: ["ใช้ extends", "super() เรียก parent constructor"]
+    },
+    quiz: [
+      {
+        question: "extends ใช้ทำอะไร?",
+        options: ["สร้าง function", "สืบทอด class", "ประกาศตัวแปร", "สร้าง loop"],
+        correctAnswer: 1
+      },
+      {
+        question: "super() ทำอะไร?",
+        options: ["สร้าง object ใหม่", "เรียก constructor ของ parent", "ลบ object", "หยุด program"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-classes-3",
+    topicId: "topic-classes",
+    slug: "static-methods",
+    title: "Static Methods",
+    titleTh: "Static Methods",
+    description: "Class-level methods and properties",
+    order: 3,
+    duration: 15,
+    content: `
+# Static Methods
+
+Static methods เรียกใช้ได้โดยไม่ต้องสร้าง instance
+
+## ประกาศ Static Method
+\`\`\`javascript
+class MathHelper {
+  static add(a, b) {
+    return a + b;
+  }
+  
+  static PI = 3.14159;
+}
+\`\`\`
+
+## ใช้งาน
+\`\`\`javascript
+MathHelper.add(5, 3);  // 8
+MathHelper.PI;         // 3.14159
+
+// ไม่ต้อง new
+// const helper = new MathHelper();
+\`\`\`
+    `,
+    codeExample: `class GameUtils {
+  static generateId() {
+    return Math.random().toString(36).substr(2, 9);
+  }
+  
+  static rollDice() {
+    return Math.floor(Math.random() * 6) + 1;
+  }
+  
+  static MAX_LEVEL = 100;
+}
+
+console.log("Player ID:", GameUtils.generateId());
+console.log("Dice roll:", GameUtils.rollDice());
+console.log("Max Level:", GameUtils.MAX_LEVEL);`,
+    challenge: {
+      description: "สร้าง class Calculator ที่มี static methods",
+      starterCode: `class Calculator {
+  static add(a, b) {
+    return a + b;
+  }
+  
+  static multiply(a, b) {
+    return a * b;
+  }
+}
+
+console.log("5 + 3 =", Calculator.add(5, 3));
+console.log("4 * 7 =", Calculator.multiply(4, 7));`,
+      expectedOutput: "5 + 3 = 8\n4 * 7 = 28",
+      hints: ["ใช้ static keyword", "เรียกใช้โดย ClassName.method()"]
+    },
+    quiz: [
+      {
+        question: "Static method ต่างจาก method ปกติอย่างไร?",
+        options: ["เร็วกว่า", "ไม่ต้องสร้าง instance", "มี this", "ใส่ parameter ไม่ได้"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-classes-4",
+    topicId: "topic-classes",
+    slug: "getters-setters",
+    title: "Getters & Setters",
+    titleTh: "Getters & Setters",
+    description: "Computed properties and validation",
+    order: 4,
+    duration: 15,
+    content: `
+# Getters & Setters
+
+ใช้ควบคุมการเข้าถึง properties
+
+## Getter
+\`\`\`javascript
+class Circle {
+  constructor(radius) {
+    this._radius = radius;
+  }
+  
+  get area() {
+    return Math.PI * this._radius ** 2;
+  }
+}
+
+const c = new Circle(5);
+console.log(c.area); // ไม่ต้อง ()
+\`\`\`
+
+## Setter
+\`\`\`javascript
+class Player {
+  set health(value) {
+    this._health = Math.max(0, value); // ไม่ต่ำกว่า 0
+  }
+}
+\`\`\`
+    `,
+    codeExample: `class Player {
+  constructor(name) {
+    this.name = name;
+    this._level = 1;
+    this._exp = 0;
+  }
+  
+  get level() {
+    return this._level;
+  }
+  
+  set exp(value) {
+    this._exp = value;
+    if (this._exp >= 100) {
+      this._level++;
+      this._exp = 0;
+      console.log("Level Up! Now Lv." + this._level);
+    }
+  }
+  
+  get exp() {
+    return this._exp;
+  }
+}
+
+const hero = new Player("Hero");
+console.log("Level:", hero.level);
+hero.exp = 50;
+console.log("Exp:", hero.exp);
+hero.exp = 100;`,
+    challenge: {
+      description: "สร้าง class ที่มี getter คำนวณ fullName",
+      starterCode: `class Person {
+  constructor(firstName, lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+  
+  get fullName() {
+    return this.firstName + " " + this.lastName;
+  }
+}
+
+const person = new Person("John", "Doe");
+console.log(person.fullName);`,
+      expectedOutput: "John Doe",
+      hints: ["ใช้ get keyword", "ไม่ต้องใช้ () ตอนเรียก"]
+    },
+    quiz: [
+      {
+        question: "Getter ใช้ทำอะไร?",
+        options: ["ลบ property", "อ่านค่าแบบคำนวณ", "สร้าง object", "สร้าง loop"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-classes-5",
+    topicId: "topic-classes",
+    slug: "private-fields",
+    title: "Private Fields",
+    titleTh: "Private Fields",
+    description: "Encapsulation with private properties",
+    order: 5,
+    duration: 15,
+    content: `
+# Private Fields
+
+ปกป้อง properties ไม่ให้เข้าถึงจากภายนอก
+
+## # prefix (ES2022+)
+\`\`\`javascript
+class BankAccount {
+  #balance = 0;
+  
+  deposit(amount) {
+    this.#balance += amount;
+  }
+  
+  getBalance() {
+    return this.#balance;
+  }
+}
+
+const acc = new BankAccount();
+acc.deposit(100);
+console.log(acc.getBalance()); // 100
+// console.log(acc.#balance); // Error!
+\`\`\`
+
+## ประโยชน์
+- ป้องกันการแก้ไขโดยตรง
+- ซ่อน implementation details
+    `,
+    codeExample: `class Inventory {
+  #items = [];
+  #maxSlots = 10;
+  
+  addItem(item) {
+    if (this.#items.length < this.#maxSlots) {
+      this.#items.push(item);
+      console.log("Added:", item);
+      return true;
+    }
+    console.log("Inventory full!");
+    return false;
+  }
+  
+  getItems() {
+    return [...this.#items]; // return copy
+  }
+  
+  get count() {
+    return this.#items.length;
+  }
+}
+
+const inv = new Inventory();
+inv.addItem("Sword");
+inv.addItem("Potion");
+console.log("Items:", inv.getItems());
+console.log("Count:", inv.count);`,
+    challenge: {
+      description: "สร้าง class ที่มี private password field",
+      starterCode: `class User {
+  #password;
+  
+  constructor(username, password) {
+    this.username = username;
+    this.#password = password;
+  }
+  
+  checkPassword(input) {
+    return input === this.#password;
+  }
+}
+
+const user = new User("admin", "secret123");
+console.log("Check 'wrong':", user.checkPassword("wrong"));
+console.log("Check 'secret123':", user.checkPassword("secret123"));`,
+      expectedOutput: "Check 'wrong': false\nCheck 'secret123': true",
+      hints: ["ใช้ # นำหน้าชื่อ field", "เข้าถึง private ได้เฉพาะใน class"]
+    },
+    quiz: [
+      {
+        question: "Private field ใช้สัญลักษณ์อะไร?",
+        options: ["_", "#", "@", "$"],
+        correctAnswer: 1
+      }
+    ]
+  },
+
+  // ============================================
+  // Topic: Async JavaScript
+  // ============================================
+  {
+    id: "learn-async-1",
+    topicId: "topic-async",
+    slug: "callbacks",
+    title: "Callbacks",
+    titleTh: "Callbacks",
+    description: "Understanding callback functions",
+    order: 1,
+    duration: 15,
+    content: `
+# Callbacks
+
+Callback คือ function ที่ส่งไปให้ function อื่นเรียกใช้ทีหลัง
+
+## ตัวอย่าง
+\`\`\`javascript
+function greet(name, callback) {
+  console.log("Hello, " + name);
+  callback();
+}
+
+greet("John", function() {
+  console.log("Done greeting!");
+});
+\`\`\`
+
+## setTimeout
+\`\`\`javascript
+setTimeout(() => {
+  console.log("3 seconds later...");
+}, 3000);
+\`\`\`
+
+## Callback Hell 😱
+callbacks ซ้อนกันมากๆ อ่านยาก
+    `,
+    codeExample: `// setTimeout ใช้ callback
+console.log("Start");
+
+setTimeout(() => {
+  console.log("After 1 second");
+}, 1000);
+
+setTimeout(() => {
+  console.log("After 2 seconds");
+}, 2000);
+
+console.log("End (but runs first!)");
+
+// Array methods ก็ใช้ callback
+const nums = [1, 2, 3];
+nums.forEach(n => console.log("Number:", n));`,
+    challenge: {
+      description: "ใช้ setTimeout แสดงข้อความหลังจาก 1 วินาที",
+      starterCode: `console.log("Start");
+
+setTimeout(() => {
+  console.log("Hello after 1 second!");
+}, 1000);
+
+console.log("End");`,
+      expectedOutput: "Start\nEnd\nHello after 1 second!",
+      hints: ["setTimeout รับ callback และเวลา (ms)", "1000 ms = 1 second"]
+    },
+    quiz: [
+      {
+        question: "Callback คืออะไร?",
+        options: ["Variable", "Function ที่ส่งไปให้เรียกทีหลัง", "Loop", "Class"],
+        correctAnswer: 1
+      },
+      {
+        question: "setTimeout(fn, 2000) จะเรียก fn หลังจากกี่วินาที?",
+        options: ["1", "2", "20", "2000"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-async-2",
+    topicId: "topic-async",
+    slug: "promises",
+    title: "Promises",
+    titleTh: "Promises",
+    description: "Working with Promises",
+    order: 2,
+    duration: 20,
+    content: `
+# Promises
+
+Promise เป็นวิธีจัดการ async ที่ดีกว่า callback
+
+## สถานะ
+- **pending** - กำลังทำงาน
+- **fulfilled** - สำเร็จ
+- **rejected** - ล้มเหลว
+
+## สร้าง Promise
+\`\`\`javascript
+const promise = new Promise((resolve, reject) => {
+  // async operation
+  if (success) {
+    resolve("Success!");
+  } else {
+    reject("Error!");
+  }
+});
+\`\`\`
+
+## ใช้งาน
+\`\`\`javascript
+promise
+  .then(result => console.log(result))
+  .catch(error => console.log(error));
+\`\`\`
+    `,
+    codeExample: `function fetchData(success) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (success) {
+        resolve({ id: 1, name: "Hero" });
+      } else {
+        reject("Failed to fetch data");
+      }
+    }, 1000);
+  });
+}
+
+console.log("Fetching...");
+
+fetchData(true)
+  .then(data => {
+    console.log("Success:", data);
+  })
+  .catch(error => {
+    console.log("Error:", error);
+  });`,
+    challenge: {
+      description: "สร้าง Promise ที่ resolve หลัง 1 วินาที",
+      starterCode: `const myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("Done!");
+  }, 1000);
+});
+
+myPromise.then(result => {
+  console.log(result);
+});`,
+      expectedOutput: "Done!",
+      hints: ["resolve() สำหรับสำเร็จ", ".then() รับ result"]
+    },
+    quiz: [
+      {
+        question: "Promise มีกี่สถานะ?",
+        options: ["1", "2", "3", "4"],
+        correctAnswer: 2
+      },
+      {
+        question: ".catch() ใช้จับอะไร?",
+        options: ["Success", "Error", "Pending", "All"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-async-3",
+    topicId: "topic-async",
+    slug: "async-await",
+    title: "Async/Await",
+    titleTh: "Async/Await",
+    description: "Modern async syntax",
+    order: 3,
+    duration: 20,
+    content: `
+# Async/Await
+
+Syntax ที่อ่านง่ายกว่า .then()
+
+## async function
+\`\`\`javascript
+async function getData() {
+  const result = await fetch(url);
+  return result;
+}
+\`\`\`
+
+## await
+- ใช้ได้เฉพาะใน async function
+- "รอ" Promise resolve แล้วค่อยทำต่อ
+
+## try/catch
+\`\`\`javascript
+async function getData() {
+  try {
+    const data = await fetchData();
+    console.log(data);
+  } catch (error) {
+    console.log("Error:", error);
+  }
+}
+\`\`\`
+    `,
+    codeExample: `function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function gameLoop() {
+  console.log("Game starting...");
+  
+  await delay(1000);
+  console.log("Loading assets...");
+  
+  await delay(1000);
+  console.log("Ready to play!");
+  
+  return "Game loaded!";
+}
+
+gameLoop().then(msg => console.log(msg));`,
+    challenge: {
+      description: "ใช้ async/await รอ delay แล้วพิมพ์ข้อความ",
+      starterCode: `function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function main() {
+  console.log("Start");
+  await delay(1000);
+  console.log("After 1 second");
+}
+
+main();`,
+      expectedOutput: "Start\nAfter 1 second",
+      hints: ["await รอ Promise", "async function ต้องมี async keyword"]
+    },
+    quiz: [
+      {
+        question: "await ใช้ได้ที่ไหน?",
+        options: ["ทุกที่", "เฉพาะใน async function", "เฉพาะ global", "ใน loop"],
+        correctAnswer: 1
+      },
+      {
+        question: "async function return อะไร?",
+        options: ["undefined", "Promise", "value ปกติ", "Error"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-async-4",
+    topicId: "topic-async",
+    slug: "fetch-api",
+    title: "Fetch API",
+    titleTh: "Fetch API",
+    description: "Making HTTP requests",
+    order: 4,
+    duration: 20,
+    content: `
+# Fetch API
+
+ใช้ส่ง HTTP requests
+
+## GET Request
+\`\`\`javascript
+fetch('https://api.example.com/data')
+  .then(response => response.json())
+  .then(data => console.log(data));
+\`\`\`
+
+## ใช้กับ async/await
+\`\`\`javascript
+async function getData() {
+  const response = await fetch(url);
+  const data = await response.json();
+  return data;
+}
+\`\`\`
+
+## POST Request
+\`\`\`javascript
+fetch(url, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ name: 'John' })
+});
+\`\`\`
+    `,
+    codeExample: `// จำลอง fetch
+async function fetchUser(id) {
+  // สมมติว่าเรียก API
+  await new Promise(r => setTimeout(r, 500));
+  
+  const users = {
+    1: { id: 1, name: "Hero", level: 10 },
+    2: { id: 2, name: "Mage", level: 15 }
+  };
+  
+  return users[id] || null;
+}
+
+async function main() {
+  console.log("Fetching user...");
+  const user = await fetchUser(1);
+  
+  if (user) {
+    console.log("Found:", user.name, "Lv.", user.level);
+  } else {
+    console.log("User not found");
+  }
+}
+
+main();`,
+    challenge: {
+      description: "เขียน function ที่ fetch และ return ข้อมูล",
+      starterCode: `async function getPlayerData() {
+  // จำลอง API call
+  await new Promise(r => setTimeout(r, 500));
+  
+  return {
+    name: "Hero",
+    score: 1000,
+    rank: "Gold"
+  };
+}
+
+async function main() {
+  const data = await getPlayerData();
+  console.log(data.name, "-", data.rank, "- Score:", data.score);
+}
+
+main();`,
+      expectedOutput: "Hero - Gold - Score: 1000",
+      hints: ["await getPlayerData()", "return object จาก async function"]
+    },
+    quiz: [
+      {
+        question: "fetch() return อะไร?",
+        options: ["String", "Object", "Promise", "Array"],
+        correctAnswer: 2
+      }
+    ]
+  },
+  {
+    id: "learn-async-5",
+    topicId: "topic-async",
+    slug: "promise-all",
+    title: "Promise.all",
+    titleTh: "Promise.all",
+    description: "Running promises in parallel",
+    order: 5,
+    duration: 15,
+    content: `
+# Promise.all
+
+รัน promises หลายตัวพร้อมกัน
+
+## Syntax
+\`\`\`javascript
+const results = await Promise.all([
+  promise1,
+  promise2,
+  promise3
+]);
+\`\`\`
+
+## ประโยชน์
+- รันพร้อมกัน = เร็วกว่า
+- รอทุกตัวเสร็จ = ได้ผลลัพธ์พร้อมกัน
+
+## ถ้าตัวใดตัวหนึ่ง reject?
+- ทั้ง Promise.all จะ reject
+- ใช้ Promise.allSettled ถ้าต้องการผลทุกตัว
+    `,
+    codeExample: `function delay(ms, value) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(value), ms);
+  });
+}
+
+async function loadGame() {
+  console.log("Loading game assets...");
+  
+  const start = Date.now();
+  
+  const [player, items, map] = await Promise.all([
+    delay(1000, { name: "Hero" }),
+    delay(800, ["Sword", "Shield"]),
+    delay(600, { level: 1 })
+  ]);
+  
+  const time = Date.now() - start;
+  
+  console.log("Player:", player);
+  console.log("Items:", items);
+  console.log("Map:", map);
+  console.log("Total time:", time, "ms");
+}
+
+loadGame();`,
+    challenge: {
+      description: "ใช้ Promise.all โหลด 2 resources พร้อมกัน",
+      starterCode: `function loadResource(name, time) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(name + " loaded"), time);
+  });
+}
+
+async function main() {
+  const [a, b] = await Promise.all([
+    loadResource("Textures", 500),
+    loadResource("Sounds", 300)
+  ]);
+  
+  console.log(a);
+  console.log(b);
+}
+
+main();`,
+      expectedOutput: "Textures loaded\nSounds loaded",
+      hints: ["Promise.all รับ array ของ promises", "destructure ผลลัพธ์ได้"]
+    },
+    quiz: [
+      {
+        question: "Promise.all ต่างจากการ await ทีละตัวอย่างไร?",
+        options: ["ช้ากว่า", "รันพร้อมกัน เร็วกว่า", "เหมือนกัน", "ไม่รอผล"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-async-6",
+    topicId: "topic-async",
+    slug: "error-handling",
+    title: "Error Handling",
+    titleTh: "การจัดการ Error",
+    description: "Handling async errors",
+    order: 6,
+    duration: 15,
+    content: `
+# Error Handling
+
+จัดการ error ใน async code
+
+## try/catch
+\`\`\`javascript
+async function getData() {
+  try {
+    const data = await fetchData();
+    return data;
+  } catch (error) {
+    console.log("Error:", error.message);
+    return null;
+  }
+}
+\`\`\`
+
+## finally
+\`\`\`javascript
+try {
+  await doSomething();
+} catch (error) {
+  handleError(error);
+} finally {
+  cleanup(); // ทำเสมอ
+}
+\`\`\`
+    `,
+    codeExample: `function fetchData(shouldFail) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (shouldFail) {
+        reject(new Error("Network error"));
+      } else {
+        resolve({ data: "Success!" });
+      }
+    }, 500);
+  });
+}
+
+async function loadData() {
+  console.log("Loading...");
+  
+  try {
+    const result = await fetchData(true);
+    console.log("Data:", result);
+  } catch (error) {
+    console.log("Caught error:", error.message);
+  } finally {
+    console.log("Done loading");
+  }
+}
+
+loadData();`,
+    challenge: {
+      description: "ใช้ try/catch จัดการ error",
+      starterCode: `async function riskyOperation() {
+  throw new Error("Something went wrong!");
+}
+
+async function main() {
+  try {
+    await riskyOperation();
+    console.log("Success");
+  } catch (error) {
+    console.log("Caught:", error.message);
+  }
+}
+
+main();`,
+      expectedOutput: "Caught: Something went wrong!",
+      hints: ["try {} catch (error) {}", "error.message เข้าถึงข้อความ error"]
+    },
+    quiz: [
+      {
+        question: "finally block ทำงานเมื่อไหร่?",
+        options: ["เมื่อสำเร็จ", "เมื่อ error", "ทำเสมอ", "ไม่ทำเลย"],
+        correctAnswer: 2
+      }
+    ]
+  },
+
+  // ============================================
+  // Topic: DOM & Events
+  // ============================================
+  {
+    id: "learn-dom-1",
+    topicId: "topic-dom",
+    slug: "dom-basics",
+    title: "DOM Basics",
+    titleTh: "พื้นฐาน DOM",
+    description: "Understanding the DOM tree",
+    order: 1,
+    duration: 15,
+    content: `
+# DOM คืออะไร?
+
+DOM = Document Object Model
+แสดง HTML เป็น tree ของ objects
+
+## โครงสร้าง
+\`\`\`
+document
+└── html
+    ├── head
+    │   └── title
+    └── body
+        ├── h1
+        └── p
+\`\`\`
+
+## เข้าถึง Elements
+\`\`\`javascript
+document.getElementById("myId")
+document.querySelector(".myClass")
+document.querySelectorAll("p")
+\`\`\`
+    `,
+    codeExample: `// จำลอง DOM environment
+const document = {
+  getElementById: (id) => ({ id, textContent: "Hello" }),
+  querySelector: (sel) => ({ selector: sel, innerHTML: "<p>Text</p>" }),
+  querySelectorAll: (sel) => [{ tag: "p" }, { tag: "p" }]
+};
+
+const element = document.getElementById("title");
+console.log("Element ID:", element.id);
+console.log("Content:", element.textContent);
+
+const items = document.querySelectorAll("p");
+console.log("Found", items.length, "paragraphs");`,
+    challenge: {
+      description: "เข้าถึง element ด้วย getElementById",
+      starterCode: `// จำลอง DOM
+const document = {
+  getElementById: (id) => ({
+    id: id,
+    textContent: "Welcome to JavaScript!"
+  })
+};
+
+const header = document.getElementById("header");
+console.log("ID:", header.id);
+console.log("Text:", header.textContent);`,
+      expectedOutput: "ID: header\nText: Welcome to JavaScript!",
+      hints: ["getElementById รับ string เป็น id", "element.textContent อ่านข้อความ"]
+    },
+    quiz: [
+      {
+        question: "DOM ย่อมาจาก?",
+        options: ["Data Object Model", "Document Object Model", "Display Object Method", "Dynamic Object Manager"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-dom-2",
+    topicId: "topic-dom",
+    slug: "manipulating-elements",
+    title: "Manipulating Elements",
+    titleTh: "การจัดการ Elements",
+    description: "Changing content and styles",
+    order: 2,
+    duration: 20,
+    content: `
+# จัดการ Elements
+
+## เปลี่ยน Content
+\`\`\`javascript
+element.textContent = "New text";
+element.innerHTML = "<b>Bold text</b>";
+\`\`\`
+
+## เปลี่ยน Style
+\`\`\`javascript
+element.style.color = "red";
+element.style.fontSize = "24px";
+\`\`\`
+
+## เปลี่ยน Class
+\`\`\`javascript
+element.classList.add("active");
+element.classList.remove("hidden");
+element.classList.toggle("dark");
+\`\`\`
+
+## เปลี่ยน Attribute
+\`\`\`javascript
+element.setAttribute("src", "image.png");
+element.getAttribute("href");
+\`\`\`
+    `,
+    codeExample: `// จำลอง element
+const element = {
+  textContent: "Original",
+  style: {},
+  classList: {
+    classes: [],
+    add(c) { this.classes.push(c); },
+    has(c) { return this.classes.includes(c); }
+  }
+};
+
+console.log("Before:", element.textContent);
+
+
+element.textContent = "Updated!";
+console.log("After:", element.textContent);
+
+element.style.color = "blue";
+element.style.fontSize = "20px";
+console.log("Style:", element.style);
+
+element.classList.add("active");
+element.classList.add("highlight");
+console.log("Classes:", element.classList.classes);`,
+    challenge: {
+      description: "เปลี่ยน textContent และ style ของ element",
+      starterCode: `const element = {
+  textContent: "Hello",
+  style: {}
+};
+
+element.textContent = "Hello World!";
+element.style.color = "green";
+
+console.log("Text:", element.textContent);
+console.log("Color:", element.style.color);`,
+      expectedOutput: "Text: Hello World!\nColor: green",
+      hints: ["กำหนดค่าให้ property โดยตรง", "style เป็น object"]
+    },
+    quiz: [
+      {
+        question: "textContent vs innerHTML ต่างกันอย่างไร?",
+        options: ["เหมือนกัน", "textContent เป็น text, innerHTML รับ HTML", "innerHTML เร็วกว่า", "textContent รับ HTML"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-dom-3",
+    topicId: "topic-dom",
+    slug: "event-listeners",
+    title: "Event Listeners",
+    titleTh: "Event Listeners",
+    description: "Handling user interactions",
+    order: 3,
+    duration: 20,
+    content: `
+# Event Listeners
+
+รับ event จากผู้ใช้
+
+## addEventListener
+\`\`\`javascript
+button.addEventListener("click", function() {
+  console.log("Clicked!");
+});
+\`\`\`
+
+## Events ที่ใช้บ่อย
+- click - คลิก
+- mouseover - hover
+- keydown - กดคีย์
+- submit - ส่งฟอร์ม
+- change - ค่าเปลี่ยน
+- load - โหลดเสร็จ
+
+## Event Object
+\`\`\`javascript
+element.addEventListener("click", (event) => {
+  console.log(event.target);
+});
+\`\`\`
+    `,
+    codeExample: `// จำลอง event system
+class Element {
+  constructor(name) {
+    this.name = name;
+    this.listeners = {};
+  }
+  
+  addEventListener(event, callback) {
+    this.listeners[event] = callback;
+  }
+  
+  trigger(event, data) {
+    if (this.listeners[event]) {
+      this.listeners[event](data);
+    }
+  }
+}
+
+const button = new Element("button");
+
+button.addEventListener("click", (e) => {
+  console.log("Button clicked!");
+  console.log("Event data:", e);
+});
+
+// จำลองการคลิก
+button.trigger("click", { type: "click", x: 100, y: 50 });`,
+    challenge: {
+      description: "สร้าง event listener สำหรับ click",
+      starterCode: `const button = {
+  listeners: {},
+  addEventListener(event, fn) {
+    this.listeners[event] = fn;
+  },
+  click() {
+    if (this.listeners["click"]) {
+      this.listeners["click"]();
+    }
+  }
+};
+
+button.addEventListener("click", () => {
+  console.log("Button was clicked!");
+});
+
+button.click();`,
+      expectedOutput: "Button was clicked!",
+      hints: ["addEventListener รับ event name และ callback", "callback จะถูกเรียกเมื่อเกิด event"]
+    },
+    quiz: [
+      {
+        question: "addEventListener ใช้ทำอะไร?",
+        options: ["สร้าง element", "ฟัง event จากผู้ใช้", "ลบ element", "เปลี่ยน style"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-dom-4",
+    topicId: "topic-dom",
+    slug: "creating-elements",
+    title: "Creating Elements",
+    titleTh: "สร้าง Elements",
+    description: "Dynamic element creation",
+    order: 4,
+    duration: 15,
+    content: `
+# สร้าง Elements
+
+## createElement
+\`\`\`javascript
+const div = document.createElement("div");
+div.textContent = "Hello";
+div.className = "box";
+\`\`\`
+
+## appendChild
+\`\`\`javascript
+parent.appendChild(div);
+\`\`\`
+
+## remove
+\`\`\`javascript
+element.remove();
+\`\`\`
+
+## insertBefore
+\`\`\`javascript
+parent.insertBefore(newChild, referenceChild);
+\`\`\`
+    `,
+    codeExample: `// จำลอง DOM creation
+class MockElement {
+  constructor(tag) {
+    this.tagName = tag;
+    this.textContent = "";
+    this.className = "";
+    this.children = [];
+  }
+  
+  appendChild(child) {
+    this.children.push(child);
+    return child;
+  }
+}
+
+const document = {
+  createElement: (tag) => new MockElement(tag)
+};
+
+// สร้าง elements
+const ul = document.createElement("ul");
+ul.className = "todo-list";
+
+const li1 = document.createElement("li");
+li1.textContent = "Learn JavaScript";
+
+const li2 = document.createElement("li");
+li2.textContent = "Build a game";
+
+ul.appendChild(li1);
+ul.appendChild(li2);
+
+console.log("List created:", ul.tagName);
+console.log("Items:", ul.children.length);
+ul.children.forEach((li, i) => {
+  console.log((i+1) + ".", li.textContent);
+});`,
+    challenge: {
+      description: "สร้าง element และเพิ่มเข้า parent",
+      starterCode: `const parent = { children: [], appendChild(c) { this.children.push(c); } };
+const createElement = (tag) => ({ tagName: tag, textContent: "" });
+
+const item = createElement("div");
+item.textContent = "New Item";
+parent.appendChild(item);
+
+console.log("Children count:", parent.children.length);
+console.log("Content:", parent.children[0].textContent);`,
+      expectedOutput: "Children count: 1\nContent: New Item",
+      hints: ["createElement สร้าง element ใหม่", "appendChild เพิ่ม element"]
+    },
+    quiz: [
+      {
+        question: "createElement ทำอะไร?",
+        options: ["ลบ element", "สร้าง element ใหม่", "หา element", "เปลี่ยน element"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-dom-5",
+    topicId: "topic-dom",
+    slug: "forms",
+    title: "Working with Forms",
+    titleTh: "การทำงานกับ Forms",
+    description: "Form handling and validation",
+    order: 5,
+    duration: 20,
+    content: `
+# Forms
+
+## อ่านค่า Input
+\`\`\`javascript
+const input = document.getElementById("name");
+console.log(input.value);
+\`\`\`
+
+## Submit Event
+\`\`\`javascript
+form.addEventListener("submit", (e) => {
+  e.preventDefault(); // ป้องกัน refresh
+  // process form
+});
+\`\`\`
+
+## Validation
+\`\`\`javascript
+if (input.value.trim() === "") {
+  alert("กรุณากรอกข้อมูล");
+}
+\`\`\`
+    `,
+    codeExample: `// จำลอง form handling
+const form = {
+  inputs: {
+    username: { value: "john_doe" },
+    email: { value: "john@example.com" },
+    age: { value: "25" }
+  },
+  
+  getData() {
+    return {
+      username: this.inputs.username.value,
+      email: this.inputs.email.value,
+      age: parseInt(this.inputs.age.value)
+    };
+  },
+  
+  validate() {
+    const data = this.getData();
+    if (!data.username) return "Username required";
+    if (!data.email.includes("@")) return "Invalid email";
+    if (data.age < 0) return "Invalid age";
+    return null;
+  }
+};
+
+const error = form.validate();
+if (error) {
+  console.log("Error:", error);
+} else {
+  console.log("Form data:", form.getData());
+}`,
+    challenge: {
+      description: "ตรวจสอบว่า input ไม่ว่างเปล่า",
+      starterCode: `function validateForm(username, email) {
+  if (!username || username.trim() === "") {
+    return "Username is required";
+  }
+  if (!email || !email.includes("@")) {
+    return "Valid email is required";
+  }
+  return null; // valid
+}
+
+console.log(validateForm("", "test@test.com"));
+console.log(validateForm("john", "invalid"));
+console.log(validateForm("john", "john@test.com"));`,
+      expectedOutput: "Username is required\nValid email is required\nnull",
+      hints: ["ใช้ trim() ลบ whitespace", "includes('@') เช็ค email"]
+    },
+    quiz: [
+      {
+        question: "e.preventDefault() ทำอะไร?",
+        options: ["ลบ form", "ป้องกัน default behavior", "ส่ง form", "Clear form"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-dom-6",
+    topicId: "topic-dom",
+    slug: "local-storage",
+    title: "Local Storage",
+    titleTh: "Local Storage",
+    description: "Storing data locally",
+    order: 6,
+    duration: 15,
+    content: `
+# Local Storage
+
+เก็บข้อมูลใน browser
+
+## บันทึก
+\`\`\`javascript
+localStorage.setItem("key", "value");
+\`\`\`
+
+## อ่าน
+\`\`\`javascript
+const value = localStorage.getItem("key");
+\`\`\`
+
+## ลบ
+\`\`\`javascript
+localStorage.removeItem("key");
+localStorage.clear(); // ลบทั้งหมด
+\`\`\`
+
+## เก็บ Object
+\`\`\`javascript
+localStorage.setItem("user", JSON.stringify(user));
+const user = JSON.parse(localStorage.getItem("user"));
+\`\`\`
+    `,
+    codeExample: `// จำลอง localStorage
+const localStorage = {
+  data: {},
+  setItem(key, value) {
+    this.data[key] = value;
+  },
+  getItem(key) {
+    return this.data[key] || null;
+  },
+  removeItem(key) {
+    delete this.data[key];
+  }
+};
+
+// เก็บ settings
+const settings = {
+  volume: 80,
+  difficulty: "hard",
+  darkMode: true
+};
+
+localStorage.setItem("gameSettings", JSON.stringify(settings));
+
+// อ่าน settings
+const saved = JSON.parse(localStorage.getItem("gameSettings"));
+console.log("Settings:", saved);
+console.log("Volume:", saved.volume);
+console.log("Dark Mode:", saved.darkMode);`,
+    challenge: {
+      description: "เก็บและอ่าน player data จาก storage",
+      starterCode: `const storage = {
+  data: {},
+  setItem(k, v) { this.data[k] = v; },
+  getItem(k) { return this.data[k] || null; }
+};
+
+const player = { name: "Hero", level: 10, gold: 500 };
+storage.setItem("player", JSON.stringify(player));
+
+const loaded = JSON.parse(storage.getItem("player"));
+console.log("Loaded:", loaded.name, "Lv.", loaded.level);`,
+      expectedOutput: "Loaded: Hero Lv. 10",
+      hints: ["JSON.stringify เปลี่ยน object เป็น string", "JSON.parse เปลี่ยน string เป็น object"]
+    },
+    quiz: [
+      {
+        question: "localStorage เก็บข้อมูลแบบไหน?",
+        options: ["ชั่วคราว", "ถาวร (จนกว่าจะลบ)", "เฉพาะ session", "บน server"],
+        correctAnswer: 1
+      },
+      {
+        question: "ทำไมต้องใช้ JSON.stringify?",
+        options: ["ให้เร็วขึ้น", "localStorage เก็บได้แค่ string", "ให้ปลอดภัย", "ให้เล็กลง"],
+        correctAnswer: 1
+      }
+    ]
+  },
 ];
 
 export function getLessonsByTopic(topicId: string): LearnLesson[] {
@@ -1430,7 +2944,19 @@ export function getLessonsByTopic(topicId: string): LearnLesson[] {
 }
 
 export function getLessonBySlug(topicSlug: string, lessonSlug: string): LearnLesson | undefined {
-  const topicId = `topic-${topicSlug === "basics" ? "basics" : topicSlug === "control-flow" ? "control" : topicSlug}`;
+  // Map topic slug to topic ID
+  const slugToId: Record<string, string> = {
+    "basics": "topic-basics",
+    "control-flow": "topic-control",
+    "functions": "topic-functions",
+    "objects-arrays": "topic-objects",
+    "classes": "topic-classes",
+    "async": "topic-async",
+    "dom": "topic-dom",
+    "typescript": "topic-typescript"
+  };
+  
+  const topicId = slugToId[topicSlug] || `topic-${topicSlug}`;
   return learnLessons.find(l => l.topicId === topicId && l.slug === lessonSlug);
 }
 
