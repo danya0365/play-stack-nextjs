@@ -52,13 +52,13 @@ function QuizSection({ quiz, lessonId, onComplete }: QuizSectionProps) {
   const allAnswered = Object.keys(answers).length === quiz.length;
 
   return (
-    <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-purple-500/30">
-      <h3 className="text-lg font-semibold text-white mb-4">❓ คำถามปิดท้าย</h3>
+    <div className="bg-white/80 dark:bg-slate-800/50 rounded-2xl p-6 mb-6 border border-purple-200 dark:border-purple-500/30">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">❓ คำถามปิดท้าย</h3>
       
       <div className="space-y-6">
         {quiz.map((q, qIdx) => (
-          <div key={qIdx} className="bg-slate-900/50 rounded-lg p-4">
-            <p className="text-white font-medium mb-3">
+          <div key={qIdx} className="bg-gray-50 dark:bg-slate-900/50 rounded-lg p-4">
+            <p className="text-gray-900 dark:text-white font-medium mb-3">
               {qIdx + 1}. {q.question}
             </p>
             <div className="space-y-2">
@@ -80,7 +80,7 @@ function QuizSection({ quiz, lessonId, onComplete }: QuizSectionProps) {
                           ? 'bg-red-600/30 border-2 border-red-500 text-red-300'
                           : isSelected
                             ? 'bg-purple-600/30 border-2 border-purple-500 text-purple-300'
-                            : 'bg-slate-700/50 hover:bg-slate-600/50 text-gray-300 border-2 border-transparent'
+                            : 'bg-gray-100 dark:bg-slate-700/50 hover:bg-gray-200 dark:hover:bg-slate-600/50 text-gray-700 dark:text-gray-300 border-2 border-transparent'
                     }`}
                   >
                     <span className="mr-2">{String.fromCharCode(65 + oIdx)}.</span>
@@ -103,7 +103,7 @@ function QuizSection({ quiz, lessonId, onComplete }: QuizSectionProps) {
             className={`px-6 py-2 rounded-lg font-medium transition-all ${
               allAnswered
                 ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                : 'bg-slate-700 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-200 dark:bg-slate-700 text-gray-500 dark:text-gray-500 cursor-not-allowed'
             }`}
           >
             ✅ ตรวจคำตอบ
@@ -117,7 +117,7 @@ function QuizSection({ quiz, lessonId, onComplete }: QuizSectionProps) {
             {score < quiz.length && (
               <button
                 onClick={handleRetry}
-                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg"
+                className="px-4 py-2 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-800 dark:text-white rounded-lg"
               >
                 🔄 ลองใหม่
               </button>
@@ -161,8 +161,8 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseSlug }: Learn
   if (!topic || !lesson || !course) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-        <h1 className="text-2xl font-bold text-white">❌ ไม่พบบทเรียนนี้</h1>
-        <Link href="/learn" className="text-indigo-400 hover:underline mt-4 block">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">❌ ไม่พบบทเรียนนี้</h1>
+        <Link href="/learn" className="text-indigo-600 dark:text-indigo-400 hover:underline mt-4 block">
           ← กลับไปหน้า Learn
         </Link>
       </div>
@@ -176,27 +176,27 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseSlug }: Learn
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  // Simple markdown renderer
+  // Simple markdown renderer - with light/dark mode support
   const renderContent = (content: string) => {
     return content
-      .replace(/^### (.+)$/gm, '<h3 class="text-lg font-semibold mt-4 mb-2 text-white">$1</h3>')
-      .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold mt-6 mb-3 text-indigo-400">$1</h2>')
-      .replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold mb-4 text-white">$1</h1>')
+      .replace(/^### (.+)$/gm, '<h3 class="text-lg font-semibold mt-4 mb-2 text-gray-900 dark:text-white">$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold mt-6 mb-3 text-indigo-600 dark:text-indigo-400">$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">$1</h1>')
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-      .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-slate-700 rounded text-sm text-pink-400">$1</code>')
+      .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-gray-100 dark:bg-slate-700 rounded text-sm text-pink-600 dark:text-pink-400">$1</code>')
       .replace(
         /```(\w+)?\n([\s\S]*?)```/g,
-        '<pre class="bg-slate-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm border border-slate-700"><code>$2</code></pre>'
+        '<pre class="bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm border border-gray-200 dark:border-slate-700"><code>$2</code></pre>'
       )
-      .replace(/^- (.+)$/gm, '<li class="ml-4 text-gray-300">• $1</li>')
-      .replace(/\n\n/g, "</p><p class='mb-3 text-gray-300'>");
+      .replace(/^- (.+)$/gm, '<li class="ml-4 text-gray-700 dark:text-gray-300">• $1</li>')
+      .replace(/\n\n/g, "</p><p class='mb-3 text-gray-700 dark:text-gray-300'>");
   };
 
   // Dynamic colors based on course
   const colorClasses: Record<string, { gradient: string; btn: string; text: string }> = {
-    javascript: { gradient: "from-yellow-600 to-orange-600", btn: "bg-yellow-600 hover:bg-yellow-700", text: "text-yellow-400" },
-    typescript: { gradient: "from-blue-600 to-indigo-600", btn: "bg-blue-600 hover:bg-blue-700", text: "text-blue-400" },
-    go: { gradient: "from-cyan-600 to-teal-600", btn: "bg-cyan-600 hover:bg-cyan-700", text: "text-cyan-400" },
+    javascript: { gradient: "from-yellow-600 to-orange-600", btn: "bg-yellow-600 hover:bg-yellow-700", text: "text-yellow-600 dark:text-yellow-400" },
+    html: { gradient: "from-orange-600 to-red-600", btn: "bg-orange-600 hover:bg-orange-700", text: "text-orange-600 dark:text-orange-400" },
+    go: { gradient: "from-cyan-600 to-teal-600", btn: "bg-cyan-600 hover:bg-cyan-700", text: "text-cyan-600 dark:text-cyan-400" },
   };
   const colors = colorClasses[courseSlug] || colorClasses.javascript;
 
@@ -211,14 +211,14 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseSlug }: Learn
       )}
 
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6 flex-wrap">
-        <Link href="/learn" className="hover:text-indigo-400">Learn</Link>
+      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6 flex-wrap">
+        <Link href="/learn" className="hover:text-indigo-600 dark:hover:text-indigo-400">Learn</Link>
         <span>/</span>
         <Link href={coursePath} className={`hover:${colors.text}`}>{course.title}</Link>
         <span>/</span>
         <Link href={topicPath} className={`hover:${colors.text}`}>{topic.titleTh}</Link>
         <span>/</span>
-        <span className="text-white">{lesson.titleTh}</span>
+        <span className="text-gray-900 dark:text-white">{lesson.titleTh}</span>
       </div>
 
       {/* Header */}
@@ -242,9 +242,9 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseSlug }: Learn
       </div>
 
       {/* Content */}
-      <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700">
+      <div className="bg-white/80 dark:bg-slate-800/50 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-slate-700">
         <div 
-          className="prose prose-invert max-w-none"
+          className="prose prose-gray dark:prose-invert max-w-none"
           dangerouslySetInnerHTML={{ __html: renderContent(lesson.content) }}
         />
       </div>
@@ -252,7 +252,7 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseSlug }: Learn
       {/* Code Example */}
       {lesson.codeExample && (
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-white mb-3">💻 ลองเขียนโค้ด</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">💻 ลองเขียนโค้ด</h3>
           <CodeEditor
             initialCode={lesson.codeExample}
             title="ตัวอย่างโค้ด"
@@ -264,7 +264,7 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseSlug }: Learn
       {/* Challenge */}
       {lesson.challenge && (
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-white mb-3">🎯 Challenge</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">🎯 Challenge</h3>
           <CodeEditor
             initialCode={lesson.challenge.starterCode}
             title={lesson.challenge.description}
@@ -292,14 +292,14 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseSlug }: Learn
           {prevLesson ? (
             <Link
               href={`${basePath}/${prevLesson.slug}`}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-800 dark:text-white rounded-lg transition-colors"
             >
               ← {prevLesson.titleTh}
             </Link>
           ) : (
             <Link
               href={topicPath}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-800 dark:text-white rounded-lg transition-colors"
             >
               ← กลับ
             </Link>

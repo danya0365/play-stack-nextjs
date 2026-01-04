@@ -65,10 +65,10 @@ export function MainLearnCourseView({ courseType }: LearnCourseViewProps) {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-        <Link href="/learn" className="hover:text-indigo-400">Learn</Link>
+      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <Link href="/learn" className="hover:text-indigo-600 dark:hover:text-indigo-400">Learn</Link>
         <span>/</span>
-        <span className="text-white">{course?.title || courseType}</span>
+        <span className="text-gray-900 dark:text-white">{course?.title || courseType}</span>
       </div>
 
       {/* Mode Switcher */}
@@ -119,8 +119,8 @@ export function MainLearnCourseView({ courseType }: LearnCourseViewProps) {
               href={`/learn/${courseType}/${topic.slug}`}
               className={`block p-6 rounded-2xl border transition-all hover:scale-[1.01] ${
                 isComplete
-                  ? "bg-green-900/20 border-green-500/50"
-                  : `bg-slate-800/50 border-slate-700/50 hover:border-${brandColor}-500/50`
+                  ? "bg-green-50 dark:bg-green-900/20 border-green-400 dark:border-green-500/50"
+                  : `bg-white/80 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700/50 hover:border-${brandColor}-400 dark:hover:border-${brandColor}-500/50`
               }`}
             >
               <div className="flex items-start justify-between mb-4">
@@ -129,20 +129,20 @@ export function MainLearnCourseView({ courseType }: LearnCourseViewProps) {
                     {topic.icon}
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {isComplete && "✅ "}{topic.titleTh}
                     </h3>
-                    <p className="text-sm text-gray-400">{topic.descriptionTh}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{topic.descriptionTh}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
                     {progress.completed}/{progress.total}
                   </span>
                 </div>
               </div>
 
-              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all ${
                     isComplete
@@ -159,7 +159,7 @@ export function MainLearnCourseView({ courseType }: LearnCourseViewProps) {
 
       {/* Back Link */}
       <div className="mt-8">
-        <Link href="/learn" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+        <Link href="/learn" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors">
           ← กลับหน้า Learn
         </Link>
       </div>
