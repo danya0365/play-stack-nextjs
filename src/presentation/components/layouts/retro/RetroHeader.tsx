@@ -3,12 +3,21 @@
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function RetroHeader() {
   const { theme, setTheme } = useTheme();
   const { toggleLayout } = useLayoutStore();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleRefresh = () => {
+    router.refresh();
+  };
 
   const menuItems = [
     { label: "File", underline: "F" },
@@ -19,10 +28,16 @@ export function RetroHeader() {
     { label: "Help", underline: "H" },
   ];
 
-  const toolbarButtons = [
-    { icon: "⬅️", label: "Back", disabled: false },
+  const toolbarButtons: {
+    icon: string;
+    label: string;
+    disabled: boolean;
+    href?: string;
+    onClick?: () => void;
+  }[] = [
+    { icon: "⬅️", label: "Back", disabled: false, onClick: handleBack },
     { icon: "➡️", label: "Forward", disabled: true },
-    { icon: "🔄", label: "Refresh", disabled: false },
+    { icon: "🔄", label: "Refresh", disabled: false, onClick: handleRefresh },
     { icon: "🏠", label: "Home", disabled: false, href: "/" },
   ];
 
@@ -100,6 +115,7 @@ export function RetroHeader() {
               <button
                 className="retro-toolbar-btn"
                 disabled={btn.disabled}
+                onClick={btn.onClick}
               >
                 <span className="retro-toolbar-icon">{btn.icon}</span>
                 <span className="retro-toolbar-label">{btn.label}</span>
