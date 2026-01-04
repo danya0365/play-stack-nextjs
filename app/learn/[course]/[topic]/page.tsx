@@ -53,5 +53,5 @@ export default async function LearnTopicPage({ params }: Props) {
     notFound();
   }
 
-  return <LearnTopicView topicSlug={topicSlug} courseType={courseSlug as "javascript" | "typescript"} />;
+  return <LearnTopicView topicSlug={topicSlug} courseSlug={courseSlug} />;
 }

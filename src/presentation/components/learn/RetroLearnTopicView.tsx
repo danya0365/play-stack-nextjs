@@ -1,5 +1,6 @@
 "use client";
 
+import { getCourseBySlug } from "@/src/data/master/learnCourses";
 import { getLessonsByTopic } from "@/src/data/master/learnLessons";
 import { getTopicBySlug } from "@/src/data/master/learnTopics";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
@@ -7,21 +8,20 @@ import Link from "next/link";
 
 interface RetroLearnTopicViewProps {
   topicSlug: string;
-  courseType?: "javascript" | "typescript";
+  courseSlug: string;
 }
 
-export function RetroLearnTopicView({ topicSlug, courseType = "javascript" }: RetroLearnTopicViewProps) {
+export function RetroLearnTopicView({ topicSlug, courseSlug }: RetroLearnTopicViewProps) {
   const { isLessonComplete } = useProgressStore();
   
-  const isTS = courseType === "typescript";
-  const actualTopicSlug = isTS ? "typescript" : topicSlug;
-  const topic = getTopicBySlug(actualTopicSlug);
+  const course = getCourseBySlug(courseSlug);
+  const topic = getTopicBySlug(topicSlug);
   const lessons = topic ? getLessonsByTopic(topic.id) : [];
 
-  const basePath = isTS ? "/learn/typescript" : `/learn/javascript/${topicSlug}`;
-  const backPath = isTS ? "/learn" : "/learn/javascript";
+  const basePath = `/learn/${courseSlug}/${topicSlug}`;
+  const backPath = `/learn/${courseSlug}`;
 
-  if (!topic) {
+  if (!topic || !course) {
     return (
       <div className="retro-page h-full overflow-auto">
         <div className="retro-groupbox">
@@ -38,6 +38,14 @@ export function RetroLearnTopicView({ topicSlug, courseType = "javascript" }: Re
   const completedCount = lessons.filter(l => isLessonComplete(l.id)).length;
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
 
+  // Dynamic color based on course
+  const progressColors: Record<string, string> = {
+    javascript: "bg-yellow-500",
+    typescript: "bg-blue-500",
+    go: "bg-cyan-500",
+  };
+  const progressColor = progressColors[courseSlug] || "bg-yellow-500";
+
   return (
     <div className="retro-page h-full overflow-auto">
       {/* Header */}
@@ -53,6 +61,18 @@ export function RetroLearnTopicView({ topicSlug, courseType = "javascript" }: Re
         </div>
       </div>
 
+      {/* Breadcrumb */}
+      <div className="retro-groupbox">
+        <span className="retro-groupbox-title">📍 Navigation</span>
+        <div className="text-xs mt-1">
+          <Link href="/learn" className="retro-link">Learn</Link>
+          {" / "}
+          <Link href={backPath} className="retro-link">{course.title}</Link>
+          {" / "}
+          <span>{topic.titleTh}</span>
+        </div>
+      </div>
+
       {/* Progress */}
       <div className="retro-groupbox">
         <span className="retro-groupbox-title">📊 Progress</span>
@@ -63,7 +83,7 @@ export function RetroLearnTopicView({ topicSlug, courseType = "javascript" }: Re
           </div>
           <div className="h-3 bg-gray-300 border border-gray-500">
             <div 
-              className={`h-full ${isTS ? "bg-blue-500" : "bg-yellow-500"}`}
+              className={`h-full ${progressColor}`}
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -123,7 +143,7 @@ export function RetroLearnTopicView({ topicSlug, courseType = "javascript" }: Re
         <span className="retro-groupbox-title">🚀 Actions</span>
         <div className="flex gap-2 mt-2">
           <Link href={backPath} className="retro-btn text-xs">
-            ← กลับ
+            ← กลับ {course.title}
           </Link>
           {lessons.length > 0 && (
             <Link href={`${basePath}/${lessons[0].slug}`} className="retro-btn retro-btn-primary text-xs">

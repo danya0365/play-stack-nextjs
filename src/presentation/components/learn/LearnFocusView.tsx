@@ -1,5 +1,6 @@
 "use client";
 
+import { getCourseBySlug, getTopicFilterForCourse } from "@/src/data/master/learnCourses";
 import { LearnLesson, getLessonsByTopic } from "@/src/data/master/learnLessons";
 import { LearnTopic, learnTopics } from "@/src/data/master/learnTopics";
 import { CodeEditor } from "@/src/presentation/components/editor/CodeEditor";
@@ -8,7 +9,7 @@ import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface LearnFocusViewProps {
-  courseType: "javascript" | "typescript";
+  courseSlug: string;
 }
 
 interface LessonWithTopic {
@@ -141,12 +142,17 @@ function QuizSection({ quiz, lessonId, onComplete }: QuizSectionProps) {
   );
 }
 
-export function LearnFocusView({ courseType }: LearnFocusViewProps) {
+export function LearnFocusView({ courseSlug }: LearnFocusViewProps) {
   const { setViewMode, reset, currentLessonIndex, setLessonIndex } = useLearnModeStore();
   const { markLessonComplete, isLessonComplete, totalPoints } = useProgressStore();
 
-  const isJS = courseType === "javascript";
-  const brandColor = isJS ? "yellow" : "blue";
+  const course = getCourseBySlug(courseSlug);
+  const colorMap: Record<string, "yellow" | "blue" | "cyan"> = {
+    javascript: "yellow",
+    typescript: "blue",
+    go: "cyan",
+  };
+  const brandColor = colorMap[courseSlug] || "yellow";
 
   // Toast state for completion message
   const [showToast, setShowToast] = useState(false);
@@ -159,12 +165,11 @@ export function LearnFocusView({ courseType }: LearnFocusViewProps) {
   const lessonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Get topics
+  // Get topics dynamically based on course
   const topics = useMemo(() => {
-    return learnTopics.filter(t => 
-      isJS ? t.id !== "topic-typescript" : t.id === "topic-typescript"
-    );
-  }, [isJS]);
+    const topicFilter = getTopicFilterForCourse(courseSlug);
+    return learnTopics.filter(t => topicFilter(t.id));
+  }, [courseSlug]);
 
   // Get all lessons with their topics
   const lessonsWithTopics = useMemo(() => {
@@ -292,9 +297,17 @@ export function LearnFocusView({ courseType }: LearnFocusViewProps) {
       activeBg: "bg-blue-500/20",
       buttonGradient: "from-blue-500 to-indigo-500",
     },
+    cyan: {
+      gradient: "from-cyan-600 to-teal-600",
+      bg: "bg-cyan-500",
+      text: "text-cyan-400",
+      border: "border-cyan-500",
+      activeBg: "bg-cyan-500/20",
+      buttonGradient: "from-cyan-500 to-teal-500",
+    },
   };
 
-  const colors = colorClasses[brandColor];
+  const colors = colorClasses[brandColor] || colorClasses.yellow;
 
   // Render content from markdown
   const renderContent = (content: string) => {
@@ -622,7 +635,7 @@ export function LearnFocusView({ courseType }: LearnFocusViewProps) {
               {currentLesson && !isLessonComplete(currentLesson.id) && !isLastLesson && (
                 <button
                   onClick={handleCompleteAndNext}
-                  className={`px-6 py-2.5 bg-gradient-to-r ${colors.buttonGradient} hover:opacity-90 ${isJS ? 'text-black' : 'text-white'} rounded-lg font-medium transition-all shadow-lg`}
+                  className={`px-6 py-2.5 bg-gradient-to-r ${colors.buttonGradient} hover:opacity-90 ${brandColor === 'yellow' || brandColor === 'cyan' ? 'text-black' : 'text-white'} rounded-lg font-medium transition-all shadow-lg`}
                 >
                   ✓ เรียนจบ → ถัดไป
                 </button>

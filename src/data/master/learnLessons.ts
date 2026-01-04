@@ -2963,3 +2963,305 @@ export function getLessonBySlug(topicSlug: string, lessonSlug: string): LearnLes
 export function getLessonById(id: string): LearnLesson | undefined {
   return learnLessons.find(l => l.id === id);
 }
+
+// ============================================
+// Go Language Lessons
+// ============================================
+
+// Go Basics Topic
+const goBasicsLessons: LearnLesson[] = [
+  {
+    id: "learn-go-basics-1",
+    topicId: "topic-go-basics",
+    slug: "introduction",
+    title: "Introduction to Go",
+    titleTh: "แนะนำ Go",
+    description: "What is Go and why learn it",
+    order: 1,
+    duration: 10,
+    content: `
+# แนะนำ Go
+
+Go (หรือ Golang) เป็นภาษาที่พัฒนาโดย Google!
+
+## ทำไมต้องเรียน Go?
+- ⚡ เร็วมาก (compile เป็น machine code)
+- 🧵 Concurrency ง่าย (Goroutines)
+- 📦 Deploy ง่าย (single binary)
+- 🔧 เรียบง่าย อ่านง่าย
+
+## Hello World
+
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, Go!")
+}
+
+## Go ใช้ทำอะไร?
+- Backend API / Microservices
+- Cloud Infrastructure (Docker, K8s เขียนด้วย Go)
+- CLI Tools
+- DevOps Tools
+    `,
+    codeExample: `// Try Go at: play.golang.org
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, Go!")
+    fmt.Println("Welcome to Golang!")
+}`,
+    quiz: [
+      {
+        question: "Go ถูกพัฒนาโดยบริษัทอะไร?",
+        options: ["Microsoft", "Google", "Facebook", "Amazon"],
+        correctAnswer: 1
+      },
+      {
+        question: "Go มีจุดเด่นเรื่องอะไร?",
+        options: ["Graphics", "Concurrency", "Mobile Apps", "Animation"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-go-basics-2",
+    topicId: "topic-go-basics",
+    slug: "variables",
+    title: "Variables in Go",
+    titleTh: "ตัวแปรใน Go",
+    description: "var, const, and short declaration",
+    order: 2,
+    duration: 15,
+    content: `
+# ตัวแปรใน Go
+
+## ประกาศตัวแปร
+
+var name string = "John"
+var age int = 25
+
+// หรือแบบสั้น (ใน function)
+name := "John"
+age := 25
+
+## Constants
+
+const PI = 3.14159
+const MaxScore = 100
+
+## Zero Values
+
+var i int      // 0
+var s string   // ""
+var b bool     // false
+    `,
+    codeExample: `package main
+
+import "fmt"
+
+func main() {
+    // Full declaration
+    var name string = "Hero"
+    var score int = 100
+    
+    // Short declaration
+    level := 10
+    isAlive := true
+    
+    fmt.Println("Name:", name)
+    fmt.Println("Score:", score)
+    fmt.Println("Level:", level)
+    fmt.Println("Alive:", isAlive)
+}`,
+    quiz: [
+      {
+        question: ":= ใน Go ใช้ทำอะไร?",
+        options: ["เปรียบเทียบ", "ประกาศตัวแปรแบบสั้น", "ลบค่า", "คูณค่า"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-go-basics-3",
+    topicId: "topic-go-basics",
+    slug: "functions",
+    title: "Functions in Go",
+    titleTh: "ฟังก์ชันใน Go",
+    description: "Creating and using functions",
+    order: 3,
+    duration: 15,
+    content: `
+# ฟังก์ชันใน Go
+
+## โครงสร้างพื้นฐาน
+
+func greet(name string) string {
+    return "Hello, " + name
+}
+
+## Multiple Return Values
+
+func divide(a, b int) (int, error) {
+    if b == 0 {
+        return 0, errors.New("cannot divide by zero")
+    }
+    return a / b, nil
+}
+
+## Named Returns
+
+func swap(a, b int) (x, y int) {
+    x = b
+    y = a
+    return
+}
+    `,
+    codeExample: `package main
+
+import "fmt"
+
+func add(a, b int) int {
+    return a + b
+}
+
+func swap(a, b int) (int, int) {
+    return b, a
+}
+
+func main() {
+    result := add(5, 3)
+    fmt.Println("5 + 3 =", result)
+    
+    x, y := swap(10, 20)
+    fmt.Println("Swapped:", x, y)
+}`,
+    quiz: [
+      {
+        question: "Go สามารถ return ได้กี่ค่า?",
+        options: ["1 ค่าเท่านั้น", "2 ค่า", "หลายค่า", "ไม่ได้"],
+        correctAnswer: 2
+      }
+    ]
+  },
+];
+
+// Go Concurrency Topic
+const goConcurrencyLessons: LearnLesson[] = [
+  {
+    id: "learn-go-concurrency-1",
+    topicId: "topic-go-concurrency",
+    slug: "goroutines",
+    title: "Goroutines",
+    titleTh: "Goroutines",
+    description: "Lightweight threads in Go",
+    order: 1,
+    duration: 20,
+    content: `
+# Goroutines
+
+Goroutine คือ lightweight thread ของ Go
+
+## สร้าง Goroutine
+
+go functionName()
+
+## ตัวอย่าง
+
+func sayHello() {
+    fmt.Println("Hello from goroutine!")
+}
+
+func main() {
+    go sayHello() // รันแบบ concurrent
+    fmt.Println("Hello from main!")
+    time.Sleep(time.Second)
+}
+    `,
+    codeExample: `package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func printNumbers() {
+    for i := 1; i <= 3; i++ {
+        fmt.Println("Number:", i)
+        time.Sleep(100 * time.Millisecond)
+    }
+}
+
+func main() {
+    go printNumbers()
+    
+    time.Sleep(time.Second)
+    fmt.Println("Done!")
+}`,
+    quiz: [
+      {
+        question: "go keyword ใช้ทำอะไร?",
+        options: ["สร้างตัวแปร", "รัน function แบบ concurrent", "จบ program", "สร้าง loop"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-go-concurrency-2",
+    topicId: "topic-go-concurrency",
+    slug: "channels",
+    title: "Channels",
+    titleTh: "Channels",
+    description: "Communication between goroutines",
+    order: 2,
+    duration: 20,
+    content: `
+# Channels
+
+Channel ใช้สื่อสารระหว่าง goroutines
+
+## สร้าง Channel
+
+ch := make(chan int)
+
+## ส่งและรับค่า
+
+ch <- 42    // ส่งค่า
+value := <-ch  // รับค่า
+
+## Buffered Channel
+
+ch := make(chan int, 3) // buffer 3 ค่า
+    `,
+    codeExample: `package main
+
+import "fmt"
+
+func sendMessage(ch chan string) {
+    ch <- "Hello from goroutine!"
+}
+
+func main() {
+    ch := make(chan string)
+    
+    go sendMessage(ch)
+    
+    message := <-ch
+    fmt.Println("Received:", message)
+}`,
+    quiz: [
+      {
+        question: "Channel ใน Go ใช้ทำอะไร?",
+        options: ["เก็บข้อมูล", "สื่อสารระหว่าง goroutines", "สร้าง loop", "ประกาศตัวแปร"],
+        correctAnswer: 1
+      }
+    ]
+  },
+];
+
+// Add Go lessons to the main array
+learnLessons.push(...goBasicsLessons, ...goConcurrencyLessons);

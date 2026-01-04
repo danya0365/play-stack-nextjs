@@ -1,5 +1,6 @@
 "use client";
 
+import { getCourseBySlug } from "@/src/data/master/learnCourses";
 import { getLessonsByTopic } from "@/src/data/master/learnLessons";
 import { getTopicBySlug } from "@/src/data/master/learnTopics";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
@@ -7,22 +8,20 @@ import Link from "next/link";
 
 interface LearnTopicViewProps {
   topicSlug: string;
-  courseType?: "javascript" | "typescript";
+  courseSlug: string;
 }
 
-export function MainLearnTopicView({ topicSlug, courseType = "javascript" }: LearnTopicViewProps) {
+export function MainLearnTopicView({ topicSlug, courseSlug }: LearnTopicViewProps) {
   const { isLessonComplete } = useProgressStore();
   
-  // For TypeScript, we show the typescript topic
-  const actualTopicSlug = courseType === "typescript" ? "typescript" : topicSlug;
-  const topic = getTopicBySlug(actualTopicSlug);
+  const course = getCourseBySlug(courseSlug);
+  const topic = getTopicBySlug(topicSlug);
   const lessons = topic ? getLessonsByTopic(topic.id) : [];
 
-  const basePath = courseType === "typescript" ? "/learn/typescript" : `/learn/javascript/${topicSlug}`;
-  const backPath = courseType === "typescript" ? "/learn" : "/learn/javascript";
-  const backLabel = courseType === "typescript" ? "Learn" : "JavaScript";
+  const basePath = `/learn/${courseSlug}/${topicSlug}`;
+  const backPath = `/learn/${courseSlug}`;
 
-  if (!topic) {
+  if (!topic || !course) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8 text-center">
         <h1 className="text-2xl font-bold text-white">❌ ไม่พบหัวข้อนี้</h1>
@@ -34,8 +33,15 @@ export function MainLearnTopicView({ topicSlug, courseType = "javascript" }: Lea
   }
 
   const completedCount = lessons.filter(l => isLessonComplete(l.id)).length;
-  const isTS = courseType === "typescript";
-  const brandColor = isTS ? "blue" : "yellow";
+  
+  // Dynamic color classes based on course
+  const colorClasses: Record<string, { gradient: string; brand: string; text: string }> = {
+    javascript: { gradient: "from-yellow-600 to-orange-600", brand: "yellow", text: "text-yellow-400" },
+    typescript: { gradient: "from-blue-600 to-indigo-600", brand: "blue", text: "text-blue-400" },
+    go: { gradient: "from-cyan-600 to-teal-600", brand: "cyan", text: "text-cyan-400" },
+  };
+  
+  const colors = colorClasses[courseSlug] || colorClasses.javascript;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -43,17 +49,13 @@ export function MainLearnTopicView({ topicSlug, courseType = "javascript" }: Lea
       <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
         <Link href="/learn" className="hover:text-indigo-400">Learn</Link>
         <span>/</span>
-        <Link href={backPath} className={`hover:text-${brandColor}-400`}>{isTS ? "TypeScript" : "JavaScript"}</Link>
-        {!isTS && (
-          <>
-            <span>/</span>
-            <span className="text-white">{topic.titleTh}</span>
-          </>
-        )}
+        <Link href={backPath} className={`hover:${colors.text}`}>{course.title}</Link>
+        <span>/</span>
+        <span className="text-white">{topic.titleTh}</span>
       </div>
 
       {/* Header */}
-      <div className={`bg-gradient-to-r ${isTS ? "from-blue-600 to-indigo-600" : "from-yellow-600 to-orange-600"} rounded-2xl p-6 mb-8`}>
+      <div className={`bg-gradient-to-r ${colors.gradient} rounded-2xl p-6 mb-8`}>
         <div className="flex items-center gap-4 mb-4">
           <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${topic.color} flex items-center justify-center text-3xl`}>
             {topic.icon}
@@ -80,7 +82,7 @@ export function MainLearnTopicView({ topicSlug, courseType = "javascript" }: Lea
       <div className="space-y-3">
         {lessons.map((lesson, index) => {
           const isComplete = isLessonComplete(lesson.id);
-          const lessonPath = isTS ? `${basePath}/${lesson.slug}` : `${basePath}/${lesson.slug}`;
+          const lessonPath = `${basePath}/${lesson.slug}`;
           
           return (
             <Link
@@ -115,9 +117,9 @@ export function MainLearnTopicView({ topicSlug, courseType = "javascript" }: Lea
       <div className="mt-8">
         <Link
           href={backPath}
-          className={`text-${brandColor}-400 hover:text-${brandColor}-300 transition-colors`}
+          className={`${colors.text} hover:opacity-80 transition-colors`}
         >
-          ← กลับไปหน้า {backLabel}
+          ← กลับไปหน้า {course.title}
         </Link>
       </div>
     </div>

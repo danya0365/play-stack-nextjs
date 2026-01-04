@@ -1,5 +1,6 @@
 "use client";
 
+import { getCourseBySlug } from "@/src/data/master/learnCourses";
 import { getLessonsByTopic } from "@/src/data/master/learnLessons";
 import { getTopicBySlug } from "@/src/data/master/learnTopics";
 import { CodeEditor } from "@/src/presentation/components/editor/CodeEditor";
@@ -131,26 +132,25 @@ function QuizSection({ quiz, lessonId, onComplete }: QuizSectionProps) {
 interface LearnLessonViewProps {
   topicSlug: string;
   lessonSlug: string;
-  courseType?: "javascript" | "typescript";
+  courseSlug: string;
 }
 
-export function MainLearnLessonView({ topicSlug, lessonSlug, courseType = "javascript" }: LearnLessonViewProps) {
+export function MainLearnLessonView({ topicSlug, lessonSlug, courseSlug }: LearnLessonViewProps) {
   const { isLessonComplete, markLessonComplete, totalPoints } = useProgressStore();
   const [isCompleted, setIsCompleted] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  const isTS = courseType === "typescript";
-  const actualTopicSlug = isTS ? "typescript" : topicSlug;
-  const topic = getTopicBySlug(actualTopicSlug);
+  const course = getCourseBySlug(courseSlug);
+  const topic = getTopicBySlug(topicSlug);
   const lessons = topic ? getLessonsByTopic(topic.id) : [];
   const lesson = lessons.find(l => l.slug === lessonSlug);
   const lessonIndex = lessons.findIndex(l => l.slug === lessonSlug);
   const prevLesson = lessonIndex > 0 ? lessons[lessonIndex - 1] : null;
   const nextLesson = lessonIndex < lessons.length - 1 ? lessons[lessonIndex + 1] : null;
 
-  const basePath = isTS ? "/learn/typescript" : `/learn/javascript/${topicSlug}`;
-  const topicPath = isTS ? "/learn/typescript" : `/learn/javascript/${topicSlug}`;
-  const coursePath = isTS ? "/learn/typescript" : "/learn/javascript";
+  const basePath = `/learn/${courseSlug}/${topicSlug}`;
+  const topicPath = `/learn/${courseSlug}/${topicSlug}`;
+  const coursePath = `/learn/${courseSlug}`;
 
   useEffect(() => {
     if (lesson) {
@@ -158,7 +158,7 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseType = "javas
     }
   }, [lesson, isLessonComplete]);
 
-  if (!topic || !lesson) {
+  if (!topic || !lesson || !course) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8 text-center">
         <h1 className="text-2xl font-bold text-white">❌ ไม่พบบทเรียนนี้</h1>
@@ -192,7 +192,13 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseType = "javas
       .replace(/\n\n/g, "</p><p class='mb-3 text-gray-300'>");
   };
 
-  const brandColor = isTS ? "blue" : "yellow";
+  // Dynamic colors based on course
+  const colorClasses: Record<string, { gradient: string; btn: string; text: string }> = {
+    javascript: { gradient: "from-yellow-600 to-orange-600", btn: "bg-yellow-600 hover:bg-yellow-700", text: "text-yellow-400" },
+    typescript: { gradient: "from-blue-600 to-indigo-600", btn: "bg-blue-600 hover:bg-blue-700", text: "text-blue-400" },
+    go: { gradient: "from-cyan-600 to-teal-600", btn: "bg-cyan-600 hover:bg-cyan-700", text: "text-cyan-400" },
+  };
+  const colors = colorClasses[courseSlug] || colorClasses.javascript;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -208,19 +214,15 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseType = "javas
       <div className="flex items-center gap-2 text-sm text-gray-400 mb-6 flex-wrap">
         <Link href="/learn" className="hover:text-indigo-400">Learn</Link>
         <span>/</span>
-        <Link href={coursePath} className={`hover:text-${brandColor}-400`}>{isTS ? "TypeScript" : "JavaScript"}</Link>
-        {!isTS && (
-          <>
-            <span>/</span>
-            <Link href={topicPath} className="hover:text-yellow-400">{topic.titleTh}</Link>
-          </>
-        )}
+        <Link href={coursePath} className={`hover:${colors.text}`}>{course.title}</Link>
+        <span>/</span>
+        <Link href={topicPath} className={`hover:${colors.text}`}>{topic.titleTh}</Link>
         <span>/</span>
         <span className="text-white">{lesson.titleTh}</span>
       </div>
 
       {/* Header */}
-      <div className={`bg-gradient-to-r ${isTS ? "from-blue-600 to-indigo-600" : "from-yellow-600 to-orange-600"} rounded-2xl p-6 mb-6`}>
+      <div className={`bg-gradient-to-r ${colors.gradient} rounded-2xl p-6 mb-6`}>
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white mb-2">
@@ -316,14 +318,14 @@ export function MainLearnLessonView({ topicSlug, lessonSlug, courseType = "javas
           {nextLesson ? (
             <Link
               href={`${basePath}/${nextLesson.slug}`}
-              className={`px-4 py-2 ${isTS ? "bg-blue-600 hover:bg-blue-700" : "bg-yellow-600 hover:bg-yellow-700"} text-white rounded-lg transition-colors`}
+              className={`px-4 py-2 ${colors.btn} text-white rounded-lg transition-colors`}
             >
               {nextLesson.titleTh} →
             </Link>
           ) : (
             <Link
               href={topicPath}
-              className={`px-4 py-2 ${isTS ? "bg-blue-600 hover:bg-blue-700" : "bg-yellow-600 hover:bg-yellow-700"} text-white rounded-lg transition-colors`}
+              className={`px-4 py-2 ${colors.btn} text-white rounded-lg transition-colors`}
             >
               เรียนจบหัวข้อ ✓
             </Link>

@@ -7,15 +7,15 @@ import { RetroLearnLessonView } from "./RetroLearnLessonView";
 interface LearnLessonViewProps {
   topicSlug: string;
   lessonSlug: string;
-  courseType?: "javascript" | "typescript";
+  courseSlug: string;
 }
 
-export function LearnLessonView({ topicSlug, lessonSlug, courseType = "javascript" }: LearnLessonViewProps) {
+export function LearnLessonView({ topicSlug, lessonSlug, courseSlug }: LearnLessonViewProps) {
   const { layout } = useLayoutStore();
 
   if (layout === "retro") {
-    return <RetroLearnLessonView topicSlug={topicSlug} lessonSlug={lessonSlug} courseType={courseType} />;
+    return <RetroLearnLessonView topicSlug={topicSlug} lessonSlug={lessonSlug} courseSlug={courseSlug} />;
   }
 
-  return <MainLearnLessonView topicSlug={topicSlug} lessonSlug={lessonSlug} courseType={courseType} />;
+  return <MainLearnLessonView topicSlug={topicSlug} lessonSlug={lessonSlug} courseSlug={courseSlug} />;
 }

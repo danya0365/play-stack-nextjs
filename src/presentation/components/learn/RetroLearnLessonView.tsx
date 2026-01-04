@@ -1,5 +1,6 @@
 "use client";
 
+import { getCourseBySlug } from "@/src/data/master/learnCourses";
 import { getLessonsByTopic } from "@/src/data/master/learnLessons";
 import { getTopicBySlug } from "@/src/data/master/learnTopics";
 import { useProgressStore } from "@/src/presentation/stores/progressStore";
@@ -9,24 +10,24 @@ import { useEffect, useState } from "react";
 interface RetroLearnLessonViewProps {
   topicSlug: string;
   lessonSlug: string;
-  courseType?: "javascript" | "typescript";
+  courseSlug: string;
 }
 
-export function RetroLearnLessonView({ topicSlug, lessonSlug, courseType = "javascript" }: RetroLearnLessonViewProps) {
+export function RetroLearnLessonView({ topicSlug, lessonSlug, courseSlug }: RetroLearnLessonViewProps) {
   const { isLessonComplete, markLessonComplete, totalPoints } = useProgressStore();
   const [isCompleted, setIsCompleted] = useState(false);
 
-  const isTS = courseType === "typescript";
-  const actualTopicSlug = isTS ? "typescript" : topicSlug;
-  const topic = getTopicBySlug(actualTopicSlug);
+  const course = getCourseBySlug(courseSlug);
+  const topic = getTopicBySlug(topicSlug);
   const lessons = topic ? getLessonsByTopic(topic.id) : [];
   const lesson = lessons.find(l => l.slug === lessonSlug);
   const lessonIndex = lessons.findIndex(l => l.slug === lessonSlug);
   const prevLesson = lessonIndex > 0 ? lessons[lessonIndex - 1] : null;
   const nextLesson = lessonIndex < lessons.length - 1 ? lessons[lessonIndex + 1] : null;
 
-  const basePath = isTS ? "/learn/typescript" : `/learn/javascript/${topicSlug}`;
-  const topicPath = isTS ? "/learn/typescript" : `/learn/javascript/${topicSlug}`;
+  const basePath = `/learn/${courseSlug}/${topicSlug}`;
+  const topicPath = `/learn/${courseSlug}/${topicSlug}`;
+  const coursePath = `/learn/${courseSlug}`;
 
   useEffect(() => {
     if (lesson) {
@@ -34,7 +35,7 @@ export function RetroLearnLessonView({ topicSlug, lessonSlug, courseType = "java
     }
   }, [lesson, isLessonComplete]);
 
-  if (!topic || !lesson) {
+  if (!topic || !lesson || !course) {
     return (
       <div className="retro-page h-full overflow-auto">
         <div className="retro-groupbox">
@@ -55,6 +56,20 @@ export function RetroLearnLessonView({ topicSlug, lessonSlug, courseType = "java
 
   return (
     <div className="retro-page h-full overflow-auto">
+      {/* Breadcrumb */}
+      <div className="retro-groupbox">
+        <span className="retro-groupbox-title">📍 Navigation</span>
+        <div className="text-xs mt-1">
+          <Link href="/learn" className="retro-link">Learn</Link>
+          {" / "}
+          <Link href={coursePath} className="retro-link">{course.title}</Link>
+          {" / "}
+          <Link href={topicPath} className="retro-link">{topic.titleTh}</Link>
+          {" / "}
+          <span>{lesson.titleTh}</span>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="retro-groupbox">
         <span className="retro-groupbox-title">📖 {lesson.titleTh}</span>

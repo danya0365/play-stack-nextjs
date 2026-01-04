@@ -46,19 +46,19 @@ export function MainLearnCourseView({ courseType }: LearnCourseViewProps) {
 
   // Render special modes
   if (viewMode === "focus") {
-    return <LearnFocusView courseType={courseType as "javascript" | "typescript"} />;
+    return <LearnFocusView courseSlug={courseType} />;
   }
 
   if (viewMode === "presentation") {
-    return <LearnPresentationView courseType={courseType as "javascript" | "typescript"} />;
+    return <LearnPresentationView courseSlug={courseType} />;
   }
 
   if (viewMode === "cinema") {
-    return <LearnCinemaView courseType={courseType as "javascript" | "typescript"} />;
+    return <LearnCinemaView courseSlug={courseType} />;
   }
 
   if (viewMode === "podcast") {
-    return <LearnPodcastView courseType={courseType as "javascript" | "typescript"} />;
+    return <LearnPodcastView courseSlug={courseType} />;
   }
 
   // Normal mode
@@ -73,7 +73,7 @@ export function MainLearnCourseView({ courseType }: LearnCourseViewProps) {
 
       {/* Mode Switcher */}
       <div className="mb-6 flex justify-center">
-        <LearnModeSwitcher brandColor={brandColor as "yellow" | "blue"} />
+        <LearnModeSwitcher brandColor={brandColor as "yellow" | "blue" | "cyan"} />
       </div>
 
       {/* Header */}

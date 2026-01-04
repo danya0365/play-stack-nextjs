@@ -1,5 +1,6 @@
 "use client";
 
+import { getCourseBySlug, getTopicFilterForCourse } from "@/src/data/master/learnCourses";
 import { LearnLesson, getLessonsByTopic } from "@/src/data/master/learnLessons";
 import { LearnTopic, learnTopics } from "@/src/data/master/learnTopics";
 import { useLearnModeStore } from "@/src/presentation/stores/learnModeStore";
@@ -7,7 +8,7 @@ import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface LearnPresentationViewProps {
-  courseType: "javascript" | "typescript";
+  courseSlug: string;
 }
 
 interface Slide {
@@ -26,12 +27,17 @@ interface LessonWithTopic {
   startSlideIndex: number;
 }
 
-export function LearnPresentationView({ courseType }: LearnPresentationViewProps) {
+export function LearnPresentationView({ courseSlug }: LearnPresentationViewProps) {
   const { currentSlideIndex, setSlideIndex, nextSlide, prevSlide, setViewMode, reset } = useLearnModeStore();
   const { markLessonComplete, isLessonComplete } = useProgressStore();
 
-  const isJS = courseType === "javascript";
-  const brandColor = isJS ? "yellow" : "blue";
+  const course = getCourseBySlug(courseSlug);
+  const colorMap: Record<string, "yellow" | "blue" | "cyan"> = {
+    javascript: "yellow",
+    typescript: "blue",
+    go: "cyan",
+  };
+  const brandColor = colorMap[courseSlug] || "yellow";
 
   // Sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -40,12 +46,11 @@ export function LearnPresentationView({ courseType }: LearnPresentationViewProps
   // Refs for scrolling
   const lessonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
-  // Get topics
+  // Get topics dynamically based on course
   const topics = useMemo(() => {
-    return learnTopics.filter(t => 
-      isJS ? t.id !== "topic-typescript" : t.id === "topic-typescript"
-    );
-  }, [isJS]);
+    const topicFilter = getTopicFilterForCourse(courseSlug);
+    return learnTopics.filter(t => topicFilter(t.id));
+  }, [courseSlug]);
 
   // Get all lessons with their topics
   const lessonsWithTopics = useMemo(() => {
@@ -199,9 +204,17 @@ export function LearnPresentationView({ courseType }: LearnPresentationViewProps
       activeBg: "bg-blue-500/20",
       activeBorder: "border-blue-500",
     },
+    cyan: {
+      gradient: "from-cyan-600 to-teal-600",
+      bg: "bg-cyan-500",
+      text: "text-cyan-400",
+      border: "border-cyan-500/30",
+      activeBg: "bg-cyan-500/20",
+      activeBorder: "border-cyan-500",
+    },
   };
 
-  const colors = colorClasses[brandColor];
+  const colors = colorClasses[brandColor] || colorClasses.yellow;
 
   return (
     <div className="fixed inset-0 z-50 flex bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -324,7 +337,7 @@ export function LearnPresentationView({ courseType }: LearnPresentationViewProps
             {!sidebarCollapsed && <div className="w-0" />}
             <div className="text-white">
               <div className="text-xs text-white/50">📊 Presentation Mode</div>
-              <div className="font-medium text-sm">{isJS ? "JavaScript" : "TypeScript"}</div>
+              <div className="font-medium text-sm">{course?.title || courseSlug}</div>
             </div>
           </div>
 

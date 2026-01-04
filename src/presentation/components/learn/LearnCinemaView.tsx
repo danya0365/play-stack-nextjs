@@ -1,5 +1,6 @@
 "use client";
 
+import { getCourseBySlug, getTopicFilterForCourse } from "@/src/data/master/learnCourses";
 import { LearnLesson, getLessonsByTopic } from "@/src/data/master/learnLessons";
 import { learnTopics } from "@/src/data/master/learnTopics";
 import { useBackgroundMusic } from "@/src/presentation/hooks/useBackgroundMusic";
@@ -9,7 +10,7 @@ import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface LearnCinemaViewProps {
-  courseType: "javascript" | "typescript";
+  courseSlug: string;
 }
 
 interface Slide {
@@ -18,7 +19,7 @@ interface Slide {
   lessonIndex: number;
 }
 
-export function LearnCinemaView({ courseType }: LearnCinemaViewProps) {
+export function LearnCinemaView({ courseSlug }: LearnCinemaViewProps) {
   const store = useLearnModeStore();
   const { markLessonComplete } = useProgressStore();
   const tts = useTTS();
@@ -27,20 +28,24 @@ export function LearnCinemaView({ courseType }: LearnCinemaViewProps) {
   const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [autoAdvanceDelay] = useState(2); // seconds after TTS
 
-  const isJS = courseType === "javascript";
-  const brandColor = isJS ? "yellow" : "blue";
+  const course = getCourseBySlug(courseSlug);
+  const colorMap: Record<string, "yellow" | "blue" | "cyan"> = {
+    javascript: "yellow",
+    typescript: "blue",
+    go: "cyan",
+  };
+  const brandColor = colorMap[courseSlug] || "yellow";
 
-  // Get all lessons
+  // Get all lessons dynamically based on course
   const allLessons = useMemo(() => {
-    const topics = learnTopics.filter(t => 
-      isJS ? t.id !== "topic-typescript" : t.id === "topic-typescript"
-    );
+    const topicFilter = getTopicFilterForCourse(courseSlug);
+    const topics = learnTopics.filter(t => topicFilter(t.id));
     const lessons: LearnLesson[] = [];
     topics.forEach(topic => {
       lessons.push(...getLessonsByTopic(topic.id));
     });
     return lessons;
-  }, [isJS]);
+  }, [courseSlug]);
 
   // Parse content into slides
   const slides = useMemo(() => {
@@ -191,9 +196,13 @@ export function LearnCinemaView({ courseType }: LearnCinemaViewProps) {
       gradient: "from-blue-600 to-indigo-600",
       glow: "shadow-blue-500/30",
     },
+    cyan: {
+      gradient: "from-cyan-600 to-teal-600",
+      glow: "shadow-cyan-500/30",
+    },
   };
 
-  const colors = colorClasses[brandColor];
+  const colors = colorClasses[brandColor] || colorClasses.yellow;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">

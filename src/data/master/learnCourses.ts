@@ -39,14 +39,18 @@ export const learnCourses: LearnCourse[] = [
     bgGradient: "from-blue-600 to-indigo-600",
     order: 2,
   },
-  // Add more languages in the future:
-  // {
-  //   id: "course-python",
-  //   slug: "python",
-  //   title: "Python",
-  //   titleTh: "Python",
-  //   ...
-  // },
+  {
+    id: "course-go",
+    slug: "go",
+    title: "Go",
+    titleTh: "Go (Golang)",
+    description: "Fast, simple, and efficient programming language",
+    descriptionTh: "ภาษาที่เร็ว เรียบง่าย และมีประสิทธิภาพสูง",
+    icon: "Go",
+    color: "cyan",
+    bgGradient: "from-cyan-600 to-teal-600",
+    order: 3,
+  },
 ];
 
 export function getCourseBySlug(slug: string): LearnCourse | undefined {
@@ -65,9 +69,11 @@ export function getValidCourseSlugs(): string[] {
 export function getTopicFilterForCourse(courseSlug: string): (topicId: string) => boolean {
   switch (courseSlug) {
     case "javascript":
-      return (topicId: string) => topicId !== "topic-typescript";
+      return (topicId: string) => topicId !== "topic-typescript" && !topicId.startsWith("topic-go");
     case "typescript":
       return (topicId: string) => topicId === "topic-typescript";
+    case "go":
+      return (topicId: string) => topicId.startsWith("topic-go");
     default:
       return () => false;
   }

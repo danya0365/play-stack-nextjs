@@ -6,15 +6,15 @@ import { RetroLearnTopicView } from "./RetroLearnTopicView";
 
 interface LearnTopicViewProps {
   topicSlug: string;
-  courseType?: "javascript" | "typescript";
+  courseSlug: string;
 }
 
-export function LearnTopicView({ topicSlug, courseType = "javascript" }: LearnTopicViewProps) {
+export function LearnTopicView({ topicSlug, courseSlug }: LearnTopicViewProps) {
   const { layout } = useLayoutStore();
 
   if (layout === "retro") {
-    return <RetroLearnTopicView topicSlug={topicSlug} courseType={courseType} />;
+    return <RetroLearnTopicView topicSlug={topicSlug} courseSlug={courseSlug} />;
   }
 
-  return <MainLearnTopicView topicSlug={topicSlug} courseType={courseType} />;
+  return <MainLearnTopicView topicSlug={topicSlug} courseSlug={courseSlug} />;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { getCourseBySlug, getTopicFilterForCourse } from "@/src/data/master/learnCourses";
 import { LearnLesson, getLessonsByTopic } from "@/src/data/master/learnLessons";
 import { learnTopics } from "@/src/data/master/learnTopics";
 import { useTTS } from "@/src/presentation/hooks/useTTS";
@@ -8,7 +9,7 @@ import { useProgressStore } from "@/src/presentation/stores/progressStore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface LearnPodcastViewProps {
-  courseType: "javascript" | "typescript";
+  courseSlug: string;
 }
 
 interface Slide {
@@ -17,7 +18,7 @@ interface Slide {
   lessonTitle: string;
 }
 
-export function LearnPodcastView({ courseType }: LearnPodcastViewProps) {
+export function LearnPodcastView({ courseSlug }: LearnPodcastViewProps) {
   const store = useLearnModeStore();
   const { markLessonComplete } = useProgressStore();
   const tts = useTTS();
@@ -26,20 +27,24 @@ export function LearnPodcastView({ courseType }: LearnPodcastViewProps) {
   const [sleepTimeRemaining, setSleepTimeRemaining] = useState<number | null>(null);
   const sleepTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const isJS = courseType === "javascript";
-  const brandColor = isJS ? "yellow" : "blue";
+  const course = getCourseBySlug(courseSlug);
+  const colorMap: Record<string, "yellow" | "blue" | "cyan"> = {
+    javascript: "yellow",
+    typescript: "blue",
+    go: "cyan",
+  };
+  const brandColor = colorMap[courseSlug] || "yellow";
 
-  // Get all lessons
+  // Get all lessons dynamically based on course
   const allLessons = useMemo(() => {
-    const topics = learnTopics.filter(t => 
-      isJS ? t.id !== "topic-typescript" : t.id === "topic-typescript"
-    );
+    const topicFilter = getTopicFilterForCourse(courseSlug);
+    const topics = learnTopics.filter(t => topicFilter(t.id));
     const lessons: LearnLesson[] = [];
     topics.forEach(topic => {
       lessons.push(...getLessonsByTopic(topic.id));
     });
     return lessons;
-  }, [isJS]);
+  }, [courseSlug]);
 
   // Parse content into slides
   const slides = useMemo(() => {
@@ -164,9 +169,13 @@ export function LearnPodcastView({ courseType }: LearnPodcastViewProps) {
       gradient: "from-blue-500 to-indigo-600",
       glow: "shadow-blue-500/30",
     },
+    cyan: {
+      gradient: "from-cyan-500 to-teal-600",
+      glow: "shadow-cyan-500/30",
+    },
   };
 
-  const colors = colorClasses[brandColor];
+  const colors = colorClasses[brandColor] || colorClasses.yellow;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-gradient-to-b from-purple-900 via-indigo-900 to-slate-900">
@@ -215,7 +224,7 @@ export function LearnPodcastView({ courseType }: LearnPodcastViewProps) {
         {/* Lesson Info */}
         <div className="text-white mb-2">
           <div className="text-white/50 text-sm mb-1">
-            {isJS ? "📒 JavaScript" : "📘 TypeScript"}
+            {course?.icon} {course?.title || courseSlug}
           </div>
           <h1 className="text-2xl md:text-3xl font-bold mb-2">
             {currentSlide?.lessonTitle || "กำลังโหลด..."}

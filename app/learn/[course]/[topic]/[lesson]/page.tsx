@@ -71,5 +71,5 @@ export default async function LearnLessonPage({ params }: Props) {
     notFound();
   }
 
-  return <LearnLessonView topicSlug={topicSlug} lessonSlug={lessonSlug} courseType={courseSlug as "javascript" | "typescript"} />;
+  return <LearnLessonView topicSlug={topicSlug} lessonSlug={lessonSlug} courseSlug={courseSlug} />;
 }

@@ -11,7 +11,7 @@ const modes: { mode: LearnViewMode; icon: string; label: string }[] = [
 ];
 
 interface LearnModeSwitcherProps {
-  brandColor: "yellow" | "blue";
+  brandColor: "yellow" | "blue" | "cyan";
 }
 
 export function LearnModeSwitcher({ brandColor }: LearnModeSwitcherProps) {
@@ -33,9 +33,13 @@ export function LearnModeSwitcher({ brandColor }: LearnModeSwitcherProps) {
       active: "bg-blue-500 text-white",
       hover: "hover:bg-blue-500/20 hover:text-blue-300",
     },
+    cyan: {
+      active: "bg-cyan-500 text-black",
+      hover: "hover:bg-cyan-500/20 hover:text-cyan-300",
+    },
   };
 
-  const colors = colorClasses[brandColor];
+  const colors = colorClasses[brandColor] || colorClasses.blue;
 
   return (
     <div className="flex items-center gap-1 p-1 bg-slate-800/50 rounded-xl border border-slate-700">

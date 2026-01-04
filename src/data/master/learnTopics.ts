@@ -111,6 +111,31 @@ export const learnTopics: LearnTopic[] = [
     order: 8,
     lessonCount: 8,
   },
+  // Go Topics
+  {
+    id: "topic-go-basics",
+    slug: "go-basics",
+    title: "Go Basics",
+    titleTh: "พื้นฐาน Go",
+    description: "Variables, types, and basic syntax",
+    descriptionTh: "ตัวแปร, ชนิดข้อมูล และ syntax พื้นฐาน",
+    icon: "🐹",
+    color: "from-cyan-500 to-teal-600",
+    order: 1,
+    lessonCount: 3,
+  },
+  {
+    id: "topic-go-concurrency",
+    slug: "go-concurrency",
+    title: "Concurrency",
+    titleTh: "การทำงานพร้อมกัน",
+    description: "Goroutines and channels",
+    descriptionTh: "Goroutines และ Channels",
+    icon: "⚡",
+    color: "from-teal-500 to-emerald-600",
+    order: 2,
+    lessonCount: 2,
+  },
 ];
 
 export function getTopicBySlug(slug: string): LearnTopic | undefined {
