@@ -32,9 +32,10 @@ export function LearnPresentationView({ courseSlug }: LearnPresentationViewProps
   const { markLessonComplete, isLessonComplete } = useProgressStore();
 
   const course = getCourseBySlug(courseSlug);
-  const colorMap: Record<string, "yellow" | "blue" | "cyan"> = {
+  const colorMap: Record<string, "yellow" | "blue" | "cyan" | "orange"> = {
     javascript: "yellow",
     typescript: "blue",
+    html: "orange",
     go: "cyan",
   };
   const brandColor = colorMap[courseSlug] || "yellow";
@@ -211,6 +212,14 @@ export function LearnPresentationView({ courseSlug }: LearnPresentationViewProps
       border: "border-cyan-500/30",
       activeBg: "bg-cyan-500/20",
       activeBorder: "border-cyan-500",
+    },
+    orange: {
+      gradient: "from-orange-600 to-red-600",
+      bg: "bg-orange-500",
+      text: "text-orange-400",
+      border: "border-orange-500/30",
+      activeBg: "bg-orange-500/20",
+      activeBorder: "border-orange-500",
     },
   };
 

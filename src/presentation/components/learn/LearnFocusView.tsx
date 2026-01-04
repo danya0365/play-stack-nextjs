@@ -147,9 +147,10 @@ export function LearnFocusView({ courseSlug }: LearnFocusViewProps) {
   const { markLessonComplete, isLessonComplete, totalPoints } = useProgressStore();
 
   const course = getCourseBySlug(courseSlug);
-  const colorMap: Record<string, "yellow" | "blue" | "cyan"> = {
+  const colorMap: Record<string, "yellow" | "blue" | "cyan" | "orange"> = {
     javascript: "yellow",
     typescript: "blue",
+    html: "orange",
     go: "cyan",
   };
   const brandColor = colorMap[courseSlug] || "yellow";
@@ -304,6 +305,14 @@ export function LearnFocusView({ courseSlug }: LearnFocusViewProps) {
       border: "border-cyan-500",
       activeBg: "bg-cyan-500/20",
       buttonGradient: "from-cyan-500 to-teal-500",
+    },
+    orange: {
+      gradient: "from-orange-600 to-red-600",
+      bg: "bg-orange-500",
+      text: "text-orange-400",
+      border: "border-orange-500",
+      activeBg: "bg-orange-500/20",
+      buttonGradient: "from-orange-500 to-red-500",
     },
   };
 

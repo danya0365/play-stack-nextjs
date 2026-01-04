@@ -28,9 +28,10 @@ export function LearnPodcastView({ courseSlug }: LearnPodcastViewProps) {
   const sleepTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const course = getCourseBySlug(courseSlug);
-  const colorMap: Record<string, "yellow" | "blue" | "cyan"> = {
+  const colorMap: Record<string, "yellow" | "blue" | "cyan" | "orange"> = {
     javascript: "yellow",
     typescript: "blue",
+    html: "orange",
     go: "cyan",
   };
   const brandColor = colorMap[courseSlug] || "yellow";
@@ -172,6 +173,10 @@ export function LearnPodcastView({ courseSlug }: LearnPodcastViewProps) {
     cyan: {
       gradient: "from-cyan-500 to-teal-600",
       glow: "shadow-cyan-500/30",
+    },
+    orange: {
+      gradient: "from-orange-500 to-red-600",
+      glow: "shadow-orange-500/30",
     },
   };
 

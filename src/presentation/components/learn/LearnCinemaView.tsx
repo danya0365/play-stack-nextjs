@@ -29,9 +29,10 @@ export function LearnCinemaView({ courseSlug }: LearnCinemaViewProps) {
   const [autoAdvanceDelay] = useState(2); // seconds after TTS
 
   const course = getCourseBySlug(courseSlug);
-  const colorMap: Record<string, "yellow" | "blue" | "cyan"> = {
+  const colorMap: Record<string, "yellow" | "blue" | "cyan" | "orange"> = {
     javascript: "yellow",
     typescript: "blue",
+    html: "orange",
     go: "cyan",
   };
   const brandColor = colorMap[courseSlug] || "yellow";
@@ -199,6 +200,10 @@ export function LearnCinemaView({ courseSlug }: LearnCinemaViewProps) {
     cyan: {
       gradient: "from-cyan-600 to-teal-600",
       glow: "shadow-cyan-500/30",
+    },
+    orange: {
+      gradient: "from-orange-600 to-red-600",
+      glow: "shadow-orange-500/30",
     },
   };
 

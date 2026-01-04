@@ -73,7 +73,7 @@ export function MainLearnCourseView({ courseType }: LearnCourseViewProps) {
 
       {/* Mode Switcher */}
       <div className="mb-6 flex justify-center">
-        <LearnModeSwitcher brandColor={brandColor as "yellow" | "blue" | "cyan"} />
+        <LearnModeSwitcher brandColor={brandColor as "yellow" | "blue" | "cyan" | "orange"} />
       </div>
 
       {/* Header */}

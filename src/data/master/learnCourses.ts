@@ -28,15 +28,15 @@ export const learnCourses: LearnCourse[] = [
     order: 1,
   },
   {
-    id: "course-typescript",
-    slug: "typescript",
-    title: "TypeScript",
-    titleTh: "TypeScript",
-    description: "Type safety, Interfaces, Generics and more",
-    descriptionTh: "Type safety และ Advanced features",
-    icon: "TS",
-    color: "blue",
-    bgGradient: "from-blue-600 to-indigo-600",
+    id: "course-html",
+    slug: "html",
+    title: "HTML",
+    titleTh: "HTML",
+    description: "Structure of the web - Elements, Tags, Semantic HTML and more",
+    descriptionTh: "โครงสร้างพื้นฐานของเว็บไซต์",
+    icon: "📄",
+    color: "orange",
+    bgGradient: "from-orange-600 to-red-600",
     order: 2,
   },
   {
@@ -69,9 +69,9 @@ export function getValidCourseSlugs(): string[] {
 export function getTopicFilterForCourse(courseSlug: string): (topicId: string) => boolean {
   switch (courseSlug) {
     case "javascript":
-      return (topicId: string) => topicId !== "topic-typescript" && !topicId.startsWith("topic-go");
-    case "typescript":
-      return (topicId: string) => topicId === "topic-typescript";
+      return (topicId: string) => !topicId.startsWith("topic-html") && !topicId.startsWith("topic-go");
+    case "html":
+      return (topicId: string) => topicId.startsWith("topic-html");
     case "go":
       return (topicId: string) => topicId.startsWith("topic-go");
     default:

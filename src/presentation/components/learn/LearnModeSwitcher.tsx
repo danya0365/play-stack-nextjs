@@ -11,7 +11,7 @@ const modes: { mode: LearnViewMode; icon: string; label: string }[] = [
 ];
 
 interface LearnModeSwitcherProps {
-  brandColor: "yellow" | "blue" | "cyan";
+  brandColor: "yellow" | "blue" | "cyan" | "orange";
 }
 
 export function LearnModeSwitcher({ brandColor }: LearnModeSwitcherProps) {
@@ -36,6 +36,10 @@ export function LearnModeSwitcher({ brandColor }: LearnModeSwitcherProps) {
     cyan: {
       active: "bg-cyan-500 text-black",
       hover: "hover:bg-cyan-500/20 hover:text-cyan-300",
+    },
+    orange: {
+      active: "bg-orange-500 text-black",
+      hover: "hover:bg-orange-500/20 hover:text-orange-300",
     },
   };
 

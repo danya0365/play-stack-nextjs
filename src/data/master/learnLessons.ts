@@ -948,477 +948,537 @@ console.log(big);`,
   },
 
   // ============================================
-  // Topic: TypeScript
+  // Topic: HTML Basics
   // ============================================
   {
-    id: "learn-ts-1",
-    topicId: "topic-typescript",
+    id: "learn-html-1",
+    topicId: "topic-html-basics",
     slug: "introduction",
-    title: "Introduction to TypeScript",
-    titleTh: "แนะนำ TypeScript",
-    description: "What is TypeScript and why use it",
+    title: "Introduction to HTML",
+    titleTh: "แนะนำ HTML",
+    description: "What is HTML and how it works",
     order: 1,
     duration: 15,
     content: `
-# แนะนำ TypeScript
+# แนะนำ HTML
 
-TypeScript คือ JavaScript + Type System!
+HTML (HyperText Markup Language) คือภาษาหลักสำหรับสร้างเว็บเพจ!
 
-## ทำไมต้อง TypeScript?
-- 🛡️ ตรวจจับ bugs ก่อน runtime
-- 📝 Auto-complete ดีขึ้น
-- 📚 Code documentation ในตัว
-- 🏢 ใช้ในบริษัทใหญ่ทั่วโลก
+## HTML ทำอะไร?
+- 📄 กำหนดโครงสร้างเนื้อหา
+- 🏗️ สร้างหัวข้อ, ย่อหน้า, รายการ
+- 🔗 สร้าง links และใส่รูปภาพ
+- 📝 สร้างแบบฟอร์ม
 
-## ความแตกต่าง
-\`\`\`typescript
-// JavaScript
-let name = "John";
-name = 123; // ได้ แต่อาจ bug
-
-// TypeScript
-let name: string = "John";
-name = 123; // ❌ Error!
+## โครงสร้างพื้นฐาน
+\`\`\`html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Page</title>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+  </body>
+</html>
 \`\`\`
     `,
-    codeExample: `// TypeScript บอก type ชัดเจน
-let playerName: string = "Hero";
-let health: number = 100;
-let isAlive: boolean = true;
-
-console.log(playerName, health, isAlive);
-
-// Type inference (อนุมานเอง)
-let score = 50; // TypeScript รู้ว่าเป็น number
-console.log("Score:", score);`,
+    codeExample: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>My First Page</title>
+  </head>
+  <body>
+    <h1>Welcome!</h1>
+    <p>This is my first webpage.</p>
+  </body>
+</html>`,
     challenge: {
-      description: "ประกาศตัวแปรพร้อม type annotation",
-      starterCode: `let name: string = "Hero";
-let level: number = 10;
-let isOnline: boolean = true;
-
-console.log(name, "Lv.", level, "Online:", isOnline);`,
-      expectedOutput: "Hero Lv. 10 Online: true",
-      hints: ["ใช้ : type หลังชื่อตัวแปร", "string, number, boolean"]
+      description: "สร้างหน้าเว็บพื้นฐานที่มี title และ heading",
+      starterCode: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Page</title>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+  </body>
+</html>`,
+      expectedOutput: "Hello World!",
+      hints: ["ใช้ <h1> สำหรับหัวข้อหลัก", "title แสดงบน tab ของ browser"]
     },
     quiz: [
       {
-        question: "TypeScript เป็นอะไร?",
-        options: ["ภาษาใหม่", "JavaScript + Type", "Framework", "Library"],
+        question: "HTML ย่อมาจากอะไร?",
+        options: ["Home Tool Markup Language", "HyperText Markup Language", "HighTech Modern Language", "HyperText Machine Language"],
         correctAnswer: 1
       },
       {
-        question: "ประโยชน์หลักของ TypeScript?",
-        options: ["เร็วขึ้น", "หา bug ก่อน run", "ใช้ง่ายกว่า", "มีขนาดเล็ก"],
+        question: "<html> tag ใช้ทำอะไร?",
+        options: ["ครอบส่วน head", "กำหนด root element", "สร้างหัวข้อ", "ใส่ JavaScript"],
         correctAnswer: 1
       }
     ]
   },
   {
-    id: "learn-ts-2",
-    topicId: "topic-typescript",
-    slug: "basic-types",
-    title: "Basic Types",
-    titleTh: "Types พื้นฐาน",
-    description: "String, number, boolean, array",
+    id: "learn-html-2",
+    topicId: "topic-html-basics",
+    slug: "text-elements",
+    title: "Text Elements",
+    titleTh: "องค์ประกอบข้อความ",
+    description: "Headings, paragraphs, and text formatting",
+    order: 2,
+    duration: 15,
+    content: `
+# Text Elements
+
+## Headings (หัวข้อ)
+\`\`\`html
+<h1>Heading ใหญ่สุด</h1>
+<h2>Heading 2</h2>
+<h3>Heading 3</h3>
+<h4>Heading 4</h4>
+<h5>Heading 5</h5>
+<h6>Heading เล็กสุด</h6>
+\`\`\`
+
+## Paragraphs (ย่อหน้า)
+\`\`\`html
+<p>This is a paragraph.</p>
+<p>Another paragraph.</p>
+\`\`\`
+
+## Text Formatting
+\`\`\`html
+<strong>ตัวหนา</strong>
+<em>ตัวเอียง</em>
+<br> ขึ้นบรรทัดใหม่
+\`\`\`
+    `,
+    codeExample: `<h1>Welcome to My Website</h1>
+<h2>About Me</h2>
+<p>Hello! I'm learning <strong>HTML</strong>.</p>
+<p>It's really <em>fun</em> to create websites!</p>
+
+<h2>My Skills</h2>
+<p>I can create:</p>
+<p>- Headings<br>- Paragraphs<br>- Formatted text</p>`,
+    challenge: {
+      description: "สร้างหน้าเว็บที่มี 2 headings และ 2 paragraphs",
+      starterCode: `<h1>My Blog</h1>
+<h2>First Post</h2>
+<p>This is my <strong>first</strong> blog post.</p>
+<p>I'm learning <em>HTML</em> today!</p>`,
+      expectedOutput: "My Blog",
+      hints: ["h1-h6 สำหรับหัวข้อ", "p สำหรับย่อหน้า"]
+    },
+    quiz: [
+      {
+        question: "<h1> ถึง <h6> ต่างกันอย่างไร?",
+        options: ["สีต่างกัน", "ขนาดและความสำคัญต่างกัน", "ไม่ต่างกัน", "font ต่างกัน"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-html-3",
+    topicId: "topic-html-basics",
+    slug: "links-images",
+    title: "Links & Images",
+    titleTh: "ลิงก์และรูปภาพ",
+    description: "Adding links and images to your page",
+    order: 3,
+    duration: 20,
+    content: `
+# Links & Images
+
+## Links (ลิงก์)
+\`\`\`html
+<a href="https://google.com">Go to Google</a>
+<a href="about.html">About Page</a>
+<a href="#section1">Jump to Section</a>
+\`\`\`
+
+## Images (รูปภาพ)
+\`\`\`html
+<img src="photo.jpg" alt="My Photo">
+<img src="https://example.com/logo.png" alt="Logo" width="200">
+\`\`\`
+
+## Image as Link
+\`\`\`html
+<a href="https://google.com">
+  <img src="google-logo.png" alt="Google">
+</a>
+\`\`\`
+    `,
+    codeExample: `<h1>My Portfolio</h1>
+
+<p>Check out my <a href="https://github.com">GitHub</a>!</p>
+
+<h2>My Photo</h2>
+<img src="https://via.placeholder.com/300x200" alt="Profile Photo">
+
+<h2>Quick Links</h2>
+<a href="#top">Back to Top</a>`,
+    challenge: {
+      description: "สร้างหน้าเว็บที่มี link และ image",
+      starterCode: `<h1>My Links</h1>
+
+<p>Visit <a href="https://google.com">Google</a></p>
+
+<img src="https://via.placeholder.com/200" alt="Placeholder">`,
+      expectedOutput: "My Links",
+      hints: ["href ระบุ URL ปลายทาง", "alt ระบุข้อความสำหรับรูปภาพ"]
+    },
+    quiz: [
+      {
+        question: "attribute ใดระบุ URL ของ link?",
+        options: ["src", "href", "link", "url"],
+        correctAnswer: 1
+      },
+      {
+        question: "alt ใน <img> ใช้ทำอะไร?",
+        options: ["เปลี่ยนสี", "อธิบายรูปภาพ", "ย่อขนาด", "หมุนรูป"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-html-4",
+    topicId: "topic-html-basics",
+    slug: "lists",
+    title: "Lists",
+    titleTh: "รายการ",
+    description: "Creating ordered and unordered lists",
+    order: 4,
+    duration: 15,
+    content: `
+# Lists (รายการ)
+
+## Unordered List (ไม่เรียงลำดับ)
+\`\`\`html
+<ul>
+  <li>Apple</li>
+  <li>Banana</li>
+  <li>Orange</li>
+</ul>
+\`\`\`
+
+## Ordered List (เรียงลำดับ)
+\`\`\`html
+<ol>
+  <li>First step</li>
+  <li>Second step</li>
+  <li>Third step</li>
+</ol>
+\`\`\`
+
+## Nested Lists
+\`\`\`html
+<ul>
+  <li>Fruits
+    <ul>
+      <li>Apple</li>
+      <li>Banana</li>
+    </ul>
+  </li>
+</ul>
+\`\`\`
+    `,
+    codeExample: `<h1>My Shopping List</h1>
+
+<h2>Fruits</h2>
+<ul>
+  <li>Apple</li>
+  <li>Banana</li>
+  <li>Orange</li>
+</ul>
+
+<h2>Recipe Steps</h2>
+<ol>
+  <li>Wash the fruits</li>
+  <li>Cut into pieces</li>
+  <li>Mix together</li>
+  <li>Enjoy!</li>
+</ol>`,
+    challenge: {
+      description: "สร้าง unordered list ของ 3 items",
+      starterCode: `<h1>My Hobbies</h1>
+
+<ul>
+  <li>Gaming</li>
+  <li>Coding</li>
+  <li>Reading</li>
+</ul>`,
+      expectedOutput: "My Hobbies",
+      hints: ["ul สำหรับ unordered list", "ol สำหรับ ordered list"]
+    },
+    quiz: [
+      {
+        question: "<ul> สร้าง list แบบไหน?",
+        options: ["เรียงลำดับ 1,2,3", "bullet points", "definition list", "table"],
+        correctAnswer: 1
+      }
+    ]
+  },
+
+  // ============================================
+  // Topic: Semantic HTML
+  // ============================================
+  {
+    id: "learn-html-5",
+    topicId: "topic-html-semantic",
+    slug: "semantic-intro",
+    title: "Introduction to Semantic HTML",
+    titleTh: "แนะนำ Semantic HTML",
+    description: "What is semantic HTML and why it matters",
+    order: 1,
+    duration: 15,
+    content: `
+# Semantic HTML
+
+Semantic HTML ใช้ tags ที่อธิบายความหมายของเนื้อหา
+
+## ทำไมต้อง Semantic?
+- 🔍 SEO ดีขึ้น
+- ♿ Accessibility ดีขึ้น
+- 📖 Code อ่านง่ายขึ้น
+
+## Non-Semantic vs Semantic
+\`\`\`html
+<!-- Non-Semantic -->
+<div id="header">...</div>
+<div id="nav">...</div>
+
+<!-- Semantic -->
+<header>...</header>
+<nav>...</nav>
+\`\`\`
+    `,
+    codeExample: `<header>
+  <h1>My Website</h1>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h2>Welcome!</h2>
+    <p>This is semantic HTML.</p>
+  </article>
+</main>
+
+<footer>
+  <p>© 2024 My Website</p>
+</footer>`,
+    challenge: {
+      description: "สร้างโครงสร้างเว็บด้วย semantic tags",
+      starterCode: `<header>
+  <h1>My Blog</h1>
+</header>
+
+<main>
+  <article>
+    <h2>First Post</h2>
+    <p>Hello World!</p>
+  </article>
+</main>
+
+<footer>
+  <p>© 2024</p>
+</footer>`,
+      expectedOutput: "My Blog",
+      hints: ["header, main, footer, article, nav, section"]
+    },
+    quiz: [
+      {
+        question: "Semantic HTML ช่วยเรื่องอะไร?",
+        options: ["แค่สวยขึ้น", "SEO และ Accessibility", "Load เร็วขึ้น", "ใช้ memory น้อยลง"],
+        correctAnswer: 1
+      }
+    ]
+  },
+  {
+    id: "learn-html-6",
+    topicId: "topic-html-semantic",
+    slug: "layout-elements",
+    title: "Layout Elements",
+    titleTh: "องค์ประกอบ Layout",
+    description: "header, nav, main, footer, section, article",
     order: 2,
     duration: 20,
     content: `
-# Types พื้นฐาน
+# Layout Elements
 
-## Primitive Types
-\`\`\`typescript
-let name: string = "John";
-let age: number = 25;
-let isActive: boolean = true;
+## header
+\`\`\`html
+<header>
+  <h1>Site Title</h1>
+  <nav>...</nav>
+</header>
 \`\`\`
 
-## Arrays
-\`\`\`typescript
-let scores: number[] = [100, 90, 85];
-let names: string[] = ["A", "B", "C"];
-let mixed: (string | number)[] = [1, "two"];
+## nav
+\`\`\`html
+<nav>
+  <a href="/">Home</a>
+  <a href="/about">About</a>
+</nav>
 \`\`\`
 
-## Any (หลีกเลี่ยง!)
-\`\`\`typescript
-let data: any = "hello";
-data = 123; // ได้ แต่ไม่ดี
+## main
+\`\`\`html
+<main>
+  <!-- เนื้อหาหลัก -->
+</main>
 \`\`\`
 
-## Union Types
-\`\`\`typescript
-let id: string | number = "abc";
-id = 123; // OK
+## footer
+\`\`\`html
+<footer>
+  <p>Copyright 2024</p>
+</footer>
+\`\`\`
+
+## section & article
+\`\`\`html
+<section>
+  <article>...</article>
+  <article>...</article>
+</section>
 \`\`\`
     `,
-    codeExample: `// Basic Types
-let name: string = "Hero";
-let level: number = 10;
-let isAlive: boolean = true;
+    codeExample: `<header>
+  <h1>News Site</h1>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/tech">Tech</a>
+    <a href="/sports">Sports</a>
+  </nav>
+</header>
 
-// Arrays
-let skills: string[] = ["Slash", "Shield"];
-let damage: number[] = [10, 20, 30];
+<main>
+  <section>
+    <h2>Latest News</h2>
+    <article>
+      <h3>Breaking News</h3>
+      <p>Something happened today...</p>
+    </article>
+  </section>
+</main>
 
-// Union type
-let id: string | number = "P001";
-
-console.log(name, "Lv.", level);
-console.log("Skills:", skills);
-console.log("ID:", id);`,
+<footer>
+  <p>Contact: news@example.com</p>
+</footer>`,
     challenge: {
-      description: "สร้าง array ของตัวเลขพร้อม type",
-      starterCode: `let scores: number[] = [85, 90, 78];
+      description: "สร้าง layout ด้วย header, nav, main, footer",
+      starterCode: `<header>
+  <h1>My Site</h1>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/blog">Blog</a>
+  </nav>
+</header>
 
-let total: number = 0;
-for (let score of scores) {
-  total += score;
-}
+<main>
+  <h2>Welcome</h2>
+  <p>Main content here.</p>
+</main>
 
-console.log("Total:", total);`,
-      expectedOutput: "Total: 253",
-      hints: ["ใช้ number[] สำหรับ array ของตัวเลข", "TypeScript จะเช็ค type ให้"]
+<footer>
+  <p>© 2024</p>
+</footer>`,
+      expectedOutput: "My Site",
+      hints: ["header อยู่บนสุด", "main คือเนื้อหาหลัก", "footer อยู่ล่างสุด"]
     },
     quiz: [
       {
-        question: "number[] หมายถึงอะไร?",
-        options: ["ตัวเลขหนึ่งตัว", "Array ของตัวเลข", "Object", "Function"],
-        correctAnswer: 1
-      },
-      {
-        question: "Union type ใช้เครื่องหมายอะไร?",
-        options: ["&", "|", "||", "&&"],
+        question: "<main> ใช้กี่ครั้งในหน้าเว็บ?",
+        options: ["ไม่จำกัด", "1 ครั้งเท่านั้น", "2 ครั้ง", "ไม่ควรใช้"],
         correctAnswer: 1
       }
     ]
   },
   {
-    id: "learn-ts-3",
-    topicId: "topic-typescript",
-    slug: "interfaces",
-    title: "Interfaces",
-    titleTh: "Interfaces",
-    description: "Define object shapes",
+    id: "learn-html-7",
+    topicId: "topic-html-semantic",
+    slug: "forms",
+    title: "Forms",
+    titleTh: "แบบฟอร์ม",
+    description: "Creating forms and input elements",
     order: 3,
     duration: 25,
     content: `
-# Interfaces
+# Forms (แบบฟอร์ม)
 
-Interface กำหนดโครงสร้างของ Object
-
-## สร้าง Interface
-\`\`\`typescript
-interface Player {
-  name: string;
-  level: number;
-  health: number;
-}
-
-const player: Player = {
-  name: "Hero",
-  level: 10,
-  health: 100
-};
+## Basic Form
+\`\`\`html
+<form action="/submit" method="POST">
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name">
+  <button type="submit">Submit</button>
+</form>
 \`\`\`
 
-## Optional Properties
-\`\`\`typescript
-interface Item {
-  name: string;
-  damage?: number; // optional
-}
+## Input Types
+\`\`\`html
+<input type="text" placeholder="Text">
+<input type="email" placeholder="Email">
+<input type="password" placeholder="Password">
+<input type="number" min="0" max="100">
+<input type="checkbox"> Remember me
+<input type="radio" name="gender" value="m"> Male
 \`\`\`
 
-## Readonly
-\`\`\`typescript
-interface Config {
-  readonly id: string;
-}
+## Textarea
+\`\`\`html
+<textarea rows="4" cols="50">
+Text here...
+</textarea>
 \`\`\`
     `,
-    codeExample: `interface Enemy {
-  name: string;
-  health: number;
-  damage: number;
-  isBoss?: boolean;
-}
-
-const slime: Enemy = {
-  name: "Slime",
-  health: 20,
-  damage: 5
-};
-
-const dragon: Enemy = {
-  name: "Dragon",
-  health: 500,
-  damage: 50,
-  isBoss: true
-};
-
-console.log(slime.name, "HP:", slime.health);
-console.log(dragon.name, "HP:", dragon.health, "Boss:", dragon.isBoss);`,
+    codeExample: `<form>
+  <h2>Contact Form</h2>
+  
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name" required>
+  
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required>
+  
+  <label for="message">Message:</label>
+  <textarea id="message" name="message" rows="4"></textarea>
+  
+  <button type="submit">Send Message</button>
+</form>`,
     challenge: {
-      description: "สร้าง interface Weapon ที่มี name, damage, และ type",
-      starterCode: `interface Weapon {
-  name: string;
-  damage: number;
-  type: string;
-}
-
-const sword: Weapon = {
-  name: "Iron Sword",
-  damage: 25,
-  type: "melee"
-};
-
-console.log(sword.name, "-", sword.damage, "dmg");`,
-      expectedOutput: "Iron Sword - 25 dmg",
-      hints: ["interface กำหนดโครงสร้าง object", "ใช้ : type สำหรับ property"]
+      description: "สร้างแบบฟอร์ม login ง่ายๆ",
+      starterCode: `<form>
+  <h2>Login</h2>
+  
+  <label for="username">Username:</label>
+  <input type="text" id="username" name="username">
+  
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password">
+  
+  <button type="submit">Login</button>
+</form>`,
+      expectedOutput: "Login",
+      hints: ["label ช่วย accessibility", "input type ระบุชนิดข้อมูล"]
     },
     quiz: [
       {
-        question: "Interface ใช้ทำอะไร?",
-        options: ["สร้าง function", "กำหนดโครงสร้าง object", "สร้าง loop", "ประกาศตัวแปร"],
+        question: "input type='password' ทำอะไร?",
+        options: ["ตรวจรหัสผ่าน", "ซ่อนตัวอักษรที่พิมพ์", "เข้ารหัส", "ส่งข้อมูล"],
         correctAnswer: 1
       },
       {
-        question: "? หลังชื่อ property หมายถึง?",
-        options: ["Required", "Optional", "Readonly", "Private"],
-        correctAnswer: 1
-      }
-    ]
-  },
-  {
-    id: "learn-ts-4",
-    topicId: "topic-typescript",
-    slug: "type-aliases",
-    title: "Type Aliases",
-    titleTh: "Type Aliases",
-    description: "Create custom types",
-    order: 4,
-    duration: 20,
-    content: `
-# Type Aliases
-
-สร้าง type ใหม่จาก types อื่น
-
-## Basic Alias
-\`\`\`typescript
-type ID = string | number;
-type Point = { x: number; y: number };
-
-let playerId: ID = "abc123";
-let position: Point = { x: 100, y: 200 };
-\`\`\`
-
-## Union Types
-\`\`\`typescript
-type Status = "active" | "inactive" | "banned";
-let userStatus: Status = "active";
-\`\`\`
-
-## Intersection Types
-\`\`\`typescript
-type Named = { name: string };
-type Leveled = { level: number };
-type Player = Named & Leveled;
-\`\`\`
-    `,
-    codeExample: `type GameState = "menu" | "playing" | "paused" | "gameover";
-type Position = { x: number; y: number };
-
-let state: GameState = "playing";
-let playerPos: Position = { x: 100, y: 200 };
-
-console.log("State:", state);
-console.log("Position:", playerPos);
-
-// เปลี่ยน state
-state = "paused";
-console.log("New State:", state);`,
-    challenge: {
-      description: "สร้าง type alias สำหรับ Direction",
-      starterCode: `type Direction = "up" | "down" | "left" | "right";
-
-let move: Direction = "up";
-console.log("Moving:", move);
-
-move = "left";
-console.log("Moving:", move);`,
-      expectedOutput: "Moving: up\nMoving: left",
-      hints: ["ใช้ | เพื่อ union", "เฉพาะค่าที่กำหนดเท่านั้น"]
-    },
-    quiz: [
-      {
-        question: "Type alias ต่างจาก interface อย่างไร?",
-        options: ["เหมือนกัน", "Type alias ใช้ union ได้", "Interface เร็วกว่า", "Type alias ไม่มี property"],
-        correctAnswer: 1
-      }
-    ]
-  },
-  {
-    id: "learn-ts-5",
-    topicId: "topic-typescript",
-    slug: "functions",
-    title: "Functions with Types",
-    titleTh: "ฟังก์ชันกับ Types",
-    description: "Typed function parameters and returns",
-    order: 5,
-    duration: 20,
-    content: `
-# Functions with Types
-
-กำหนด type ให้ parameters และ return value
-
-## Basic Typed Function
-\`\`\`typescript
-function add(a: number, b: number): number {
-  return a + b;
-}
-\`\`\`
-
-## Arrow Function
-\`\`\`typescript
-const greet = (name: string): string => {
-  return "Hello, " + name;
-};
-\`\`\`
-
-## Void (ไม่มี return)
-\`\`\`typescript
-function log(msg: string): void {
-  console.log(msg);
-}
-\`\`\`
-
-## Optional Parameters
-\`\`\`typescript
-function greet(name: string, title?: string): string {
-  return title ? title + " " + name : name;
-}
-\`\`\`
-    `,
-    codeExample: `function calculateDamage(base: number, multiplier: number): number {
-  return base * multiplier;
-}
-
-const formatHP = (current: number, max: number): string => {
-  return current + "/" + max + " HP";
-};
-
-function logAction(action: string): void {
-  console.log("[ACTION]", action);
-}
-
-console.log("Damage:", calculateDamage(10, 1.5));
-console.log(formatHP(80, 100));
-logAction("Player attacks!");`,
-    challenge: {
-      description: "สร้าง function ที่รับ 2 ตัวเลขและ return ผลรวม",
-      starterCode: `function sum(a: number, b: number): number {
-  return a + b;
-}
-
-console.log("5 + 3 =", sum(5, 3));
-console.log("10 + 20 =", sum(10, 20));`,
-      expectedOutput: "5 + 3 = 8\n10 + 20 = 30",
-      hints: ["กำหนด type ให้ parameters", "กำหนด return type ด้วย"]
-    },
-    quiz: [
-      {
-        question: ": void หมายถึงอะไร?",
-        options: ["Return undefined", "Return null", "ไม่มี return", "Error"],
-        correctAnswer: 2
-      },
-      {
-        question: "Optional parameter ใช้เครื่องหมายอะไร?",
-        options: ["!", "?", "*", "&"],
-        correctAnswer: 1
-      }
-    ]
-  },
-  {
-    id: "learn-ts-6",
-    topicId: "topic-typescript",
-    slug: "generics",
-    title: "Generics",
-    titleTh: "Generics",
-    description: "Reusable type-safe components",
-    order: 6,
-    duration: 25,
-    content: `
-# Generics
-
-สร้าง functions/classes ที่ทำงานกับหลาย types
-
-## Generic Function
-\`\`\`typescript
-function getFirst<T>(arr: T[]): T {
-  return arr[0];
-}
-
-getFirst<number>([1, 2, 3]); // 1
-getFirst<string>(["a", "b"]); // "a"
-\`\`\`
-
-## Generic Interface
-\`\`\`typescript
-interface Response<T> {
-  data: T;
-  success: boolean;
-}
-
-const userRes: Response<User> = {
-  data: { name: "John" },
-  success: true
-};
-\`\`\`
-
-## Constraints
-\`\`\`typescript
-function getLength<T extends { length: number }>(item: T): number {
-  return item.length;
-}
-\`\`\`
-    `,
-    codeExample: `function identity<T>(value: T): T {
-  return value;
-}
-
-function getFirst<T>(arr: T[]): T | undefined {
-  return arr[0];
-}
-
-function merge<A, B>(a: A, b: B): A & B {
-  return { ...a, ...b };
-}
-
-console.log(identity<string>("Hello"));
-console.log(identity<number>(42));
-console.log(getFirst([10, 20, 30]));
-console.log(merge({ name: "Hero" }, { level: 10 }));`,
-    challenge: {
-      description: "สร้าง generic function ที่ return ตัวสุดท้ายใน array",
-      starterCode: `function getLast<T>(arr: T[]): T | undefined {
-  return arr[arr.length - 1];
-}
-
-console.log(getLast([1, 2, 3]));
-console.log(getLast(["a", "b", "c"]));`,
-      expectedOutput: "3\nc",
-      hints: ["ใช้ arr[arr.length - 1]", "<T> คือ generic type parameter"]
-    },
-    quiz: [
-      {
-        question: "Generics ใช้ทำอะไร?",
-        options: ["สร้าง loop", "ทำให้ code ใช้ซ้ำได้กับหลาย types", "ประกาศตัวแปร", "สร้าง class"],
-        correctAnswer: 1
-      },
-      {
-        question: "<T> คืออะไร?",
-        options: ["Type ชื่อ T", "Generic type parameter", "Template", "ทั้งหมด"],
+        question: "label for='email' เชื่อมกับอะไร?",
+        options: ["name='email'", "id='email'", "class='email'", "type='email'"],
         correctAnswer: 1
       }
     ]

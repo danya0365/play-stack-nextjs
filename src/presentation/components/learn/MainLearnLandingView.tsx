@@ -47,13 +47,13 @@ export function MainLearnLandingView() {
       hover: "group-hover:text-yellow-600 dark:group-hover:text-yellow-400",
       shadow: "shadow-yellow-500/30",
     },
-    typescript: {
-      bg: "from-blue-50 to-indigo-50 dark:from-blue-500/10 dark:to-indigo-500/10",
-      border: "border-blue-200 dark:border-blue-500/20 hover:border-blue-400 dark:hover:border-blue-500/40",
-      text: "text-blue-600 dark:text-blue-400",
-      progress: "from-blue-500 to-indigo-500",
-      hover: "group-hover:text-blue-600 dark:group-hover:text-blue-400",
-      shadow: "shadow-blue-500/30",
+    html: {
+      bg: "from-orange-50 to-red-50 dark:from-orange-500/10 dark:to-red-500/10",
+      border: "border-orange-200 dark:border-orange-500/20 hover:border-orange-400 dark:hover:border-orange-500/40",
+      text: "text-orange-600 dark:text-orange-400",
+      progress: "from-orange-500 to-red-500",
+      hover: "group-hover:text-orange-600 dark:group-hover:text-orange-400",
+      shadow: "shadow-orange-500/30",
     },
     go: {
       bg: "from-cyan-50 to-teal-50 dark:from-cyan-500/10 dark:to-teal-500/10",
