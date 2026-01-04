@@ -2,6 +2,7 @@
 
 import { LessonContent } from "@/src/data/master/lessonContents";
 import { PaywallGuard } from "@/src/presentation/components/auth/PaywallGuard";
+import { CodeEditor } from "@/src/presentation/components/editor/CodeEditor";
 import { getLessonComponent, hasLessonComponent } from "@/src/presentation/components/lessons";
 import { useLayoutStore } from "@/src/presentation/stores/layoutStore";
 import { usePresentationStore } from "@/src/presentation/stores/presentationStore";

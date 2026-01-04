@@ -302,7 +302,7 @@ export function LearnFocusView({ courseType }: LearnFocusViewProps) {
     let inCodeBlock = false;
     let codeBlockLines: string[] = [];
     let codeLanguage = '';
-    const elements: JSX.Element[] = [];
+    const elements: React.ReactElement[] = [];
 
     lines.forEach((line, i) => {
       // Code block start
